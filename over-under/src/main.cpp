@@ -74,15 +74,14 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+	float p = 0.5;
 	while(true){
 		reset_positions();
-		move_distance(48, 90);
+		move_distance_proportional(24.0, p);
 		pros::delay(2000);
-		reset_positions();
-		move_distance(48, 50);
+		move_distance_proportional(24.0, p);
 		pros::delay(2000);
-		reset_positions();
-		move_distance(12*6,127);
+		move_distance_proportional(48.0, p);
 		pros::delay(100000);
 	}
 }
