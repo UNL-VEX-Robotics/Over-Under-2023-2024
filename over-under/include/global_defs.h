@@ -7,7 +7,7 @@
 
 #define TOP_LEFT_DRIVE 17 
 #define MID_LEFT_DRIVE 5 
-#define BOT_LEFT_DRIVE 4
+#define BOT_LEFT_DRIVE 2
 
 #define TOP_RIGHT_DRIVE 11
 #define MID_RIGHT_DRIVE 15
@@ -25,7 +25,7 @@
 #define INTAKE 'G'
 #define FLIPPERS 'H'
 
-const int radius = 1.625;
+const float radius = 1.625;
 
 const int blue_ticks_per_rev = 300;
 const int green_ticks_per_rev = 900;

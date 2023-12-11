@@ -66,9 +66,8 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	float p = 0.1;
+	float p = 3;
 	while(true){
-		reset_positions();
 		move_distance_proportional(24.0, p);
 		pros::delay(2000);
 		move_distance_proportional(24.0, p);
@@ -209,7 +208,7 @@ void activateIntake(){
 }
 
 void opcontrol() {
-	
+
 	master.clear();
 	while (true) {
 		//Sets the brake type of the evevation motor
@@ -219,13 +218,13 @@ void opcontrol() {
 		moveDrive(topLeftDrive, midLeftDrive, botLeftDrive, topRightDrive, midRightDrive, botRightDrive);
 
 		//Catapult Code Button: L1
-		//moveCat();
+		moveCat();
 
 		//Elevation Button: X for up,  B for down
-		//elevate();
+		elevate();
 
 		//Intake Button: R1 for in, R2 for out
-		//intake();
+		intake();
 
 		//Flippers Button: A
 		actiavteFlippers();
