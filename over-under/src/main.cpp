@@ -180,10 +180,12 @@ void intake(){
 		leftIntake = 100;
 		rightIntake = 100;
 		
-	}
-	if(master.get_digital(DIGITAL_R2)){
+	}else if(master.get_digital(DIGITAL_R2)){
 		leftIntake = -100;
 		rightIntake = -100;
+	}else{
+		leftIntake = 0;
+		rightIntake = 0;
 	}
 }
 
