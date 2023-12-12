@@ -7,8 +7,6 @@
 #include <cmath>
 #include <string>
 #include <math.h>
-#include "pros/imu.h"
-#include "pros/imu.hpp"
 
 using namespace pros;
 
@@ -22,8 +20,6 @@ Motor lb(BOT_LEFT_DRIVE, -1);
 Motor rf(TOP_RIGHT_DRIVE);
 Motor rm(MID_RIGHT_DRIVE, -1);
 Motor rb(BOT_RIGHT_DRIVE);
-
-pros::Imu imu;
 
 void reset_positions(){
     lf.set_zero_position(0);
@@ -76,6 +72,7 @@ void move_distance_proportional(float inches, float p){
     float avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position() + rf.get_position() + rm.get_position() + rb.get_position()) / 6.0;
     while(avg_error > 0){
         avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position() + rf.get_position() + rm.get_position() + rb.get_position()) / 6.0;
+<<<<<<< HEAD
         float normalized_error = avg_error / 2400;
         set_all_velocity((int) (normalized_error*p*127));
     }
@@ -98,4 +95,9 @@ void turn_right_relative(int degrees, float p){
 
 void turn_left_relative(int degrees, float p){
     return;
+=======
+        float normalized_error = avg_error / 3000;
+        set_all_velocity((int) (normalized_error*p*127));
+    }
+>>>>>>> parent of cd4e77e (Will this fix?)
 }
