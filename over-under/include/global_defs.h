@@ -25,7 +25,7 @@
 #define INTAKE 'G'
 #define FLIPPERS 'H'
 
-#define IMU 1
+#define IMU 12
 
 const float radius = 1.625;
 

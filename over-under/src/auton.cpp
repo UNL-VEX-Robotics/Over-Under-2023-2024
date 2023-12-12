@@ -1,5 +1,6 @@
 #include "main.h"
 #include "global_defs.h"
+#include "pros/imu.h"
 #include "pros/imu.hpp"
 #include "pros/llemu.hpp"
 #include "pros/motors.h"
@@ -41,14 +42,14 @@ void set_all_voltage(int voltage){
     return;
 }
 
-void set_left_voltage(int voltage){
+void set_left_voltage(float voltage){
     lf = voltage;
     lm = voltage;
     lb = voltage;
     return;
 }
 
-void set_right_voltage(int voltage){
+void set_right_voltage(float voltage){
     rf = voltage;
     rm = voltage;
     rb = voltage;
@@ -80,24 +81,33 @@ void move_distance_proportional(float inches, float p){
 
 void move_distance_individual_sides(float inches, float p){
     double revolutions = inches / circum;
-    double encoder_units = revolutions * blue_ticks_per_rev;
+    double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev;
     reset_positions();
-    float left_avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
-    float right_avg_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
-    while((left_avg_error > 0) && (right_avg_error > 0)){
-        float left_avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
-        float right_avg_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+    int i = 0;
+    double left_avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
+    double right_avg_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+    while(( abs(left_avg_error) > 20 ) && (abs(right_avg_error) > 20 )){
+        left_avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
+        right_avg_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
         if(left_avg_error*p > 127){
-            set_left_voltage(217);
+            set_left_voltage(127);
         } else{
-            set_left_voltage((int) (left_avg_error * p));
+            set_left_voltage((left_avg_error * p));
         }
-        if(right_avg_error*p>127) {
-            set_right_voltage((int) 127);
+        if(right_avg_error*p > 127) {
+            set_right_voltage(127);
         } else {
-            set_right_voltage((int) (right_avg_error * p));
+            set_right_voltage((right_avg_error * p));
         }
+        if(i % 15000 == 0){
+            std::cout << "\nleft: ";
+            std::cout << left_avg_error;
+            std::cout << "\nright: ";
+            std::cout << right_avg_error;
+        }
+        i++;
     }
+    std::cout << "\nend reached\n";    
     return;
 }
 
@@ -111,9 +121,85 @@ void turn_absolute_proportional(int degrees, float p){
 }
 
 void turn_right_relative(int degrees, float p){
+    double end_heading = degrees + imu.get_heading();
+    double error = degrees;
+    if(end_heading >= 360){
+        while(imu.get_heading() > 15){
+            error = end_heading - imu.get_heading();
+            if(error * p > 127){
+                set_left_voltage(127);
+                set_right_voltage(-127);
+            } else {
+                set_left_voltage(error*p);
+                set_right_voltage(-error*p);
+            }
+        }
+        end_heading-=360;
+        error = end_heading - imu.get_heading();
+        while(abs(error) > 5){
+            error = end_heading - imu.get_heading();
+            if(error * p > 127){
+                set_left_voltage(127);
+                set_right_voltage(-127);
+            } else {
+                set_left_voltage(error*p);
+                set_right_voltage(-error*p);
+            }
+        }
+        return;
+    }
+    
+    while(abs(error) > 3){
+        error = end_heading - imu.get_heading();
+        if(error * p > 127){
+            set_left_voltage(127);
+            set_right_voltage(-127);
+        } else {
+            set_left_voltage(error*p);
+            set_right_voltage(-error*p);
+        }
+    }
     return;
 }
 
 void turn_left_relative(int degrees, float p){
+    double end_heading = imu.get_heading() - degrees;
+    double error = degrees;
+    if(end_heading < 0){
+         while(imu.get_heading() < 345){
+            error = imu.get_heading() - end_heading;
+            if(error * p > 127){
+                set_left_voltage(-127);
+                set_right_voltage(127);
+            } else {
+                set_left_voltage(-error*p);
+                set_right_voltage(error*p);
+            }
+        }
+        end_heading+=360;
+        error = imu.get_heading() - end_heading;
+        while(abs(error) > 3){
+            error = imu.get_heading() - end_heading;
+            if(error * p > 127){
+                set_left_voltage(-127);
+                set_right_voltage(127);
+            } else {
+                set_left_voltage(-error*p);
+                set_right_voltage(error*p);
+            }
+        }
+        return;
+    } else {
+        while(abs(error) > 3){
+        error = imu.get_heading()- end_heading;
+        if(error * p > 127){
+            set_left_voltage(-127);
+            set_right_voltage(127);
+        } else {
+            set_left_voltage(-error*p);
+            set_right_voltage(error*p);
+        }
+    }
     return;
+    }
 }

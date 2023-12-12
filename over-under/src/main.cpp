@@ -67,17 +67,19 @@ void competition_initialize() {}
  */
 void autonomous() {
 	while(true){
-		//move_distance_proportional(24, 2.0);
-		//pros::delay(2000);
-		//move_distance_proportional(24, 3.0);
-		//pros::delay(2000);
-		//move_distance_proportional(24, 4.0);
 		//pros::delay(4000);
-		move_distance_individual_sides(24.0, .8);
-		pros::delay(2000);
-		move_distance_individual_sides(24.0, .5);
-		pros::delay(2000);
-		move_distance_individual_sides(24.0, .3);
+		//move_distance_individual_sides(36.0, .16);
+		pros::Imu imu(IMU);
+		while(imu.is_calibrating()){
+			pros::delay(20);
+		}
+		turn_right_relative(180, 0.9);
+		std::cout << "\nend reached\n";
+		turn_left_relative(180,0.9);
+		std::cout << "\nend reached\n";
+		turn_right_relative(90,0.9);
+		std::cout << "\nend reached\n";
+		turn_left_relative(90,.9);
 		pros::delay(1000000);
 	}
 }

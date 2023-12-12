@@ -1,7 +1,7 @@
 void reset_positions();
 void set_all_velocity(int voltage);
-void set_left_velocity(int voltage);
-void set_right_velocity(int voltage);
+void set_left_velocity(float voltage);
+void set_right_velocity(float voltage);
 void all_brake();
 void move_distance_proportional(float inches, float p);
 void move_distance_individual_sides(float inches, float p);
