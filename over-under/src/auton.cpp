@@ -1,5 +1,6 @@
 #include "main.h"
 #include "global_defs.h"
+#include "pros/imu.hpp"
 #include "pros/llemu.hpp"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
@@ -9,9 +10,9 @@
 
 using namespace pros;
 
-const int max_encoder_units = 4200;
 const int circum = radius*2*M_PI;
 
+Imu imu(IMU);
 Motor lf(TOP_LEFT_DRIVE, -1);
 Motor lm(MID_LEFT_DRIVE);
 Motor lb(BOT_LEFT_DRIVE, -1);
@@ -40,6 +41,20 @@ void set_all_velocity(int voltage){
     return;
 }
 
+void set_left_velocity(int voltage){
+    lf = voltage;
+    lm = voltage;
+    lb = voltage;
+    return;
+}
+
+void set_right_velocity(int voltage){
+    rf = voltage;
+    rm = voltage;
+    rb = voltage;
+    return;
+}
+
 void all_brake(){
     lf.brake();
     lm.brake();
@@ -57,7 +72,26 @@ void move_distance_proportional(float inches, float p){
     float avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position() + rf.get_position() + rm.get_position() + rb.get_position()) / 6.0;
     while(avg_error > 0){
         avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position() + rf.get_position() + rm.get_position() + rb.get_position()) / 6.0;
-        float normalized_error = avg_error / 3000;
+        float normalized_error = avg_error / 2400;
         set_all_velocity((int) (normalized_error*p*127));
     }
+    return;
+}
+
+
+//Turns the robot to the absolute given heading
+void turn_absolute_proportional(int degrees, float p){
+    int start_heading = imu.get_heading(); 
+    //logic to get relative turn, and whether turning left or right is quicker
+    int x = 0;
+    turn_absolute_proportional(0, p);
+    return;
+}
+
+void turn_right_relative(int degrees, float p){
+    return;
+}
+
+void turn_left_relative(int degrees, float p){
+    return;
 }
