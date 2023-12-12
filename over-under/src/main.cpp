@@ -33,7 +33,7 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "test test test");
+	pros::lcd::set_text(1, "mac gets bitches");
 	pros::lcd::register_btn1_cb(on_center_button);
 }
 
@@ -67,13 +67,13 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	float p = 3;
+	float p = 2.0;
 	while(true){
-		move_distance_proportional(24.0, p);
+		move_distance_proportional(24.0, 2.0);
 		pros::delay(2000);
-		move_distance_proportional(24.0, p);
+		move_distance_proportional(24.0, 3.0);
 		pros::delay(2000);
-		move_distance_proportional(48.0, p);
+		move_distance_proportional(24.0, 4.0);
 		pros::delay(100000);
 	}
 }

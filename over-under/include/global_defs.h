@@ -32,6 +32,8 @@
 #define INTAKE 'G'
 #define FLIPPERS 'H'
 
+#define IMU 1
+
 const float radius = 1.625;
 
 const int blue_ticks_per_rev = 300;
