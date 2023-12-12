@@ -66,14 +66,19 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	float p = 2.0;
 	while(true){
-		move_distance_proportional(24.0, 2.0);
+		//move_distance_proportional(24, 2.0);
+		//pros::delay(2000);
+		//move_distance_proportional(24, 3.0);
+		//pros::delay(2000);
+		//move_distance_proportional(24, 4.0);
+		//pros::delay(4000);
+		move_distance_individual_sides(24.0, .8);
 		pros::delay(2000);
-		move_distance_proportional(24.0, 3.0);
+		move_distance_individual_sides(24.0, .5);
 		pros::delay(2000);
-		move_distance_proportional(24.0, 4.0);
-		pros::delay(100000);
+		move_distance_individual_sides(24.0, .3);
+		pros::delay(1000000);
 	}
 }
 
@@ -218,19 +223,19 @@ void opcontrol() {
 		moveDrive(topLeftDrive, midLeftDrive, botLeftDrive, topRightDrive, midRightDrive, botRightDrive);
 
 		//Catapult Code Button: L1
-		moveCat();
+		//moveCat();
 
 		//Elevation Button: X for up,  B for down
-		elevate();
+		//elevate();
 
 		//Intake Button: R1 for in, R2 for out
-		intake();
+		//intake();
 
 		//Flippers Button: A
-		actiavteFlippers();
+		//actiavteFlippers();
 
 		//Intake Activation Button: Y
-		activateIntake();
+		//activateIntake();
 		
 		pros::delay(2);
 	}

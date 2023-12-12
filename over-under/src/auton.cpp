@@ -31,7 +31,7 @@ void reset_positions(){
     return;
 }
 
-void set_all_velocity(int voltage){
+void set_all_voltage(int voltage){
     lf = voltage;
     lm = voltage;
     lb = voltage;
@@ -41,14 +41,14 @@ void set_all_velocity(int voltage){
     return;
 }
 
-void set_left_velocity(int voltage){
+void set_left_voltage(int voltage){
     lf = voltage;
     lm = voltage;
     lb = voltage;
     return;
 }
 
-void set_right_velocity(int voltage){
+void set_right_voltage(int voltage){
     rf = voltage;
     rm = voltage;
     rb = voltage;
@@ -74,11 +74,33 @@ void move_distance_proportional(float inches, float p){
         avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position() + rf.get_position() + rm.get_position() + rb.get_position()) / 6.0;
 <<<<<<< HEAD
         float normalized_error = avg_error / 2400;
-        set_all_velocity((int) (normalized_error*p*127));
+        set_all_voltage((int) (normalized_error*p*127));
     }
     return;
 }
 
+void move_distance_individual_sides(float inches, float p){
+    double revolutions = inches / circum;
+    double encoder_units = revolutions * blue_ticks_per_rev;
+    reset_positions();
+    float left_avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
+    float right_avg_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+    while((left_avg_error > 0) && (right_avg_error > 0)){
+        float left_avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
+        float right_avg_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+        if(left_avg_error*p > 127){
+            set_left_voltage(217);
+        } else{
+            set_left_voltage((int) (left_avg_error * p));
+        }
+        if(right_avg_error*p>127) {
+            set_right_voltage((int) 127);
+        } else {
+            set_right_voltage((int) (right_avg_error * p));
+        }
+    }
+    return;
+}
 
 //Turns the robot to the absolute given heading
 void turn_absolute_proportional(int degrees, float p){
