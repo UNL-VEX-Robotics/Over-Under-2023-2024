@@ -1,3 +1,4 @@
+#include "display/lv_core/lv_obj.h"
 #include "main.h"
 #include "global_defs.h"
 #include "pros/imu.h"
@@ -79,31 +80,62 @@ void move_distance_proportional(float inches, float p){
     return;
 }
 
-void move_distance_individual_sides(float inches, float p){
+void move_individual_sides_debug(float inches, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
     double revolutions = inches / circum;
     double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev;
     reset_positions();
     int i = 0;
-    double left_avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
-    double right_avg_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
-    while(( abs(left_avg_error) > 20 ) && (abs(right_avg_error) > 20 )){
-        left_avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
-        right_avg_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
-        if(left_avg_error*p > 127){
+    double left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
+    double right_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+    double prev_left_error = left_error;
+    double prev_right_error=right_error;
+    double left_integral = 0;
+    double right_integral = 0;
+    double left_derivative = 0;
+    double right_derivative = 0;
+
+    double left_voltage = 0;
+    double right_voltage = 0;
+    while(( abs(left_error) > 20 ) && (abs(right_error) > 20 )){
+        prev_left_error = left_error;
+        prev_right_error = right_error;
+        left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
+        right_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+        
+        //if each iteration of the loop doesn't take a uniform amount of time, derivative and integral calculations need
+        //to consider time
+        left_derivative = left_error - prev_left_error;
+        right_derivative = right_error - prev_right_error;
+
+        if(abs(left_error) > integral_max_error){
+            left_integral = 0;    
+        } else {
+            left_integral = left_integral + Ki * left_error;
+        }
+        if(abs(right_error) > integral_max_error){
+            right_integral = 0;
+        } else {
+            right_integral = right_integral + Ki * right_error;
+        }
+        
+        left_voltage = Kp * left_error + Ki * left_integral + Kd * left_derivative;
+        right_voltage = Kp * right_error + Ki * right_integral + Kd * right_derivative;
+        if(left_voltage> 127){
             set_left_voltage(127);
         } else{
-            set_left_voltage((left_avg_error * p));
+            set_left_voltage(left_voltage);
         }
-        if(right_avg_error*p > 127) {
+        if(right_voltage > 127) {
             set_right_voltage(127);
         } else {
-            set_right_voltage((right_avg_error * p));
+            set_right_voltage(right_voltage);
         }
+
         if(i % 15000 == 0){
             std::cout << "\nleft: ";
-            std::cout << left_avg_error;
+            std::cout << left_error;
             std::cout << "\nright: ";
-            std::cout << right_avg_error;
+            std::cout << right_error;
         }
         i++;
     }
@@ -111,12 +143,65 @@ void move_distance_individual_sides(float inches, float p){
     return;
 }
 
-//Turns the robot to the absolute given heading
-void turn_absolute_proportional(int degrees, float p){
+void move_individual_sides(float inches, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
+    double revolutions = inches / circum;
+    double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev;
+    reset_positions();
+    double left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
+    double right_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+    double prev_left_error = left_error;
+    double prev_right_error=right_error;
+    double left_integral = 0;
+    double right_integral = 0;
+    double left_derivative = 0;
+    double right_derivative = 0;
+
+    double left_voltage = 0;
+    double right_voltage = 0;
+    while(( abs(left_error) > 20 ) && (abs(right_error) > 20 )){
+        prev_left_error = left_error;
+        prev_right_error = right_error;
+        left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
+        right_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+        
+        //if each iteration of the loop doesn't take a uniform amount of time, derivative and integral calculations need
+        //to consider time
+        left_derivative = left_error - prev_left_error;
+        right_derivative = right_error - prev_right_error;
+
+        if(abs(left_error) > integral_max_error){
+            left_integral = 0;    
+        } else {
+            left_integral = left_integral + Ki * left_error;
+        }
+        if(abs(right_error) > integral_max_error){
+            right_integral = 0;
+        } else {
+            right_integral = right_integral + Ki * right_error;
+        }
+        
+        left_voltage = Kp * left_error + Ki * left_integral + Kd * left_derivative;
+        right_voltage = Kp * right_error + Ki * right_integral + Kd * right_derivative;
+        if(left_voltage> 127){
+            set_left_voltage(127);
+        } else{
+            set_left_voltage(left_voltage);
+        }
+        if(right_voltage > 127) {
+            set_right_voltage(127);
+        } else {
+            set_right_voltage(right_voltage);
+        }
+    }
+    return;
+}
+
+//Turns the robot to the given heading
+void turn_absolute(int degrees, float p){
     int start_heading = imu.get_heading(); 
     //logic to get relative turn, and whether turning left or right is quicker
     int x = 0;
-    turn_absolute_proportional(0, p);
+    // call relative turn left or right with relative degrees
     return;
 }
 
@@ -134,8 +219,10 @@ void turn_right_relative(int degrees, float p){
                 set_right_voltage(-error*p);
             }
         }
+        std::cout << "\nflipped to 0\n";
         end_heading-=360;
         error = end_heading - imu.get_heading();
+        int i = 0;
         while(abs(error) > 5){
             error = end_heading - imu.get_heading();
             if(error * p > 127){
@@ -145,11 +232,16 @@ void turn_right_relative(int degrees, float p){
                 set_left_voltage(error*p);
                 set_right_voltage(-error*p);
             }
+            if(i%5000 == 0){
+                std::cout << error;
+                std::cout << "  ";
+            }
+            i++;
         }
         return;
     }
     
-    while(abs(error) > 3){
+    while(abs(error) > 5){
         error = end_heading - imu.get_heading();
         if(error * p > 127){
             set_left_voltage(127);
@@ -176,9 +268,11 @@ void turn_left_relative(int degrees, float p){
                 set_right_voltage(error*p);
             }
         }
+        std::cout << "\nflipped to 0\n";
         end_heading+=360;
         error = imu.get_heading() - end_heading;
-        while(abs(error) > 3){
+        int i = 0;
+        while(abs(error) > 5){
             error = imu.get_heading() - end_heading;
             if(error * p > 127){
                 set_left_voltage(-127);
@@ -187,10 +281,15 @@ void turn_left_relative(int degrees, float p){
                 set_left_voltage(-error*p);
                 set_right_voltage(error*p);
             }
+            if(i%5000 == 0){
+                std::cout << error;
+                std::cout << "  ";
+            }
+            i++;
         }
         return;
     } else {
-        while(abs(error) > 3){
+        while(abs(error) > 5){
         error = imu.get_heading()- end_heading;
         if(error * p > 127){
             set_left_voltage(-127);

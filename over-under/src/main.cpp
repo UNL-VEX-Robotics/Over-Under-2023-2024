@@ -73,13 +73,14 @@ void autonomous() {
 		while(imu.is_calibrating()){
 			pros::delay(20);
 		}
-		turn_right_relative(180, 0.9);
-		std::cout << "\nend reached\n";
-		turn_left_relative(180,0.9);
-		std::cout << "\nend reached\n";
-		turn_right_relative(90,0.9);
-		std::cout << "\nend reached\n";
-		turn_left_relative(90,.9);
+		std::cout << "\nSO IT BEGINS\n";
+		turn_right_relative(180, 1.1);
+		std::cout << "end reached\n";
+		turn_left_relative(180,1.1);
+		std::cout << "end reached\n";
+		turn_right_relative(90,1.1);
+		std::cout << "end reached\n";
+		turn_left_relative(90,1.1);
 		pros::delay(1000000);
 	}
 }
