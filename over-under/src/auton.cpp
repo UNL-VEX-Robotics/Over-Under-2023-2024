@@ -6,6 +6,7 @@
 #include "pros/llemu.hpp"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
+#include "auton.h"
 #include <cmath>
 #include <string>
 #include <math.h>
@@ -172,12 +173,12 @@ void move_individual_sides(float inches, int settled_margin, int integral_max_er
         if(abs(left_error) > integral_max_error){
             left_integral = 0;    
         } else {
-            left_integral = left_integral + Ki * left_error;
+            left_integral = left_integral + left_error;
         }
         if(abs(right_error) > integral_max_error){
             right_integral = 0;
         } else {
-            right_integral = right_integral + Ki * right_error;
+            right_integral = right_integral + right_error;
         }
         
         left_voltage = Kp * left_error + Ki * left_integral + Kd * left_derivative;
@@ -197,26 +198,43 @@ void move_individual_sides(float inches, int settled_margin, int integral_max_er
 }
 
 //Turns the robot to the given heading
-void turn_absolute(int degrees, float p){
+void turn_absolute(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
     int start_heading = imu.get_heading(); 
-    //logic to get relative turn, and whether turning left or right is quicker
-    int x = 0;
-    // call relative turn left or right with relative degrees
+    //right range = start +1, start + 180 % 360
+    //left range = start -1, start - 180 % 360
+    if(degrees > start_heading && degrees < ((start_heading + 180) % 360) ){
+        turn_right_relative((degrees - start_heading) % 360 , settled_margin, integral_max_error, Kp, Ki, Kd);
+    } else {
+        turn_left_relative((start_heading - degrees ) % 360, settled_margin, integral_max_error, Kp, Ki, Kd);
+    }
     return;
 }
 
-void turn_right_relative(int degrees, float p){
+void turn_right_relative(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
     double end_heading = degrees + imu.get_heading();
     double error = degrees;
+    double prev_error = 0;
+    double integral = 0;
+    double derivative = 0;
+    double voltage = 0;
+    int i = 0;
     if(end_heading >= 360){
         while(imu.get_heading() > 15){
+            prev_error = error;
             error = end_heading - imu.get_heading();
-            if(error * p > 127){
+            if(abs(error) > integral_max_error){
+                integral = 0;
+            } else {
+                integral = integral + error;
+            }
+            derivative = error - prev_error;
+            voltage = Kp * error + Ki * integral + Kd * derivative;
+            if(voltage > 127){
                 set_left_voltage(127);
                 set_right_voltage(-127);
             } else {
-                set_left_voltage(error*p);
-                set_right_voltage(-error*p);
+                set_left_voltage(voltage);
+                set_right_voltage(-voltage);
             }
         }
         std::cout << "\nflipped to 0\n";
@@ -224,13 +242,21 @@ void turn_right_relative(int degrees, float p){
         error = end_heading - imu.get_heading();
         int i = 0;
         while(abs(error) > 5){
+            prev_error = error;
             error = end_heading - imu.get_heading();
-            if(error * p > 127){
+            if(abs(error) > integral_max_error){
+                integral = 0;
+            } else {
+                integral = integral + error;
+            }
+            derivative = error - prev_error;
+            voltage = Kp * error + Ki * integral + Kd * derivative;
+            if(voltage > 127){
                 set_left_voltage(127);
                 set_right_voltage(-127);
             } else {
-                set_left_voltage(error*p);
-                set_right_voltage(-error*p);
+                set_left_voltage(voltage);
+                set_right_voltage(-voltage);
             }
             if(i%5000 == 0){
                 std::cout << error;
@@ -240,46 +266,73 @@ void turn_right_relative(int degrees, float p){
         }
         return;
     }
-    
     while(abs(error) > 5){
+        prev_error = error;
         error = end_heading - imu.get_heading();
-        if(error * p > 127){
+        if(abs(error) > integral_max_error){
+            integral = 0;
+        } else {
+            integral = integral + error;
+        }
+        derivative = error - prev_error;
+        voltage = Kp * error + Ki * integral + Kd * derivative;
+        if(voltage > 127){
             set_left_voltage(127);
             set_right_voltage(-127);
         } else {
-            set_left_voltage(error*p);
-            set_right_voltage(-error*p);
+            set_left_voltage(voltage);
+            set_right_voltage(-voltage);
         }
     }
     return;
 }
 
-void turn_left_relative(int degrees, float p){
+void turn_left_relative(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
     double end_heading = imu.get_heading() - degrees;
+    double prev_error = 0;
     double error = degrees;
+    double integral = 0;
+    double derivative = 0;
+    double voltage = 0;
+    int i = 0;
     if(end_heading < 0){
          while(imu.get_heading() < 345){
+            prev_error = error;
             error = imu.get_heading() - end_heading;
-            if(error * p > 127){
+            if(abs(error) > integral_max_error){
+                integral = 0;
+            } else {
+                integral = integral + error;
+            }
+            derivative = error - prev_error;
+            voltage = Kp * error + Ki * integral + Kd * derivative; 
+            if(voltage > 127){
                 set_left_voltage(-127);
                 set_right_voltage(127);
             } else {
-                set_left_voltage(-error*p);
-                set_right_voltage(error*p);
+                set_left_voltage(-voltage);
+                set_right_voltage(voltage);
             }
         }
         std::cout << "\nflipped to 0\n";
         end_heading+=360;
         error = imu.get_heading() - end_heading;
-        int i = 0;
-        while(abs(error) > 5){
+        while(abs(error) > settled_margin){
+            prev_error = error;
             error = imu.get_heading() - end_heading;
-            if(error * p > 127){
+            if(abs(error) > integral_max_error){
+                integral = 0;
+            } else {
+                integral = integral + error;
+            }
+            derivative = error - prev_error;
+            voltage = Kp * error + Ki * integral + Kd * derivative; 
+            if(voltage > 127){
                 set_left_voltage(-127);
                 set_right_voltage(127);
             } else {
-                set_left_voltage(-error*p);
-                set_right_voltage(error*p);
+                set_left_voltage(-voltage);
+                set_right_voltage(voltage);
             }
             if(i%5000 == 0){
                 std::cout << error;
@@ -289,16 +342,29 @@ void turn_left_relative(int degrees, float p){
         }
         return;
     } else {
-        while(abs(error) > 5){
-        error = imu.get_heading()- end_heading;
-        if(error * p > 127){
-            set_left_voltage(-127);
-            set_right_voltage(127);
-        } else {
-            set_left_voltage(-error*p);
-            set_right_voltage(error*p);
+        while(abs(error) > settled_margin){
+            prev_error = error;
+            error = imu.get_heading() - end_heading;
+            if(abs(error) > integral_max_error){
+                integral = 0;
+            } else {
+                integral = integral + error;
+            }
+            derivative = error - prev_error;
+            voltage = Kp * error + Ki * integral + Kd * derivative; 
+            if(voltage > 127){
+                set_left_voltage(-127);
+                set_right_voltage(127);
+            } else {
+                set_left_voltage(-voltage);
+                set_right_voltage(voltage);
+            }
+            if(i%5000 == 0){
+                std::cout << error;
+                std::cout << "  ";
+            }
+            i++;
         }
-    }
     return;
     }
 }

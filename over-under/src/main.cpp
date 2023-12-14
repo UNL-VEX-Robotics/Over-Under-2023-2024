@@ -73,15 +73,7 @@ void autonomous() {
 		while(imu.is_calibrating()){
 			pros::delay(20);
 		}
-		std::cout << "\nSO IT BEGINS\n";
-		turn_right_relative(180, 1.1);
-		std::cout << "end reached\n";
-		turn_left_relative(180,1.1);
-		std::cout << "end reached\n";
-		turn_right_relative(90,1.1);
-		std::cout << "end reached\n";
-		turn_left_relative(90,1.1);
-		pros::delay(1000000);
+		
 	}
 }
 
@@ -228,19 +220,19 @@ void opcontrol() {
 		moveDrive(topLeftDrive, midLeftDrive, botLeftDrive, topRightDrive, midRightDrive, botRightDrive);
 
 		//Catapult Code Button: L1
-		//moveCat();
+		moveCat();
 
 		//Elevation Button: X for up,  B for down
-		//elevate();
+		elevate();
 
 		//Intake Button: R1 for in, R2 for out
-		//intake();
+		intake();
 
 		//Flippers Button: A
-		//actiavteFlippers();
+		actiavteFlippers();
 
 		//Intake Activation Button: Y
-		//activateIntake();
+		activateIntake();
 		
 		pros::delay(2);
 	}
