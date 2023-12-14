@@ -68,7 +68,7 @@ void competition_initialize() {}
 void autonomous() {
 	while(true){
 		//pros::delay(4000);
-		//move_distance_individual_sides(36.0, .16);
+		move_distance_individual_sides(36.0, 20 .16);
 		pros::Imu imu(IMU);
 		while(imu.is_calibrating()){
 			pros::delay(20);

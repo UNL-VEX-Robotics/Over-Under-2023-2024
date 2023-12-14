@@ -7,6 +7,7 @@
 #include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "auton.h"
+#include <chrono>
 #include <cmath>
 #include <string>
 #include <math.h>
@@ -97,7 +98,7 @@ void move_individual_sides_debug(float inches, int settled_margin, int integral_
 
     double left_voltage = 0;
     double right_voltage = 0;
-    while(( abs(left_error) > 20 ) && (abs(right_error) > 20 )){
+    while(( abs(left_error) > settled_margin ) && (abs(right_error) > settled_margin )){
         prev_left_error = left_error;
         prev_right_error = right_error;
         left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
@@ -159,7 +160,7 @@ void move_individual_sides(float inches, int settled_margin, int integral_max_er
 
     double left_voltage = 0;
     double right_voltage = 0;
-    while(( abs(left_error) > 20 ) && (abs(right_error) > 20 )){
+    while(( abs(left_error) > settled_margin ) && (abs(right_error) > settled_margin )){
         prev_left_error = left_error;
         prev_right_error = right_error;
         left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
@@ -241,7 +242,7 @@ void turn_right_relative(int degrees, int settled_margin, int integral_max_error
         end_heading-=360;
         error = end_heading - imu.get_heading();
         int i = 0;
-        while(abs(error) > 5){
+        while(abs(error) > settled_margin){
             prev_error = error;
             error = end_heading - imu.get_heading();
             if(abs(error) > integral_max_error){
@@ -266,7 +267,7 @@ void turn_right_relative(int degrees, int settled_margin, int integral_max_error
         }
         return;
     }
-    while(abs(error) > 5){
+    while(abs(error) > settled_margin){
         prev_error = error;
         error = end_heading - imu.get_heading();
         if(abs(error) > integral_max_error){
