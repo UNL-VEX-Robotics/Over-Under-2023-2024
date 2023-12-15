@@ -4,6 +4,7 @@
 #include "pros/adi.hpp"
 #include "pros/apix.h"
 #include "pros/misc.h"
+#include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include <string>
 #include "global_defs.h"
@@ -67,13 +68,43 @@ void competition_initialize() {}
  */
 void autonomous() {
 	while(true){
-		//pros::delay(4000);
-		move_distance_individual_sides(36.0, 20 .16);
+		//straight params
+		int tick_margin = 15;
+		int integral_max_error_s= 1000;
+		float Kps = 0.23;
+		float Kis = .0001;
+		float Kds = 1.5;
+		//turning params
+		int degree_margin = 5;
+		int integral_max_error_t = 90;
+		float Kpt = 0.23;
+		float Kit = 0.0001;
+		float Kdt = 1.5;
+
 		pros::Imu imu(IMU);
+		imu.reset();
 		while(imu.is_calibrating()){
 			pros::delay(20);
 		}
-		
+		imu.set_heading(0);
+		while(imu.is_calibrating()){
+			pros::delay(20);
+		}
+		std::cout << imu.get_heading();
+		turn_absolute(270, degree_margin, integral_max_error_t, Kpt, Kit, Kdt);
+		std::cout << "\nend reached 1\n";
+		move_individual_sides_debug(36.0, tick_margin, integral_max_error_s, Kps, Kis, Kds);	
+		std::cout << "\nend reached 2\n";
+		turn_absolute(90, degree_margin, integral_max_error_t, Kpt, Kit, Kdt);
+		std::cout << "\nend reached 3\n";
+		move_individual_sides_debug(36.0, tick_margin, integral_max_error_s,  Kps, Kis, Kds);
+		std::cout << "\nend reached 4\n";
+		turn_absolute(45, degree_margin, integral_max_error_t, Kpt, Kit, Kdt);
+		std::cout << "\nend reached 5\n";
+		move_individual_sides_debug(12.0, tick_margin, integral_max_error_s,  Kps, Kis, Kds);
+		std::cout << "\nend reached 6\n";
+	
+		pros::delay(100000);
 	}
 }
 
@@ -126,7 +157,8 @@ pros::Motor elevation(EVEVATION, pros::E_MOTOR_GEAR_RED, true);
 pros::Motor leftCat(LEFT_CAT, pros::E_MOTOR_GEAR_RED, true);
 pros::Motor rightCat(RIGHT_CAT, pros::E_MOTOR_GEAR_RED);
 
-pros::ADIAnalogIn limit(LIMIT_SWITCH);
+
+pros::ADIDigitalIn limit(LIMIT_SWITCH);
 pros::ADIDigitalOut triBallIntake(INTAKE);
 pros::ADIDigitalOut flippers(FLIPPERS);
 
@@ -150,16 +182,16 @@ void moveDrive(pros::Motor tl, pros::Motor ml, pros::Motor bl, pros::Motor tr, p
 //Function For Moving the Catapult: Button: L1
 
 void moveCat(){
-	
-	if (master.get_digital(DIGITAL_L1)){
+	if(master.get_digital(DIGITAL_L1)){
 		leftCat = -100;
 		rightCat = -100;
-	}else if(limit.get_value()){
-		leftCat = -100;
-		rightCat = -100;
-	} else{
-		leftCat = 0;
-		rightCat = 0;
+		pros::delay(300);
+		while(!limit.get_value()){
+			leftCat = -100;
+			rightCat = -100;
+		}
+		leftCat.brake();
+		rightCat.brake();
 	}
 }
 
@@ -208,14 +240,20 @@ void activateIntake(){
 		pros::delay(300);
 	}
 }
-
 void opcontrol() {
-
+	
 	master.clear();
+	leftCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	rightCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	while(!limit.get_value()){
+		leftCat = -100;
+		rightCat = -100;
+	}
+	leftCat.brake();
+	rightCat.brake();
 	while (true) {
 		//Sets the brake type of the evevation motor
 		//elevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-
 		//Tank Drive Code Sticks
 		moveDrive(topLeftDrive, midLeftDrive, botLeftDrive, topRightDrive, midRightDrive, botRightDrive);
 

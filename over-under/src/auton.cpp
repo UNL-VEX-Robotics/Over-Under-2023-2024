@@ -122,26 +122,25 @@ void move_individual_sides_debug(float inches, int settled_margin, int integral_
         
         left_voltage = Kp * left_error + Ki * left_integral + Kd * left_derivative;
         right_voltage = Kp * right_error + Ki * right_integral + Kd * right_derivative;
-        if(left_voltage> 127){
-            set_left_voltage(127);
+        if(left_voltage > 127){
+            set_left_voltage(127.0 * (i+100)/25000);
         } else{
             set_left_voltage(left_voltage);
         }
         if(right_voltage > 127) {
-            set_right_voltage(127);
+            set_right_voltage(127.0 * (i+100)/25000);
         } else {
             set_right_voltage(right_voltage);
         }
 
-        if(i % 15000 == 0){
-            std::cout << "\nleft: ";
+        if(i % 15000 == 0 && i < 120000){
+            std::cout << "\n   left: ";
             std::cout << left_error;
-            std::cout << "\nright: ";
+            std::cout << "\n   right: ";
             std::cout << right_error;
         }
         i++;
-    }
-    std::cout << "\nend reached\n";    
+    }     
     return;
 }
 
@@ -203,7 +202,10 @@ void turn_absolute(int degrees, int settled_margin, int integral_max_error, floa
     int start_heading = imu.get_heading(); 
     //right range = start +1, start + 180 % 360
     //left range = start -1, start - 180 % 360
-    if(degrees > start_heading && degrees < ((start_heading + 180) % 360) ){
+    std::cout <<  "HELLLOOOOO\n start:  ";
+    std::cout << std::to_string(start_heading) + "\nleft turn:   "   + std::to_string((start_heading - degrees) % 360);
+    std::cout << (start_heading-degrees) % 360;
+    if(degrees > start_heading && (degrees < ((start_heading + 180) % 360)) ){
         turn_right_relative((degrees - start_heading) % 360 , settled_margin, integral_max_error, Kp, Ki, Kd);
     } else {
         turn_left_relative((start_heading - degrees ) % 360, settled_margin, integral_max_error, Kp, Ki, Kd);
