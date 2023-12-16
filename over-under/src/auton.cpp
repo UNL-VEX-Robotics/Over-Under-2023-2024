@@ -269,6 +269,11 @@ void turn_right_relative(int degrees, int settled_margin, int integral_max_error
                 set_left_voltage(voltage);
                 set_right_voltage(-voltage);
             }
+            if(i%5000 == 0){
+                std::cout << error;
+                std::cout << "  ";
+            }
+            i++;
         }
         std::cout << "\nflipped to 0\n";
         end_heading-=360;
@@ -316,6 +321,11 @@ void turn_right_relative(int degrees, int settled_margin, int integral_max_error
             set_left_voltage(voltage);
             set_right_voltage(-voltage);
         }
+        if(i%5000 == 0){
+            std::cout << error;
+            std::cout << "  ";
+        }
+        i++;
     }
     return;
 }
@@ -346,6 +356,11 @@ void turn_left_relative(int degrees, int settled_margin, int integral_max_error,
                 set_left_voltage(-voltage);
                 set_right_voltage(voltage);
             }
+            if(i%5000 == 0){
+                std::cout << error;
+                std::cout << "  ";
+            }
+            i++;
         }
         std::cout << "\nflipped to 0\n";
         end_heading+=360;

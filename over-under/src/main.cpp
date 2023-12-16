@@ -116,7 +116,6 @@ void autonomous() {
 	leftCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	rightCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	//ATTACK
-	/*
 	triBallIntake.set_value(1);
 	rightIntake = 127;
 	leftIntake = 127;
@@ -135,7 +134,6 @@ void autonomous() {
 	triBallIntake.set_value(0);
 	rightIntake = 0;
 	leftIntake = 0;
-	*/
 	pros::Imu imu(IMU);
 	imu.reset();
 	while(imu.is_calibrating()){
@@ -298,6 +296,11 @@ void opcontrol() {
 		//Intake Activation Button: Y
 		activateIntake();
 		
+		if(master.get_digital(DIGITAL_L2)){
+			triBallIntake.set_value(1);
+			flippers.set_value(1);
+		}
+
 		pros::delay(2);
 	}
 }
