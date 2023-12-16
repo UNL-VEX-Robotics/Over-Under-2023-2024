@@ -7,7 +7,7 @@
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include <string>
-#include "global_defs.h"
+#include "global_defs_v1.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -55,6 +55,29 @@ void disabled() {}
  */
 void competition_initialize() {}
 
+pros::Controller master(pros::E_CONTROLLER_MASTER);
+
+pros::Motor topLeftDrive(TOP_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
+pros::Motor midLeftDrive(MID_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor botLeftDrive(BOT_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
+
+pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
+pros::Motor midRightDrive(MID_RIGHT_DRIVE, true);
+pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
+
+pros::Motor leftIntake(LEFT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor rightIntake(RIGHT_INTAKE, pros::E_MOTOR_GEAR_BLUE, true);
+
+pros::Motor elevation(EVEVATION, pros::E_MOTOR_GEAR_RED, true);
+
+pros::Motor leftCat(LEFT_CAT, pros::E_MOTOR_GEAR_RED, true);
+pros::Motor rightCat(RIGHT_CAT, pros::E_MOTOR_GEAR_RED);
+
+pros::ADIDigitalIn limit(LIMIT_SWITCH);
+pros::ADIDigitalOut triBallIntake(INTAKE);
+pros::ADIDigitalOut flippers(FLIPPERS);
+
+
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -66,46 +89,70 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {
-	while(true){
-		//straight params
-		int tick_margin = 15;
-		int integral_max_error_s= 1000;
-		float Kps = 0.23;
-		float Kis = .0001;
-		float Kds = 1.5;
-		//turning params
-		int degree_margin = 5;
-		int integral_max_error_t = 90;
-		float Kpt = 0.23;
-		float Kit = 0.0001;
-		float Kdt = 1.5;
+//straight params
+int tick_margin = 15;
+int integral_max_error_s= 1000;
+float Kps = 0.23;
+float Kis = .0001;
+float Kds = 1.5;
+//turning params
+int degree_margin = 5;
+int integral_max_error_t = 90;
+float Kpt = 0.1;
+float Kit = 0.0001;
+float Kdt = 0;
 
-		pros::Imu imu(IMU);
-		imu.reset();
-		while(imu.is_calibrating()){
-			pros::delay(20);
+void turn(int degrees){
+	turn_absolute(degrees, degree_margin, integral_max_error_t, Kpt, Kit, Kdt);
+	return;
+}
+
+void go(int inches){
+	move_individual_sides_debug(inches, tick_margin, integral_max_error_s, Kps, Kis, Kds);
+	return;
+}
+void autonomous() {
+	//ATTACK
+	leftCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	rightCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	//ATTACK
+	/*
+	triBallIntake.set_value(1);
+	rightIntake = 127;
+	leftIntake = 127;
+	for(int i = 0; i < 25; i++){
+		leftCat = -100;
+		rightCat = -100;
+		pros::delay(300);
+		while(!limit.get_value()){
+			leftCat = -100;
+			rightCat = -100;
 		}
-		imu.set_heading(0);
-		while(imu.is_calibrating()){
-			pros::delay(20);
-		}
-		std::cout << imu.get_heading();
-		turn_absolute(270, degree_margin, integral_max_error_t, Kpt, Kit, Kdt);
-		std::cout << "\nend reached 1\n";
-		move_individual_sides_debug(36.0, tick_margin, integral_max_error_s, Kps, Kis, Kds);	
-		std::cout << "\nend reached 2\n";
-		turn_absolute(90, degree_margin, integral_max_error_t, Kpt, Kit, Kdt);
-		std::cout << "\nend reached 3\n";
-		move_individual_sides_debug(36.0, tick_margin, integral_max_error_s,  Kps, Kis, Kds);
-		std::cout << "\nend reached 4\n";
-		turn_absolute(45, degree_margin, integral_max_error_t, Kpt, Kit, Kdt);
-		std::cout << "\nend reached 5\n";
-		move_individual_sides_debug(12.0, tick_margin, integral_max_error_s,  Kps, Kis, Kds);
-		std::cout << "\nend reached 6\n";
-	
-		pros::delay(100000);
+		leftCat.brake();
+		rightCat.brake();
+		pros::delay(1000);
 	}
+	triBallIntake.set_value(0);
+	rightIntake = 0;
+	leftIntake = 0;
+	*/
+	pros::Imu imu(IMU);
+	imu.reset();
+	while(imu.is_calibrating()){
+		pros::delay(20);
+	}
+	imu.set_heading(0);
+	while(imu.is_calibrating()){
+		pros::delay(20);
+	}
+	turn(45);
+	go(-6*12);
+	turn(0);
+	go(-2*12);
+	turn(315);
+	go(-8);
+
+	pros::delay(100000);
 }
 
 void leftButton(){
@@ -139,28 +186,7 @@ void rightButton(){
 
 
 //Creating the Motors and Controller
-pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-pros::Motor topLeftDrive(TOP_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
-pros::Motor midLeftDrive(MID_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE);
-pros::Motor botLeftDrive(BOT_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
-
-pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
-pros::Motor midRightDrive(MID_RIGHT_DRIVE, true);
-pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
-
-pros::Motor leftIntake(LEFT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
-pros::Motor rightIntake(RIGHT_INTAKE, pros::E_MOTOR_GEAR_BLUE, true);
-
-pros::Motor elevation(EVEVATION, pros::E_MOTOR_GEAR_RED, true);
-
-pros::Motor leftCat(LEFT_CAT, pros::E_MOTOR_GEAR_RED, true);
-pros::Motor rightCat(RIGHT_CAT, pros::E_MOTOR_GEAR_RED);
-
-
-pros::ADIDigitalIn limit(LIMIT_SWITCH);
-pros::ADIDigitalOut triBallIntake(INTAKE);
-pros::ADIDigitalOut flippers(FLIPPERS);
 
 //Function For Drive Code: Sticks
 void moveDrive(pros::Motor tl, pros::Motor ml, pros::Motor bl, pros::Motor tr, pros::Motor mr, pros::Motor br){

@@ -1,13 +1,13 @@
 #include "display/lv_core/lv_obj.h"
 #include "main.h"
-#include "global_defs.h"
+#include "global_defs_v1.h"
 #include "pros/imu.h"
 #include "pros/imu.hpp"
 #include "pros/llemu.hpp"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "auton.h"
-#include <chrono>
+#include "pros/rtos.h"
 #include <cmath>
 #include <string>
 #include <math.h>
@@ -17,12 +17,12 @@ using namespace pros;
 const int circum = radius*2*M_PI;
 
 Imu imu(IMU);
-Motor lf(TOP_LEFT_DRIVE, -1);
+Motor lf(TOP_LEFT_DRIVE, true);
 Motor lm(MID_LEFT_DRIVE);
-Motor lb(BOT_LEFT_DRIVE, -1);
+Motor lb(BOT_LEFT_DRIVE, true);
 
 Motor rf(TOP_RIGHT_DRIVE);
-Motor rm(MID_RIGHT_DRIVE, -1);
+Motor rm(MID_RIGHT_DRIVE, true);
 Motor rb(BOT_RIGHT_DRIVE);
 
 void reset_positions(){
@@ -82,6 +82,7 @@ void move_distance_proportional(float inches, float p){
     return;
 }
 
+
 void move_individual_sides_debug(float inches, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
     double revolutions = inches / circum;
     double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev;
@@ -99,6 +100,8 @@ void move_individual_sides_debug(float inches, int settled_margin, int integral_
     double left_voltage = 0;
     double right_voltage = 0;
     while(( abs(left_error) > settled_margin ) && (abs(right_error) > settled_margin )){
+        //TODO: maintain linked list of n previous errors, if std deviation is below 10, exit with error code. 
+        //In auton route, if error code is returned, go some kind of reset.
         prev_left_error = left_error;
         prev_right_error = right_error;
         left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
@@ -202,14 +205,41 @@ void turn_absolute(int degrees, int settled_margin, int integral_max_error, floa
     int start_heading = imu.get_heading(); 
     //right range = start +1, start + 180 % 360
     //left range = start -1, start - 180 % 360
-    std::cout <<  "HELLLOOOOO\n start:  ";
-    std::cout << std::to_string(start_heading) + "\nleft turn:   "   + std::to_string((start_heading - degrees) % 360);
-    std::cout << (start_heading-degrees) % 360;
-    if(degrees > start_heading && (degrees < ((start_heading + 180) % 360)) ){
-        turn_right_relative((degrees - start_heading) % 360 , settled_margin, integral_max_error, Kp, Ki, Kd);
+    int low_bound_right_range;
+    int high_bound_right_range;
+    if(start_heading < 180){
+        low_bound_right_range = start_heading;
+        high_bound_right_range = start_heading + 180;
+        if(degrees > low_bound_right_range && degrees < high_bound_right_range) {
+            int x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
+            std::cout << "\nright: ";
+            std::cout << x;
+            std::cout << "\n";
+            turn_right_relative( x, settled_margin, integral_max_error, Kp, Ki, Kd);
+        } else {
+            int x = ((start_heading-degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
+            std::cout << "\nleft: ";
+            std::cout << x;
+            std::cout << "\n";
+            turn_left_relative(x, settled_margin, integral_max_error, Kp, Ki, Kd);
+        }
     } else {
-        turn_left_relative((start_heading - degrees ) % 360, settled_margin, integral_max_error, Kp, Ki, Kd);
-    }
+        low_bound_right_range = 360;
+        high_bound_right_range = start_heading - 180;
+        if(degrees > low_bound_right_range || degrees < high_bound_right_range) {
+            int x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
+            std::cout << "\nright: ";
+            std::cout << x;
+            std::cout << "\n";
+            turn_right_relative( x, settled_margin, integral_max_error, Kp, Ki, Kd);
+        } else {
+            int x = ((start_heading -degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
+            std::cout << "\nleft: ";
+            std::cout << x;
+            std::cout << "\n";
+            turn_left_relative(x, settled_margin, integral_max_error, Kp, Ki, Kd);
+        }
+    }    
     return;
 }
 
