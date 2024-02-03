@@ -21,13 +21,20 @@
 #define LEFT_CAT 3 
 #define RIGHT_CAT 14
 
-#define LIMIT_SWITCH 'A'
+#define LIMIT_SWITCH 'D'
 #define INTAKE 'G'
 #define FLIPPERS 'H'
 
 #define IMU 12
 
-const float radius = 1.625;
+#define LEFT_ENCODE_TOP 'A'
+#define LEFT_ENCODE_BOT 'B'
+#define RIGHT_ENCODE_TOP 'E'
+#define RIGHT_ENCODE_BOT 'F'
+
+const float wheel_radius = 1.625;
+const float encoder_wheel_radius = 2.75;
+
 
 const int blue_ticks_per_rev = 300;
 const int green_ticks_per_rev = 900;

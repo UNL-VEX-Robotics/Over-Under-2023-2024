@@ -28,6 +28,7 @@
 #define IMU 13
 
 const float radius = 1.625;
+const float encoder_wheel_radius = 2.75;
 
 const int blue_ticks_per_rev = 300;
 const int green_ticks_per_rev = 900;
