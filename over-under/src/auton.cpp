@@ -110,6 +110,28 @@ void move_distance_proportional(float inches, float p){
     return;
 }
 
+void move_distance_individual_sides(float inches, float p){
+    double revolutions = inches / circum;
+    double encoder_units = revolutions * blue_ticks_per_rev;
+    reset_positions();
+    float left_avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
+    float right_avg_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+    while((left_avg_error > 0) && (right_avg_error > 0)){
+        float left_avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
+        float right_avg_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+        if(left_avg_error*p > 127){
+            set_left_voltage(217);
+        } else{
+            set_left_voltage((int) (left_avg_error * p));
+        }
+        if(right_avg_error*p>127) {
+            set_right_voltage((int) 127);
+        } else {
+            set_right_voltage((int) (right_avg_error * p));
+        }
+    }
+    return;
+}
 
 void move_individual_sides_debug(float inches, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
     double revolutions = inches / circum;

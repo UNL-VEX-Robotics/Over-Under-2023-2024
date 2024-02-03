@@ -285,19 +285,19 @@ void opcontrol() {
 		moveDrive(topLeftDrive, midLeftDrive, botLeftDrive, topRightDrive, midRightDrive, botRightDrive);
 
 		//Catapult Code Button: L1
-		moveCat();
+		//moveCat();
 
 		//Elevation Button: X for up,  B for down
-		elevate();
+		//elevate();
 
 		//Intake Button: R1 for in, R2 for out
-		intake();
+		//intake();
 
 		//Flippers Button: A
-		actiavteFlippers();
+		//actiavteFlippers();
 
 		//Intake Activation Button: Y
-		activateIntake();
+		//activateIntake();
 		
 		if(master.get_digital(DIGITAL_L2)){
 			triBallIntake.set_value(0);
