@@ -4,9 +4,10 @@
 #include "pros/adi.hpp"
 #include "pros/apix.h"
 #include "pros/misc.h"
+#include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include <string>
-#include "global_defs.h"
+#include "global_defs_v1.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -20,7 +21,7 @@ void on_center_button() {
 	if (pressed) {
 		pros::lcd::set_text(2, "I was pressed!");
 	} else {
-		pros::lcd::clear_line(2);
+		pros::lcd::clear_line(2); 
 	}
 }
 
@@ -54,6 +55,31 @@ void disabled() {}
  */
 void competition_initialize() {}
 
+pros::ADIEncoder left(LEFT_ENCODE_TOP, LEFT_ENCODE_BOT);
+pros::ADIEncoder right(RIGHT_ENCODE_TOP, RIGHT_ENCODE_BOT);
+
+pros::Controller master(pros::E_CONTROLLER_MASTER);
+
+pros::Motor topLeftDrive(TOP_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
+pros::Motor midLeftDrive(MID_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor botLeftDrive(BOT_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
+
+pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
+pros::Motor midRightDrive(MID_RIGHT_DRIVE, true);
+pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
+
+pros::Motor leftIntake(LEFT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor rightIntake(RIGHT_INTAKE, pros::E_MOTOR_GEAR_BLUE, true);
+
+pros::Motor elevation(EVEVATION, pros::E_MOTOR_GEAR_RED, true);
+
+pros::Motor leftCat(LEFT_CAT, pros::E_MOTOR_GEAR_RED, true);
+pros::Motor rightCat(RIGHT_CAT, pros::E_MOTOR_GEAR_RED);
+
+pros::ADIDigitalIn limit(LIMIT_SWITCH);
+pros::ADIDigitalOut triBallIntake(INTAKE);
+pros::ADIDigitalOut flippers(FLIPPERS);
+
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -65,21 +91,59 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {
-	while(true){
-		//move_distance_proportional(24, 2.0);
-		//pros::delay(2000);
-		//move_distance_proportional(24, 3.0);
-		//pros::delay(2000);
-		//move_distance_proportional(24, 4.0);
-		//pros::delay(4000);
-		move_distance_individual_sides(24.0, .8);
-		pros::delay(2000);
-		move_distance_individual_sides(24.0, .5);
-		pros::delay(2000);
-		move_distance_individual_sides(24.0, .3);
-		pros::delay(1000000);
+int convert(int degrees){
+	return degrees + 23;
+}
+
+void shoot(int num){
+	triBallIntake.set_value(1);
+	rightIntake = 127;
+	leftIntake = 127;
+	pros::delay(1150);
+
+	for(int i = 0; i < num; i++){
+		leftCat = -127;
+		rightCat = -127;
+		pros::delay(300);
+		while(!limit.get_value()){
+			leftCat = -127;
+			rightCat = -127;
+		}
+		leftCat.brake();
+		rightCat.brake();
+		pros::delay(1000);
 	}
+	rightIntake = 0;
+	leftIntake = 0;
+	leftCat = -127;
+	rightCat = -127;
+	pros::delay(150);
+	leftCat = 0;
+	rightCat = 0;
+	return;
+}
+
+void autonomous() {
+	//ATTACK
+	elevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	leftCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	rightCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	//shoot(30);
+	pros::Imu imu(IMU);
+	imu.reset();
+	while(imu.is_calibrating()){
+		pros::delay(20);
+	}
+	imu.set_heading(convert(45));
+	while(imu.is_calibrating()){
+		pros::delay(20);
+	}
+	go(-2);
+	turn(convert(0));
+	std::cout << "end reached 1\n";
+	go (4*12-8);
+	std::cout << "end reached 2\n";
+	pros::delay(100000);
 }
 
 void leftButton(){
@@ -111,36 +175,12 @@ void rightButton(){
  * task, not resume it from where it left off.
  */
 
-
-//Creating the Motors and Controller
-pros::Controller master(pros::E_CONTROLLER_MASTER);
-
-pros::Motor topLeftDrive(TOP_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
-pros::Motor midLeftDrive(MID_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE);
-pros::Motor botLeftDrive(BOT_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
-
-pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
-pros::Motor midRightDrive(MID_RIGHT_DRIVE, true);
-pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
-
-pros::Motor leftIntake(LEFT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
-pros::Motor rightIntake(RIGHT_INTAKE, pros::E_MOTOR_GEAR_BLUE, true);
-
-pros::Motor elevation(EVEVATION, pros::E_MOTOR_GEAR_RED, true);
-
-pros::Motor leftCat(LEFT_CAT, pros::E_MOTOR_GEAR_RED, true);
-pros::Motor rightCat(RIGHT_CAT, pros::E_MOTOR_GEAR_RED);
-
-pros::ADIAnalogIn limit(LIMIT_SWITCH);
-pros::ADIDigitalOut triBallIntake(INTAKE);
-pros::ADIDigitalOut flippers(FLIPPERS);
-
 //Function For Drive Code: Sticks
 void moveDrive(pros::Motor tl, pros::Motor ml, pros::Motor bl, pros::Motor tr, pros::Motor mr, pros::Motor br){
 	
 	//Tank Drive
-	int leftDrive = master.get_analog(ANALOG_LEFT_Y);
-	int rightDrive = master.get_analog(ANALOG_RIGHT_Y);
+	int leftDrive = 0.75 * master.get_analog(ANALOG_LEFT_Y);
+	int rightDrive = 0.75 * master.get_analog(ANALOG_RIGHT_Y);
 
 	tr = rightDrive;
 	mr = rightDrive;
@@ -155,16 +195,16 @@ void moveDrive(pros::Motor tl, pros::Motor ml, pros::Motor bl, pros::Motor tr, p
 //Function For Moving the Catapult: Button: L1
 
 void moveCat(){
-	
-	if (master.get_digital(DIGITAL_L1)){
-		leftCat = -100;
-		rightCat = -100;
-	}else if(limit.get_value()){
-		leftCat = -100;
-		rightCat = -100;
-	} else{
-		leftCat = 0;
-		rightCat = 0;
+	if(master.get_digital(DIGITAL_L1)){
+		leftCat = -127;
+		rightCat = -127;
+		pros::delay(300);
+		while(!limit.get_value()){
+			leftCat = -127;
+			rightCat = -127;
+		}
+		leftCat.brake();
+		rightCat.brake();
 	}
 }
 
@@ -175,21 +215,33 @@ void elevate(){
 	} else if(master.get_digital(DIGITAL_B)){ //Climbs
 		elevation = -100;
 	} else{
-		elevation = 0;
+		elevation.brake();
 	}
 }
 
-//Intake Button: R1 for in, R2 for out
+
+bool isOnFor = false;
+bool isOnRev = false;
 void intake(){
-	if(master.get_digital(DIGITAL_R1)){
-		leftIntake = 100;
-		rightIntake = 100;
-		
-	}
-	if(master.get_digital(DIGITAL_R2)){
-		leftIntake = -100;
-		rightIntake = -100;
-	}
+     if(master.get_digital_new_press(DIGITAL_R1)){
+        isOnFor = !isOnFor;
+        isOnRev = false;
+    }else if(master.get_digital_new_press(DIGITAL_R2)){
+        isOnFor = false;
+        isOnRev = !isOnRev;
+    }
+    if (isOnFor){
+        leftIntake = 127;
+        rightIntake = 127;
+    }
+    if (isOnRev){
+        leftIntake = -127;
+        rightIntake = -127;
+    }
+    if(!isOnFor && !isOnRev){
+        leftIntake = 0;
+        rightIntake = 0;
+    }
 }
 
 //Flippers Buttons: Y to Deploy and Pull Back
@@ -213,12 +265,22 @@ void activateIntake(){
 }
 
 void opcontrol() {
-
 	master.clear();
+	elevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	leftCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	rightCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	while(!limit.get_value()){
+		leftCat = -127;
+		rightCat = -127;
+	}
+	leftCat.brake();
+	rightCat.brake();
+	left.reset();
+	right.reset();
+	int i = 0;
 	while (true) {
 		//Sets the brake type of the evevation motor
 		//elevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-
 		//Tank Drive Code Sticks
 		moveDrive(topLeftDrive, midLeftDrive, botLeftDrive, topRightDrive, midRightDrive, botRightDrive);
 
@@ -237,6 +299,10 @@ void opcontrol() {
 		//Intake Activation Button: Y
 		//activateIntake();
 		
+		if(master.get_digital(DIGITAL_L2)){
+			triBallIntake.set_value(0);
+			flippers.set_value(1);
+		}
 		pros::delay(2);
 	}
 }
