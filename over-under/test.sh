@@ -1,4 +1,4 @@
-pros build
+pros build --verbose
 echo ""
 pros upload
 echo ""

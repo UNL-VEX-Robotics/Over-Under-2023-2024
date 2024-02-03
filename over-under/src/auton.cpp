@@ -11,10 +11,11 @@
 #include <cmath>
 #include <string>
 #include <math.h>
+#include <list>
 
 using namespace pros;
 
-const int circum = radius*2*M_PI;
+const int circum = wheel_radius*2*M_PI;
 
 Imu imu(IMU);
 Motor lf(TOP_LEFT_DRIVE, true);
@@ -25,7 +26,34 @@ Motor rf(TOP_RIGHT_DRIVE);
 Motor rm(MID_RIGHT_DRIVE, true);
 Motor rb(BOT_RIGHT_DRIVE);
 
-void reset_positions(){
+//ADIEncoder encodeL(LEFT_ENCODE_TOP,LEFT_ENCODE_BOT);
+//ADIEncoder encodeR(RIGHT_ENCODE_TOP,RIGHT_ENCODE_BOT);
+
+//straight params
+int tick_margin = 15;
+int integral_max_error_s= 1000;
+float Kps = 0.22;
+float Kis = 0.005;
+float Kds = 0;
+//turning params
+int degree_margin = 5;
+int integral_max_error_t = 14;
+float Kpt = 1.0605;
+float Kit = 0.000007;
+float Kdt = 0;
+
+
+int turn(int degrees){
+	turn_absolute(degrees, degree_margin, integral_max_error_t, Kpt, Kit, Kdt);
+	return 1;
+}
+
+int go(int inches){
+    move_individual_sides_debug(inches, tick_margin, integral_max_error_s, Kps, Kis, Kds);
+    return 1;
+}
+
+void reset_motors(){
     lf.set_zero_position(0);
     lm.set_zero_position(0);
     lb.set_zero_position(0);
@@ -72,7 +100,7 @@ void all_brake(){
 void move_distance_proportional(float inches, float p){
     double revolutions = inches / circum;
     double encoder_units = revolutions * blue_ticks_per_rev;
-    reset_positions();
+    reset_motors();
     float avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position() + rf.get_position() + rm.get_position() + rb.get_position()) / 6.0;
     while(avg_error > 0){
         avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position() + rf.get_position() + rm.get_position() + rb.get_position()) / 6.0;
@@ -86,12 +114,12 @@ void move_distance_proportional(float inches, float p){
 void move_individual_sides_debug(float inches, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
     double revolutions = inches / circum;
     double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev;
-    reset_positions();
+    reset_motors();
     int i = 0;
-    double left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
-    double right_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+    double left_error = encoder_units;
+    double right_error = encoder_units;
     double prev_left_error = left_error;
-    double prev_right_error=right_error;
+    double prev_right_error = right_error;
     double left_integral = 0;
     double right_integral = 0;
     double left_derivative = 0;
@@ -99,14 +127,12 @@ void move_individual_sides_debug(float inches, int settled_margin, int integral_
 
     double left_voltage = 0;
     double right_voltage = 0;
-    while(( abs(left_error) > settled_margin ) && (abs(right_error) > settled_margin )){
-        //TODO: maintain linked list of n previous errors, if std deviation is below 10, exit with error code. 
-        //In auton route, if error code is returned, go some kind of reset.
+    while(( abs(left_error) > settled_margin ) && (abs(right_error) > settled_margin )){ 
         prev_left_error = left_error;
         prev_right_error = right_error;
         left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
         right_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
-        
+
         //if each iteration of the loop doesn't take a uniform amount of time, derivative and integral calculations need
         //to consider time
         left_derivative = left_error - prev_left_error;
@@ -137,6 +163,7 @@ void move_individual_sides_debug(float inches, int settled_margin, int integral_
         }
 
         if(i % 15000 == 0 && i < 120000){
+           
             std::cout << "\n   left: ";
             std::cout << left_error;
             std::cout << "\n   right: ";
@@ -147,10 +174,97 @@ void move_individual_sides_debug(float inches, int settled_margin, int integral_
     return;
 }
 
+int move_individual_sides_debug_loop_control(float inches, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
+    std::list<double> error_list;
+    double revolutions = inches / circum;
+    double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev;
+    reset_motors();
+    int i = 0;
+    double left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
+    double right_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+    double prev_left_error = left_error;
+    double prev_right_error=right_error;
+    double left_integral = 0;
+    double right_integral = 0;
+    double left_derivative = 0;
+    double right_derivative = 0;
+
+    double left_voltage = 0;
+    double right_voltage = 0;
+    while(( abs(left_error) > settled_margin ) && (abs(right_error) > settled_margin )){
+        
+        if(i % 2000 == 0){
+            if(i > 20000){
+                error_list.pop_back();
+            }
+            error_list.push_front(left_error+right_error);
+            if(i % 8000 == 0){
+                double mean = 0;
+                double stdev = 0;
+                for(float e: error_list){
+                    mean += e / (error_list.size());
+                }
+                for(int e: error_list){
+                    stdev += pow((e-mean),2);
+                }
+                std::cout << "\nstandard deviation!: ";
+                std::cout << stdev;
+            }
+
+        }
+        
+        prev_left_error = left_error;
+        prev_right_error = right_error;
+        left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
+        right_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+        
+        //if each iteration of the loop doesn't take a uniform amount of time, derivative and integral calculations need
+        //to consider time
+        left_derivative = left_error - prev_left_error;
+        right_derivative = right_error - prev_right_error;
+
+        if(abs(left_error) > integral_max_error){
+            left_integral = 0;    
+        } else {
+            left_integral = left_integral + Ki * left_error;
+        }
+        if(abs(right_error) > integral_max_error){
+            right_integral = 0;
+        } else {
+            right_integral = right_integral + Ki * right_error;
+        }
+        
+        left_voltage = Kp * left_error + Ki * left_integral + Kd * left_derivative;
+        right_voltage = Kp * right_error + Ki * right_integral + Kd * right_derivative;
+
+        //ramping up. error is large, so we're just starting to drive proabbly. so we 
+        //increase power according to what iteration we're on. constants were found w/ trial & error
+        if(left_voltage > 127){
+            set_left_voltage(127.0 * (i+100)/25000);
+        } else{
+            set_left_voltage(left_voltage);
+        }
+        if(right_voltage > 127) {
+            set_right_voltage(127.0 * (i+100)/25000);
+        } else {
+            set_right_voltage(right_voltage);
+        }
+
+        if(i % 15000 == 0 && i < 120000){
+            std::cout << "\n   left: ";
+            std::cout << left_error;
+            std::cout << "\n   right: ";
+            std::cout << right_error;
+        }
+        i++;
+    }     
+    return 1;
+}
+
 void move_individual_sides(float inches, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
     double revolutions = inches / circum;
     double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev;
-    reset_positions();
+    reset_motors();
     double left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
     double right_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
     double prev_left_error = left_error;
@@ -215,13 +329,13 @@ void turn_absolute(int degrees, int settled_margin, int integral_max_error, floa
             std::cout << "\nright: ";
             std::cout << x;
             std::cout << "\n";
-            turn_right_relative( x, settled_margin, integral_max_error, Kp, Ki, Kd);
+            turn_right_relative_debug( x, settled_margin, integral_max_error, Kp, Ki, Kd);
         } else {
             int x = ((start_heading-degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
             std::cout << "\nleft: ";
             std::cout << x;
             std::cout << "\n";
-            turn_left_relative(x, settled_margin, integral_max_error, Kp, Ki, Kd);
+            turn_left_relative_debug(x, settled_margin, integral_max_error, Kp, Ki, Kd);
         }
     } else {
         low_bound_right_range = 360;
@@ -231,19 +345,19 @@ void turn_absolute(int degrees, int settled_margin, int integral_max_error, floa
             std::cout << "\nright: ";
             std::cout << x;
             std::cout << "\n";
-            turn_right_relative( x, settled_margin, integral_max_error, Kp, Ki, Kd);
+            turn_right_relative_debug(x, settled_margin, integral_max_error, Kp, Ki, Kd);
         } else {
             int x = ((start_heading -degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
             std::cout << "\nleft: ";
             std::cout << x;
             std::cout << "\n";
-            turn_left_relative(x, settled_margin, integral_max_error, Kp, Ki, Kd);
+            turn_left_relative_debug(x, settled_margin, integral_max_error, Kp, Ki, Kd);
         }
     }    
     return;
 }
 
-void turn_right_relative(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
+void turn_right_relative_debug(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
     double end_heading = degrees + imu.get_heading();
     double error = degrees;
     double prev_error = 0;
@@ -330,7 +444,7 @@ void turn_right_relative(int degrees, int settled_margin, int integral_max_error
     return;
 }
 
-void turn_left_relative(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
+void turn_left_relative_debug(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
     double end_heading = imu.get_heading() - degrees;
     double prev_error = 0;
     double error = degrees;
