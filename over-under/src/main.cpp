@@ -7,7 +7,7 @@
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include <string>
-#include "global_defs_v1.h"
+#include "global_defs.h"
 
 /**
  * A callback function for LLEMU's center button.
