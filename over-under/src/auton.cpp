@@ -44,7 +44,7 @@ float Kdt = 0;
 
 
 int turn(int degrees){
-	turn_absolute(degrees, degree_margin, integral_max_error_t, Kpt, Kit, Kdt);
+	turn_absolute_debug(degrees, degree_margin, integral_max_error_t, Kpt, Kit, Kdt);
 	return 1;
 }
 
@@ -184,12 +184,13 @@ void move_individual_sides_debug(float inches, int settled_margin, int integral_
             set_right_voltage(right_voltage);
         }
 
-        if(i % 15000 == 0 && i < 120000){
+        if(i % 5000 == 0){
            
             std::cout << "\n   left: ";
             std::cout << left_error;
             std::cout << "\n   right: ";
             std::cout << right_error;
+            std::cout <<"\n";
         }
         i++;
     }     
@@ -337,7 +338,7 @@ void move_individual_sides(float inches, int settled_margin, int integral_max_er
 }
 
 //Turns the robot to the given heading
-void turn_absolute(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
+void turn_absolute_debug(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd){
     int start_heading = imu.get_heading(); 
     //right range = start +1, start + 180 % 360
     //left range = start -1, start - 180 % 360

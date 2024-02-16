@@ -12,6 +12,6 @@ void move_individual_sides_debug(float inches, int settled_margin, int integral_
 int move_individual_sides_debug_loop_control(float inches, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd);
 void move_individual_sides(float inches, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd);
 
-void turn_absolute(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd);
+void turn_absolute_debug(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd);
 void turn_right_relative_debug(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd);
 void turn_left_relative_debug(int degrees, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd);

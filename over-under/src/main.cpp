@@ -134,16 +134,13 @@ void autonomous() {
 	while(imu.is_calibrating()){
 		pros::delay(20);
 	}
-	imu.set_heading(convert(45));
+	imu.set_heading(convert(225));
 	while(imu.is_calibrating()){
 		pros::delay(20);
 	}
-	go(-2);
-	turn(convert(0));
-	std::cout << "end reached 1\n";
-	go (4*12-8);
-	std::cout << "end reached 2\n";
-	pros::delay(100000);
+	go(12);
+	std::cout << "end reached 1";
+
 }
 
 void leftButton(){
