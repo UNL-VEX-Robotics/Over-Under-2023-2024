@@ -8,6 +8,7 @@ void set_right_voltage(float voltage);
 void all_brake();
 
 void move_distance_proportional(float inches, float p);
+void move_distance_proportional_individual_sides(float inches, float p);
 void move_individual_sides_debug(float inches, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd);
 int move_individual_sides_debug_loop_control(float inches, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd);
 void move_individual_sides(float inches, int settled_margin, int integral_max_error, float Kp, float Ki, float Kd);
