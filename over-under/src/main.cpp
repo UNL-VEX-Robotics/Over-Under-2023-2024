@@ -55,9 +55,6 @@ void disabled() {}
  */
 void competition_initialize() {}
 
-pros::ADIEncoder left(LEFT_ENCODE_TOP, LEFT_ENCODE_BOT);
-pros::ADIEncoder right(RIGHT_ENCODE_TOP, RIGHT_ENCODE_BOT);
-
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 pros::Motor topLeftDrive(TOP_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
@@ -68,17 +65,15 @@ pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
 pros::Motor midRightDrive(MID_RIGHT_DRIVE, true);
 pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
 
-pros::Motor leftIntake(LEFT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
-pros::Motor rightIntake(RIGHT_INTAKE, pros::E_MOTOR_GEAR_BLUE, true);
+pros::Motor intake(INTAKE, pros::E_MOTOR_GEAR_BLUE);
 
-pros::Motor elevation(EVEVATION, pros::E_MOTOR_GEAR_RED, true);
+pros::Motor rightElevation(RIGHT_EVEVATION, pros::E_MOTOR_GEAR_RED, true);
+pros::Motor leftElevation(LEFT_ELEVATION);
 
-pros::Motor leftCat(LEFT_CAT, pros::E_MOTOR_GEAR_RED, true);
-pros::Motor rightCat(RIGHT_CAT, pros::E_MOTOR_GEAR_RED);
-
-pros::ADIDigitalIn limit(LIMIT_SWITCH);
-pros::ADIDigitalOut triBallIntake(INTAKE);
-pros::ADIDigitalOut flippers(FLIPPERS);
+pros::ADIDigitalOut rightIntake(INTAKE_PNEU_RIGHT);
+pros::ADIDigitalOut leftIntake(INTAKE_PNEU_LEFT);
+pros::ADIDigitalOut rightFlippers(FLIPPERS_RIGHT);
+pros::ADIDigitalOut leftFlippers(FLIPPERS_LEFT);
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -95,51 +90,9 @@ int convert(int degrees){
 	return degrees + 23;
 }
 
-void shoot(int num){
-	triBallIntake.set_value(1);
-	rightIntake = 127;
-	leftIntake = 127;
-	pros::delay(1150);
-
-	for(int i = 0; i < num; i++){
-		leftCat = -127;
-		rightCat = -127;
-		pros::delay(300);
-		while(!limit.get_value()){
-			leftCat = -127;
-			rightCat = -127;
-		}
-		leftCat.brake();
-		rightCat.brake();
-		pros::delay(1000);
-	}
-	rightIntake = 0;
-	leftIntake = 0;
-	leftCat = -127;
-	rightCat = -127;
-	pros::delay(150);
-	leftCat = 0;
-	rightCat = 0;
-	return;
-}
 
 void autonomous() {
-	//ATTACK
-	elevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	leftCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	rightCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	//shoot(30);
-	pros::Imu imu(IMU);
-	imu.reset();
-	while(imu.is_calibrating()){
-		pros::delay(20);
-	}
-	imu.set_heading(convert(225));
-	while(imu.is_calibrating()){
-		pros::delay(20);
-	}
-	go(12);
-	std::cout << "end reached 1";
+	
 
 }
 
@@ -173,53 +126,41 @@ void rightButton(){
  */
 
 //Function For Drive Code: Sticks
-void moveDrive(pros::Motor tl, pros::Motor ml, pros::Motor bl, pros::Motor tr, pros::Motor mr, pros::Motor br){
+void moveDrive(){
 	
 	//Tank Drive
 	int leftDrive = 0.75 * master.get_analog(ANALOG_LEFT_Y);
 	int rightDrive = 0.75 * master.get_analog(ANALOG_RIGHT_Y);
 
-	tr = rightDrive;
-	mr = rightDrive;
-	br = rightDrive;
+	topRightDrive = rightDrive;
+	midRightDrive = rightDrive;
+	botRightDrive = rightDrive;
 
-	tl = leftDrive;
-	ml = leftDrive;
-	bl = leftDrive;
+	topLeftDrive = leftDrive;
+	midLeftDrive = leftDrive;
+	botLeftDrive = leftDrive;
 	
 }
 
-//Function For Moving the Catapult: Button: L1
-
-void moveCat(){
-	if(master.get_digital(DIGITAL_L1)){
-		leftCat = -127;
-		rightCat = -127;
-		pros::delay(300);
-		while(!limit.get_value()){
-			leftCat = -127;
-			rightCat = -127;
-		}
-		leftCat.brake();
-		rightCat.brake();
-	}
-}
 
 //Code for Elevation Button: X for up,  B for down
 void elevate(){
 	if (master.get_digital(DIGITAL_X)){ //Comes out of storage
-		elevation = 100;
+		rightElevation = 100;
+		leftElevation = 100;
 	} else if(master.get_digital(DIGITAL_B)){ //Climbs
-		elevation = -100;
+		rightElevation = -100;
+		leftElevation = -100;
 	} else{
-		elevation.brake();
+		rightElevation = 0;
+		leftElevation = 0;
 	}
 }
 
 
 bool isOnFor = false;
 bool isOnRev = false;
-void intake(){
+void intake_func(){
      if(master.get_digital_new_press(DIGITAL_R1)){
         isOnFor = !isOnFor;
         isOnRev = false;
@@ -228,25 +169,23 @@ void intake(){
         isOnRev = !isOnRev;
     }
     if (isOnFor){
-        leftIntake = 127;
-        rightIntake = 127;
+        intake = 127;
     }
     if (isOnRev){
-        leftIntake = -127;
-        rightIntake = -127;
+        intake = -127;
     }
     if(!isOnFor && !isOnRev){
-        leftIntake = 0;
-        rightIntake = 0;
+        intake = 0;
     }
 }
 
-//Flippers Buttons: Y to Deploy and Pull Back
+//Flippers Buttons: A to Deploy and Pull Back
 bool flipperToggle = false;
 void actiavteFlippers(){
 	if(master.get_digital_new_press(DIGITAL_A)){
 		flipperToggle = !flipperToggle;
-		flippers.set_value(flipperToggle);
+		rightFlippers.set_value(flipperToggle);
+		leftFlippers.set_value(flipperToggle);
 		pros::delay(300);
 	}
 }
@@ -256,50 +195,33 @@ bool intakeToggle = false;
 void activateIntake(){
 	if(master.get_digital_new_press(DIGITAL_Y)){
 		intakeToggle = !intakeToggle;
-		triBallIntake.set_value(intakeToggle);
+		rightIntake.set_value(intakeToggle);
+		leftIntake.set_value(intakeToggle);
 		pros::delay(300);
 	}
 }
 
 void opcontrol() {
 	master.clear();
-	elevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	leftCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	rightCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	while(!limit.get_value()){
-		leftCat = -127;
-		rightCat = -127;
-	}
-	leftCat.brake();
-	rightCat.brake();
-	left.reset();
-	right.reset();
+	rightElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	leftElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	int i = 0;
 	while (true) {
-		//Sets the brake type of the evevation motor
-		//elevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 		//Tank Drive Code Sticks
-		moveDrive(topLeftDrive, midLeftDrive, botLeftDrive, topRightDrive, midRightDrive, botRightDrive);
-
-		//Catapult Code Button: L1
-		//moveCat();
+		moveDrive();
 
 		//Elevation Button: X for up,  B for down
-		//elevate();
+		elevate();
 
 		//Intake Button: R1 for in, R2 for out
-		//intake();
+		intake_func();
 
 		//Flippers Button: A
-		//actiavteFlippers();
+		actiavteFlippers();
 
 		//Intake Activation Button: Y
-		//activateIntake();
-		
-		if(master.get_digital(DIGITAL_L2)){
-			triBallIntake.set_value(0);
-			flippers.set_value(1);
-		}
+		activateIntake();
+
 		pros::delay(2);
 	}
 }

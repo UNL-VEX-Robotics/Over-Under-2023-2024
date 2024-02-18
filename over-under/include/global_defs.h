@@ -6,17 +6,15 @@
 #define MID_RIGHT_DRIVE 15
 #define BOT_RIGHT_DRIVE 20
 
-#define LEFT_INTAKE 7
-#define RIGHT_INTAKE 10 
+#define INTAKE 7
 
-#define EVEVATION 8 
+#define RIGHT_EVEVATION 8 
+#define LEFT_ELEVATION 9
 
-#define LEFT_CAT 3 
-#define RIGHT_CAT 14
-
-#define LIMIT_SWITCH 'A'
-#define INTAKE 'G'
-#define FLIPPERS 'H'
+#define INTAKE_PNEU_RIGHT 'A'
+#define INTAKE_PNEU_LEFT 'B'
+#define FLIPPERS_RIGHT 'G'
+#define FLIPPERS_LEFT 'H'
 
 #define IMU 13
 

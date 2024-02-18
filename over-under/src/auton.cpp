@@ -176,7 +176,7 @@ void move_individual_sides_debug(float inches){
     return;
 }
 
-void move_individual_sides_debug(float inches){
+void move_individual_sides_debug_SECOND_VERSION(float inches){
     double revolutions = inches / circum;
     double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev;
     reset_motors();
@@ -327,50 +327,6 @@ int move_individual_sides_debug_loop_control(float inches){
         i++;
     }     
     return 1;
-}
-
-
-//Turns the robot to the given heading
-void turn_absolute_debug(int degrees){
-    int start_heading = imu.get_heading(); 
-    //right range = start +1, start + 180 % 360
-    //left range = start -1, start - 180 % 360
-    int low_bound_right_range;
-    int high_bound_right_range;
-    if(start_heading < 180){
-        low_bound_right_range = start_heading;
-        high_bound_right_range = start_heading + 180;
-        if(degrees > low_bound_right_range && degrees < high_bound_right_range) {
-            int x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
-            std::cout << "\nright: ";
-            std::cout << x;
-            std::cout << "\n";
-            turn_right_relative_debug( x);
-        } else {
-            int x = ((start_heading-degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
-            std::cout << "\nleft: ";
-            std::cout << x;
-            std::cout << "\n";
-            turn_left_relative_debug(x);
-        }
-    } else {
-        low_bound_right_range = 360;
-        high_bound_right_range = start_heading - 180;
-        if(degrees > low_bound_right_range || degrees < high_bound_right_range) {
-            int x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
-            std::cout << "\nright: ";
-            std::cout << x;
-            std::cout << "\n";
-            turn_right_relative_debug( x);
-        } else {
-            int x = ((start_heading -degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
-            std::cout << "\nleft: ";
-            std::cout << x;
-            std::cout << "\n";
-            turn_left_relative_debug(x);
-        }
-    }    
-    return;
 }
 
 void turn_right_relative_debug(int degrees){
@@ -545,4 +501,47 @@ void turn_left_relative_debug(int degrees){
         }
     return;
     }
+}
+
+//Turns the robot to the given heading
+void turn_absolute_debug(int degrees){
+    int start_heading = imu.get_heading(); 
+    //right range = start +1, start + 180 % 360
+    //left range = start -1, start - 180 % 360
+    int low_bound_right_range;
+    int high_bound_right_range;
+    if(start_heading < 180){
+        low_bound_right_range = start_heading;
+        high_bound_right_range = start_heading + 180;
+        if(degrees > low_bound_right_range && degrees < high_bound_right_range) {
+            int x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
+            std::cout << "\nright: ";
+            std::cout << x;
+            std::cout << "\n";
+            turn_right_relative_debug( x);
+        } else {
+            int x = ((start_heading-degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
+            std::cout << "\nleft: ";
+            std::cout << x;
+            std::cout << "\n";
+            turn_left_relative_debug(x);
+        }
+    } else {
+        low_bound_right_range = 360;
+        high_bound_right_range = start_heading - 180;
+        if(degrees > low_bound_right_range || degrees < high_bound_right_range) {
+            int x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
+            std::cout << "\nright: ";
+            std::cout << x;
+            std::cout << "\n";
+            turn_right_relative_debug( x);
+        } else {
+            int x = ((start_heading -degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
+            std::cout << "\nleft: ";
+            std::cout << x;
+            std::cout << "\n";
+            turn_left_relative_debug(x);
+        }
+    }    
+    return;
 }
