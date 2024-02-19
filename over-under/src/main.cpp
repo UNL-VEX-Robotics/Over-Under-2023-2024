@@ -128,21 +128,21 @@ void rightButton(){
 //Function For Drive Code: Sticks
 void moveDrive(){
 	
-	//Tank Drive
-	int leftDrive = 0.75 * master.get_analog(ANALOG_LEFT_Y);
-	int rightDrive = 0.75 * master.get_analog(ANALOG_RIGHT_Y);
+	//Arcade Drive
+	int drive = 0.75 * master.get_analog(ANALOG_LEFT_Y);
+	int turn = 0.75 * master.get_analog(ANALOG_RIGHT_X);
 
-	topRightDrive = rightDrive;
-	midRightDrive = rightDrive;
-	botRightDrive = rightDrive;
+	topRightDrive = drive - turn;
+	midRightDrive = drive - turn;
+	botRightDrive = drive - turn;
 
-	topLeftDrive = leftDrive;
-	midLeftDrive = leftDrive;
-	botLeftDrive = leftDrive;
+	topLeftDrive = drive + turn;
+	midLeftDrive = drive + turn;
+	botLeftDrive = drive + turn;
 	
 }
 
-
+/* Keep incase we add an elevation
 //Code for Elevation Button: X for up,  B for down
 void elevate(){
 	if (master.get_digital(DIGITAL_X)){ //Comes out of storage
@@ -156,15 +156,17 @@ void elevate(){
 		leftElevation = 0;
 	}
 }
+*/
 
-
+//Old Code for the Intake keep incase Drew wants it like this
+/*
 bool isOnFor = false;
 bool isOnRev = false;
 void intake_func(){
-     if(master.get_digital_new_press(DIGITAL_R1)){
+     if(master.get_digital_new_press(DIGITAL_L1)){
         isOnFor = !isOnFor;
         isOnRev = false;
-    }else if(master.get_digital_new_press(DIGITAL_R2)){
+    }else if(master.get_digital_new_press(DIGITAL_L2)){
         isOnFor = false;
         isOnRev = !isOnRev;
     }
@@ -178,11 +180,34 @@ void intake_func(){
         intake = 0;
     }
 }
+*/
+bool direction = true; //True = Forward, False = Reverse
+bool isOn = false;
+void intake_func(){
+	if(master.get_digital_new_press(DIGITAL_L2)){
+		direction = !direction;
+	}
+	if(master.get_digital_new_press(DIGITAL_L1)){
+		isOn = !isOn;
+	}
+	if(isOn){
+		if(direction){
+			intake = 127;
+		}
+		else if(!direction){
+			intake = -127;
+		}
+	}
+	else{
+		intake.brake();
+	}
+}
 
-//Flippers Buttons: A to Deploy and Pull Back
+
+//Flippers Buttons: R2 to Deploy and Pull Back
 bool flipperToggle = false;
 void actiavteFlippers(){
-	if(master.get_digital_new_press(DIGITAL_A)){
+	if(master.get_digital_new_press(DIGITAL_R2)){
 		flipperToggle = !flipperToggle;
 		rightFlippers.set_value(flipperToggle);
 		leftFlippers.set_value(flipperToggle);
@@ -190,10 +215,10 @@ void actiavteFlippers(){
 	}
 }
 
-//Intake Activation Buttons: A to Deploy and Pull Back
+//Intake Activation Buttons: R1 to Deploy and Pull Back
 bool intakeToggle = false;
 void activateIntake(){
-	if(master.get_digital_new_press(DIGITAL_Y)){
+	if(master.get_digital_new_press(DIGITAL_R1)){
 		intakeToggle = !intakeToggle;
 		rightIntake.set_value(intakeToggle);
 		leftIntake.set_value(intakeToggle);
@@ -211,15 +236,15 @@ void opcontrol() {
 		moveDrive();
 
 		//Elevation Button: X for up,  B for down
-		elevate();
+		//elevate();
 
-		//Intake Button: R1 for in, R2 for out
+		//Intake Button: L1 for in, L2 for out
 		intake_func();
 
-		//Flippers Button: A
+		//Flippers Button: R2
 		actiavteFlippers();
 
-		//Intake Activation Button: Y
+		//Intake Activation Button: R1
 		activateIntake();
 
 		pros::delay(2);
