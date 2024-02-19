@@ -70,6 +70,8 @@ pros::Motor intake(INTAKE, pros::E_MOTOR_GEAR_BLUE);
 pros::Motor rightElevation(RIGHT_EVEVATION, pros::E_MOTOR_GEAR_RED, true);
 pros::Motor leftElevation(LEFT_ELEVATION);
 
+pros::Motor flywheel(FLYWHEEL);
+
 pros::ADIDigitalOut rightIntake(INTAKE_PNEU_RIGHT);
 pros::ADIDigitalOut leftIntake(INTAKE_PNEU_LEFT);
 pros::ADIDigitalOut rightFlippers(FLIPPERS_RIGHT);
@@ -142,13 +144,13 @@ void moveDrive(){
 	
 }
 
-/* Keep incase we add an elevation
+
 //Code for Elevation Button: X for up,  B for down
 void elevate(){
-	if (master.get_digital(DIGITAL_X)){ //Comes out of storage
+	if (master.get_digital(DIGITAL_UP)){ //Comes out of storage
 		rightElevation = 100;
 		leftElevation = 100;
-	} else if(master.get_digital(DIGITAL_B)){ //Climbs
+	} else if(master.get_digital(DIGITAL_DOWN)){ //Climbs
 		rightElevation = -100;
 		leftElevation = -100;
 	} else{
@@ -156,7 +158,7 @@ void elevate(){
 		leftElevation = 0;
 	}
 }
-*/
+
 
 //Old Code for the Intake keep incase Drew wants it like this
 /*
@@ -226,6 +228,20 @@ void activateIntake(){
 	}
 }
 
+//Flywheel set to run unless Y Button is pressed
+bool isFlyOn = true; //Auto set to true so the flywheel starts on
+void flywheelRun(){
+	if(master.get_digital_new_press(DIGITAL_Y)){
+		isFlyOn = !isFlyOn;
+	}
+	if(isFlyOn){
+		flywheel = 127;
+	}
+	else {
+		flywheel = 0;
+	}
+}
+
 void opcontrol() {
 	master.clear();
 	rightElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
@@ -246,6 +262,9 @@ void opcontrol() {
 
 		//Intake Activation Button: R1
 		activateIntake();
+
+		//Run Flywheel Button: Y
+		flywheelRun();
 
 		pros::delay(2);
 	}
