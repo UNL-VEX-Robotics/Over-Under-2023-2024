@@ -70,6 +70,8 @@ pros::Motor intake(INTAKE, pros::E_MOTOR_GEAR_BLUE);
 pros::Motor rightElevation(RIGHT_EVEVATION, pros::E_MOTOR_GEAR_RED, true);
 pros::Motor leftElevation(LEFT_ELEVATION);
 
+pros::Motor flywheel(FLYWHEEL);
+
 pros::ADIDigitalOut rightIntake(INTAKE_PNEU_RIGHT);
 pros::ADIDigitalOut leftIntake(INTAKE_PNEU_LEFT);
 pros::ADIDigitalOut rightFlippers(FLIPPERS_RIGHT);
@@ -129,26 +131,26 @@ void rightButton(){
 void moveDrive(){
 	
 	//Arcade Drive
-	int drive = 0.75 * master.get_analog(ANALOG_LEFT_Y);
-	int turn = 0.75 * master.get_analog(ANALOG_RIGHT_X);
+	int right = 0.75 * master.get_analog(ANALOG_LEFT_Y);
+	int left = 0.75 * master.get_analog(ANALOG_RIGHT_Y);
 
-	topRightDrive = drive - turn;
-	midRightDrive = drive - turn;
-	botRightDrive = drive - turn;
+	topRightDrive = right;
+	midRightDrive = right;
+	botRightDrive = right;
 
-	topLeftDrive = drive + turn;
-	midLeftDrive = drive + turn;
-	botLeftDrive = drive + turn;
+	topLeftDrive = left;
+	midLeftDrive = left;
+	botLeftDrive = left;
 	
 }
 
-/* Keep incase we add an elevation
+
 //Code for Elevation Button: X for up,  B for down
 void elevate(){
-	if (master.get_digital(DIGITAL_X)){ //Comes out of storage
+	if (master.get_digital(DIGITAL_L1)){ //Comes out of storage
 		rightElevation = 100;
 		leftElevation = 100;
-	} else if(master.get_digital(DIGITAL_B)){ //Climbs
+	} else if(master.get_digital(DIGITAL_L2)){ //Climbs
 		rightElevation = -100;
 		leftElevation = -100;
 	} else{
@@ -156,17 +158,14 @@ void elevate(){
 		leftElevation = 0;
 	}
 }
-*/
 
-//Old Code for the Intake keep incase Drew wants it like this
-/*
 bool isOnFor = false;
 bool isOnRev = false;
 void intake_func(){
-     if(master.get_digital_new_press(DIGITAL_L1)){
+     if(master.get_digital_new_press(DIGITAL_R1)){
         isOnFor = !isOnFor;
         isOnRev = false;
-    }else if(master.get_digital_new_press(DIGITAL_L2)){
+    }else if(master.get_digital_new_press(DIGITAL_R2)){
         isOnFor = false;
         isOnRev = !isOnRev;
     }
@@ -180,7 +179,9 @@ void intake_func(){
         intake = 0;
     }
 }
-*/
+
+//Old Code for the Intake keep incase Tanner wants it like this
+/*
 bool direction = true; //True = Forward, False = Reverse
 bool isOn = false;
 void intake_func(){
@@ -202,12 +203,12 @@ void intake_func(){
 		intake.brake();
 	}
 }
-
+*/
 
 //Flippers Buttons: R2 to Deploy and Pull Back
 bool flipperToggle = false;
 void actiavteFlippers(){
-	if(master.get_digital_new_press(DIGITAL_R2)){
+	if(master.get_digital_new_press(DIGITAL_Y)){
 		flipperToggle = !flipperToggle;
 		rightFlippers.set_value(flipperToggle);
 		leftFlippers.set_value(flipperToggle);
@@ -218,13 +219,31 @@ void actiavteFlippers(){
 //Intake Activation Buttons: R1 to Deploy and Pull Back
 bool intakeToggle = false;
 void activateIntake(){
-	if(master.get_digital_new_press(DIGITAL_R1)){
+	if(master.get_digital_new_press(DIGITAL_A)){
 		intakeToggle = !intakeToggle;
 		rightIntake.set_value(intakeToggle);
 		leftIntake.set_value(intakeToggle);
 		pros::delay(300);
 	}
 }
+
+//Flywheel set to be always running unless turned off Button: X On, B Off
+bool isFlyOn = true;
+void flywheelRun(){
+	if(master.get_digital_new_press(DIGITAL_X)){
+		isFlyOn = true;
+	}
+	if(master.get_digital_new_press(DIGITAL_B)){
+		isFlyOn = false;
+	}
+	if(isFlyOn){
+		flywheel = 127;
+	}
+	else if(!isFlyOn){
+		flywheel = 0;
+	}
+}
+
 
 void opcontrol() {
 	master.clear();
@@ -246,6 +265,9 @@ void opcontrol() {
 
 		//Intake Activation Button: R1
 		activateIntake();
+
+		//Flywheel On by default
+		flywheelRun();
 
 		pros::delay(2);
 	}
