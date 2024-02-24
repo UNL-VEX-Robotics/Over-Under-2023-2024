@@ -6,12 +6,13 @@
 #define MID_RIGHT_DRIVE 3
 #define BOT_RIGHT_DRIVE 17
 
-#define INTAKE 2
+#define INTAKE 11
 
 #define RIGHT_ELEVATION -10
 #define LEFT_ELEVATION 4
 
-#define FLYWHEEL 6
+#define FLYWHEEL_L 6
+#define FLYWHEEL_R -1
 
 #define INTAKE_PNEU 'B'
 #define ELEVATION_LOCK 'C'

@@ -31,6 +31,16 @@ pros::Motor rf(TOP_RIGHT_DRIVE);
 pros::Motor rm(MID_RIGHT_DRIVE);
 pros::Motor rb(BOT_RIGHT_DRIVE);
 
+
+pros::Motor fL(FLYWHEEL_L);
+pros::Motor fR(FLYWHEEL_R);
+
+
+pros::Motor intak(INTAKE, pros::E_MOTOR_GEAR_BLUE);
+
+
+pros::ADIDigitalOut lock(ELEVATION_LOCK);
+
 //straight params
 int tick_margin = 15;
 int integral_max_error_s= 1000;
@@ -41,9 +51,9 @@ float Kds = 0;
 //turning params
 int degree_margin = 1;
 int integral_max_error_t = 14;
-float Kpt = 1.0615;
+float Kpt = 1.1;
 float Kit = 0.00001;
-float Kdt = 0;
+float Kdt = 0.01;
 
 double convert(double degrees){
     return degrees + 23;
@@ -488,6 +498,49 @@ void route_skills(double start_heading){
     push(3.5*12);
 }
 
+ void elevateAuto(double x, bool rev){
+	if (rev){
+	lele = 100;
+	rele = 100;
+	}
+	else{
+	lele = -100;
+	rele = -100;
+	}
+	pros::delay(x);
+	lele = 0;
+	rele = 0;
+ }
+
+void route_skills_simple(double start_heading){
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    imu.set_heading(convert(start_heading));
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+	intak = 127;
+	fL = 127;
+	fR = 127;
+	pros::delay(1000);
+	for(int j = 0; j < 16; j++){
+		intk.set_value(true);
+		pros::delay(750);
+		intk.set_value(false);
+		pros::delay(850);
+	}
+	intak = 0;
+	fL = 0;
+	fR = 0;
+	
+	intk.set_value(true);
+	elevateAuto(2000, false);
+	go(2);
+	lock.set_value(true);
+	elevateAuto(2000, true);
+}
+
 
 void route_match_tanner(){
     while (imu.is_calibrating()){
@@ -497,18 +550,10 @@ void route_match_tanner(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    go(50);
-    turn(convert(45));
-    go(12);
-    intk.set_value(1);
-    go(-6);
-    turn(convert(270));
-    push(30);
-    go(-12);
-    turn(convert(135));
-    go(24);
-    turn(convert(180));
-    go(18);
+	intk.set_value(true);
+	pros::delay(250);
+	push(36);
+	go(-10);
 }
 
 void route_match_drew(){

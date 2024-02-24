@@ -5,6 +5,7 @@
 #include "pros/apix.h"
 #include "pros/misc.h"
 #include "pros/motors.h"
+#include "pros/motors.hpp"
 #include "pros/rtos.hpp"
 #include <string>
 #include "global_defs.h"
@@ -57,6 +58,9 @@ void competition_initialize() {}
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
+
+pros::Imu imu(IMU);
+
 pros::Motor topLeftDrive(TOP_LEFT_DRIVE);
 pros::Motor midLeftDrive(MID_LEFT_DRIVE);
 pros::Motor botLeftDrive(BOT_LEFT_DRIVE);
@@ -70,7 +74,8 @@ pros::Motor intake(INTAKE, pros::E_MOTOR_GEAR_BLUE);
 pros::Motor rightElevation(RIGHT_ELEVATION);
 pros::Motor leftElevation(LEFT_ELEVATION);
 
-pros::Motor flywheel(FLYWHEEL);
+pros::Motor flywheelL(FLYWHEEL_L);
+pros::Motor flywheelR(FLYWHEEL_R);
 
 pros::ADIDigitalOut intakePneu(INTAKE_PNEU);
 pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
@@ -88,8 +93,12 @@ pros::ADIDigitalOut flippers(FLIPPERS);
  * from where it left off.
  */
 
+
+
 void autonomous() {
+	//route_skills_simple(45);
 	route_match_tanner();
+	
 }
 
 void leftButton(){
@@ -236,10 +245,12 @@ void flywheelRun(){
 		isFlyOn = !isFlyOn;
 	}
 	if(isFlyOn){
-		flywheel = 127;
+		flywheelL = 127;
+		flywheelR = 127;
 	}
 	else if(!isFlyOn){
-		flywheel = 0;
+		flywheelL = 0;
+		flywheelR = 0;
 	}
 }
 

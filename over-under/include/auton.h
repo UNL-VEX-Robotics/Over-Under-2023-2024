@@ -6,6 +6,8 @@ double convert(double degrees);
 void route_skills(double degrees);
 void route_match_drew();
 void route_match_tanner();
+void route_skills_simple(double start_heading);
+void elevateAuto(double x, bool rev = false);
 
 void reset_positions();
 void set_all_voltage(int voltage);
