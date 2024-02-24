@@ -88,7 +88,7 @@ pros::ADIDigitalOut flippers(FLIPPERS);
  */
 
 void autonomous() {
-	route1(225);
+	push(2*12+4);
 }
 
 void leftButton(){

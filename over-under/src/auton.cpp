@@ -182,7 +182,7 @@ void push(double inches){
             if(i > 20000){
                 error_list.pop_back();
             }
-            error_list.push_front(left_error+right_error);
+            error_list.push_front(left_error + right_error);
             if(i % 8000 == 0){
                 double mean = 0;
                 double stdev = 0;
