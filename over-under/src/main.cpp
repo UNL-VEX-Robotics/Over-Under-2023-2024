@@ -87,14 +87,9 @@ pros::ADIDigitalOut flippers(FLIPPERS);
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-int convert(int degrees){
-	return degrees + 23;
-}
-
 
 void autonomous() {
-	
-
+	route_match_tanner();
 }
 
 void leftButton(){

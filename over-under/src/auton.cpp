@@ -19,6 +19,7 @@ const int circum = wheel_radius*2*M_PI;
 
 Imu imu(IMU);
 
+pros::ADIDigitalOut flappers(FLIPPERS);
 pros::Motor lf(TOP_LEFT_DRIVE);
 pros::Motor lm(MID_LEFT_DRIVE);
 pros::Motor lb(BOT_LEFT_DRIVE);
@@ -161,7 +162,9 @@ void push(double inches){
             std::cout << left_error;
             std::cout << "   R: ";
             std::cout << right_error;
-            std::cout <<"\n";
+            std::cout <<"  reset clock: ";
+            std::cout << now - start;
+            std::cout << "\n";
         }
         i++;
 
@@ -468,17 +471,17 @@ void route_skills(double start_heading){
     go(-2);
     turn(convert(0));
     go(7*12);
-    //deployFlaps();
+    flappers.set_value(1);
     turn(convert(45));
     go(2.25*12);
     turn(convert(90));
     push(1.75*12);
-    //unDeployFlaps();
+    flappers.set_value(0);
     //reset??
     go(-1*12);
     turn(convert(180));
     go(4*12);
-    //deployFlaps();
+    flappers.set_value(1);
     turn(convert(90));
     go(3*12);
     turn(convert(0));
