@@ -1,5 +1,11 @@
-int turn(int degrees);
-int go(int inches);
+void turn(double degrees);
+void go(double inches);
+void push(double inches);
+double convert(double degrees);
+
+void route_skills(double degrees);
+void route_match_drew();
+void route_match_tanner();
 
 void reset_positions();
 void set_all_voltage(int voltage);

@@ -67,7 +67,7 @@ pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
 
 pros::Motor intake(INTAKE, pros::E_MOTOR_GEAR_BLUE);
 
-pros::Motor rightElevation(RIGHT_EVEVATION, pros::E_MOTOR_GEAR_RED, true);
+pros::Motor rightElevation(RIGHT_ELEVATION);
 pros::Motor leftElevation(LEFT_ELEVATION);
 
 pros::Motor flywheel(FLYWHEEL);
