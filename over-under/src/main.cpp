@@ -32,7 +32,7 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "mac gets bitches");
+	pros::lcd::set_text(1, "WE RESPECT WOMEN");
 	pros::lcd::register_btn1_cb(on_center_button);
 }
 
@@ -66,7 +66,7 @@ pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
 
 pros::Motor intake(INTAKE, pros::E_MOTOR_GEAR_BLUE);
 
-pros::Motor rightElevation(RIGHT_EVEVATION, true);
+pros::Motor rightElevation(RIGHT_ELEVATION);
 pros::Motor leftElevation(LEFT_ELEVATION);
 
 pros::Motor flywheel(FLYWHEEL);
@@ -88,7 +88,6 @@ pros::ADIDigitalOut flippers(FLIPPERS);
  */
 
 void autonomous() {
-	push(2*12+4);
 }
 
 void leftButton(){
@@ -101,6 +100,7 @@ void leftButton(){
 
 void rightButton(){
 	static bool pressed = false;
+
 	pressed = !pressed;
 	if (pressed) {
 	}
@@ -130,7 +130,7 @@ void moveDrive(){
 	topRightDrive = drive - turn;
 	midRightDrive = drive - turn;
 	botRightDrive = drive - turn;
-
+//
 	topLeftDrive = drive + turn;
 	midLeftDrive = drive + turn;
 	botLeftDrive = drive + turn;

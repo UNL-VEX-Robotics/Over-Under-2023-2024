@@ -8,7 +8,7 @@
 
 #define INTAKE 19
 
-#define RIGHT_EVEVATION 2
+#define RIGHT_ELEVATION -2
 #define LEFT_ELEVATION 6
 
 #define FLYWHEEL 18
