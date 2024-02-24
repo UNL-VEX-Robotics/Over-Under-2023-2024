@@ -69,7 +69,7 @@ pros::Motor intake(INTAKE, pros::E_MOTOR_GEAR_BLUE);
 pros::Motor rightElevation(RIGHT_ELEVATION);
 pros::Motor leftElevation(LEFT_ELEVATION);
 
-pros::Motor flywheel(FLYWHEEL);
+pros::Motor flywheel(FLYWHEELL);
 
 pros::ADIDigitalOut intakePneu(INTAKE_PNEU);
 pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
@@ -88,6 +88,7 @@ pros::ADIDigitalOut flippers(FLIPPERS);
  */
 
 void autonomous() {
+	route_match_drew();
 }
 
 void leftButton(){

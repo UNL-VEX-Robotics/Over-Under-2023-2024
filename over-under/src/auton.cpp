@@ -12,6 +12,7 @@
 #include <string>
 #include <math.h>
 #include <list>
+#include <sys/_stdint.h>
 
 using namespace pros;
 
@@ -23,9 +24,11 @@ pros::Motor lf(TOP_LEFT_DRIVE);
 pros::Motor lm(MID_LEFT_DRIVE);
 pros::Motor lb(BOT_LEFT_DRIVE);
 
+pros::Motor fly(FLYWHEELL);
+pros::Motor intk(INTAKE, pros::E_MOTOR_GEAR_BLUE);
 pros::Motor rele(RIGHT_ELEVATION);
 pros::Motor lele(LEFT_ELEVATION);
-pros::ADIDigitalOut intk(INTAKE_PNEU);
+pros::ADIDigitalOut intkPNEU(INTAKE_PNEU);
 pros::Motor rf(TOP_RIGHT_DRIVE);
 pros::Motor rm(MID_RIGHT_DRIVE);
 pros::Motor rb(BOT_RIGHT_DRIVE);
@@ -40,7 +43,7 @@ float Kds = 0;
 //turning params
 int degree_margin = 1;
 int integral_max_error_t = 14;
-float Kpt = 1.0615;
+float Kpt = 1.1;
 float Kit = 0.00001;
 float Kdt = 0;
 
@@ -93,6 +96,19 @@ void all_brake(){
 
 int convert(int degrees){
 	return degrees + 23;
+}
+
+void shoot(int num){
+    intk = 127;
+    fly = -127;
+    for(int i=0; i < num; i++){
+        intkPNEU.set_value(1);
+        pros::delay(600);
+        intkPNEU.set_value(0);
+        pros::delay(1000);
+    }
+    intkPNEU.set_value(0);
+    pros::delay(500);
 }
 
 void push(double inches){
@@ -457,7 +473,8 @@ void turn(double degrees){
 }
 
 void route_skills(double start_heading){
-    int i = 0; 
+    int i = 0;
+    shoot(5);
     while (imu.is_calibrating()){
         pros::delay(10);
     }
@@ -497,7 +514,7 @@ void route_match_tanner(){
     go(50);
     turn(convert(45));
     go(12);
-    intk.set_value(1);
+    intkPNEU.set_value(1);
     go(-6);
     turn(convert(270));
     push(30);
@@ -516,19 +533,34 @@ void route_match_drew(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    intk.set_value(1);
-    go(-6);
-    turn(convert(270));
-    push(24);
-    go(-12);
+    intk = 127;
+    pros::delay(500);
+    intkPNEU.set_value(1);
+    pros::delay(500);
+    pros::delay(500);
+    intkPNEU.set_value(0);
+    intk = 0;
+    pros::delay(500);
+    go(-1);
+    turn(convert(260));
+    fly=-100;
+    intk=-100;
+    pros::delay(1000);
+    fly=0;
+    intk=0;
+    turn(convert(85));
+    push(-20);
+    go(12);
     turn(convert(45));
-    go(24);
-    turn(convert(0));
+    go(15);
+    turn(convert(180));
     rele.set_zero_position(0);
     lele.set_zero_position(0);
-    while((rele.get_position() < (double)red_ticks_per_rev*1600/360)){
+    while((lele.get_position() < (double)red_ticks_per_rev*0.1)){
         rele = 127;
         lele = 127;
     } 
-    go(-24);
+    intkPNEU.set_value(0);
+    pros::delay(1000);
+    push(-28);
 }
