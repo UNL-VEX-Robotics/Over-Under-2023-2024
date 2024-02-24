@@ -130,16 +130,16 @@ void rightButton(){
 void moveDrive(){
 	
 	//Arcade Drive
-	int left = -(0.75 * master.get_analog(ANALOG_LEFT_Y));
-	int right = -(0.75 * master.get_analog(ANALOG_RIGHT_Y));
+	int left = (0.75 * master.get_analog(ANALOG_LEFT_Y));
+	int right = (0.75 * master.get_analog(ANALOG_RIGHT_Y));
 
-	topRightDrive = right;
-	midRightDrive = right;
-	botRightDrive = -right;
+	topRightDrive = -right;
+	midRightDrive = -right;
+	botRightDrive = right;
 
-	topLeftDrive = left;
-	midLeftDrive = left;
-	botLeftDrive = -left;
+	topLeftDrive = -left;
+	midLeftDrive = -left;
+	botLeftDrive = left;
 	
 }
 
