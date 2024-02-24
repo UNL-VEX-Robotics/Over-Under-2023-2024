@@ -244,7 +244,7 @@ void flywheelRun(){
 }
 
 //Toggle to Set Wheels at Brake Type hold
-bool isWheelsBrake = false;
+bool isWheelsBrake = true;
 void wheelsBrake(){
 	if(master.get_digital_new_press(DIGITAL_RIGHT)){
 		isWheelsBrake = !isWheelsBrake;
