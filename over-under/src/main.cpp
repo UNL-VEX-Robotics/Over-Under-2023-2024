@@ -97,7 +97,7 @@ pros::ADIDigitalOut flippers(FLIPPERS);
 
 void autonomous() {
 	//route_skills_simple(45);
-	route_match_tanner();
+	ez_skills_start_on_left();
 	
 }
 
