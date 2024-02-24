@@ -57,13 +57,13 @@ void competition_initialize() {}
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-pros::Motor topLeftDrive(TOP_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
+pros::Motor topLeftDrive(TOP_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE);
 pros::Motor midLeftDrive(MID_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE);
 pros::Motor botLeftDrive(BOT_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE);
 
 pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
 pros::Motor midRightDrive(MID_RIGHT_DRIVE);
-pros::Motor botRightDrive(BOT_RIGHT_DRIVE, true);
+pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
 
 pros::Motor intake(INTAKE, pros::E_MOTOR_GEAR_BLUE);
 
@@ -130,16 +130,16 @@ void rightButton(){
 void moveDrive(){
 	
 	//Arcade Drive
-	int right = -(0.75 * master.get_analog(ANALOG_LEFT_Y));
-	int left = 0.75 * master.get_analog(ANALOG_RIGHT_Y);
+	int left = -(0.75 * master.get_analog(ANALOG_LEFT_Y));
+	int right = -(0.75 * master.get_analog(ANALOG_RIGHT_Y));
 
 	topRightDrive = right;
 	midRightDrive = right;
-	botRightDrive = right;
+	botRightDrive = -right;
 
 	topLeftDrive = left;
 	midLeftDrive = left;
-	botLeftDrive = left;
+	botLeftDrive = -left;
 	
 }
 
