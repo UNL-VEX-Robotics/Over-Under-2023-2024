@@ -232,7 +232,7 @@ void activateElevation(){
 //Flywheel set to run unless Y Button is pressed
 bool isFlyOn = true; //Auto set to true so the flywheel starts on
 void flywheelRun(){
-	if(master.get_digital_new_press(DIGITAL_Y)){
+	if(master.get_digital_new_press(DIGITAL_X)){
 		isFlyOn = !isFlyOn;
 	}
 	if(isFlyOn){
