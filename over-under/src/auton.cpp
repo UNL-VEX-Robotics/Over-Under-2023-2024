@@ -40,7 +40,7 @@ float Kds = 0;
 //turning params
 int degree_margin = 1;
 int integral_max_error_t = 14;
-float Kpt = 1.0605;
+float Kpt = 1.0615;
 float Kit = 0.00001;
 float Kdt = 0;
 
@@ -495,14 +495,14 @@ void route_match_tanner(){
         pros::delay(10);
     }
     go(50);
-    turn(convert(315));
+    turn(convert(45));
     go(12);
     intk.set_value(1);
     go(-6);
-    turn(convert(90));
+    turn(convert(270));
     push(30);
     go(-12);
-    turn(convert(225));
+    turn(convert(135));
     go(24);
     turn(convert(180));
     go(18);
@@ -512,16 +512,16 @@ void route_match_drew(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    imu.set_heading(convert(225));
+    imu.set_heading(convert(135));
     while (imu.is_calibrating()){
         pros::delay(10);
     }
     intk.set_value(1);
     go(-6);
-    turn(convert(90));
+    turn(convert(270));
     push(24);
     go(-12);
-    turn(convert(315));
+    turn(convert(45));
     go(24);
     turn(convert(0));
     rele.set_zero_position(0);
