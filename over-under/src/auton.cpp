@@ -19,13 +19,13 @@ const int circum = wheel_radius*2*M_PI;
 
 Imu imu(IMU);
 
-pros::Motor lf(TOP_LEFT_DRIVE, true);
+pros::Motor lf(TOP_LEFT_DRIVE);
 pros::Motor lm(MID_LEFT_DRIVE);
 pros::Motor lb(BOT_LEFT_DRIVE);
 
 pros::Motor rf(TOP_RIGHT_DRIVE);
-pros::Motor rm(MID_RIGHT_DRIVE, true);
-pros::Motor rb(BOT_RIGHT_DRIVE, true);
+pros::Motor rm(MID_RIGHT_DRIVE);
+pros::Motor rb(BOT_RIGHT_DRIVE);
 
 //straight params
 int tick_margin = 15;

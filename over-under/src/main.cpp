@@ -132,13 +132,13 @@ void moveDrive(){
 	int drive = 0.75 * master.get_analog(ANALOG_LEFT_Y);
 	int turn = 0.75 * master.get_analog(ANALOG_RIGHT_X);
 
-	topRightDrive = (drive - turn);
-	midRightDrive = (drive - turn);
-	botRightDrive = (drive - turn);
+	topRightDrive = -(drive - turn);
+	midRightDrive = -(drive - turn);
+	botRightDrive = -(drive - turn);
 
-	topLeftDrive = (drive + turn);
-	midLeftDrive = (drive + turn);
-	botLeftDrive = (drive + turn);
+	topLeftDrive = -(drive + turn);
+	midLeftDrive = -(drive + turn);
+	botLeftDrive = -(drive + turn);
 	
 }
 
