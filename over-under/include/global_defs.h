@@ -1,22 +1,21 @@
-#define TOP_LEFT_DRIVE 17 
-#define MID_LEFT_DRIVE 5 
-#define BOT_LEFT_DRIVE 2
+#define TOP_LEFT_DRIVE 8
+#define MID_LEFT_DRIVE 20
+#define BOT_LEFT_DRIVE 7
 
 #define TOP_RIGHT_DRIVE 19
-#define MID_RIGHT_DRIVE 15
-#define BOT_RIGHT_DRIVE 20
+#define MID_RIGHT_DRIVE 3
+#define BOT_RIGHT_DRIVE 17
 
-#define INTAKE 7
+#define INTAKE 1
 
-#define RIGHT_EVEVATION 8 
-#define LEFT_ELEVATION 9
+#define RIGHT_EVEVATION 10
+#define LEFT_ELEVATION 4
 
-#define FLYWHEEL 10
+#define FLYWHEEL 6
 
-#define INTAKE_PNEU_RIGHT 'A'
-#define INTAKE_PNEU_LEFT 'B'
-#define FLIPPERS_RIGHT 'G'
-#define FLIPPERS_LEFT 'H'
+#define INTAKE_PNEU 'B'
+#define ELEVATION_LOCK 'C'
+#define FLIPPERS 'F'
 
 #define IMU 13
 
