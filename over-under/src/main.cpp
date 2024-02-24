@@ -147,11 +147,11 @@ void moveDrive(){
 //Code for Elevation Button: X for up,  B for down
 void elevate(){
 	if (master.get_digital(DIGITAL_L1)){ //Comes out of storage
-		rightElevation = 100;
-		leftElevation = 100;
-	} else if(master.get_digital(DIGITAL_L2)){ //Climbs
 		rightElevation = -100;
 		leftElevation = -100;
+	} else if(master.get_digital(DIGITAL_L2)){ //Climbs
+		rightElevation = 100;
+		leftElevation = 100;
 	} else{
 		rightElevation = 0;
 		leftElevation = 0;
