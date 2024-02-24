@@ -130,8 +130,8 @@ void rightButton(){
 void moveDrive(){
 	
 	//Arcade Drive
-	int left = (0.75 * master.get_analog(ANALOG_LEFT_Y));
-	int right = (0.75 * master.get_analog(ANALOG_RIGHT_Y));
+	int left = (.75 * master.get_analog(ANALOG_LEFT_Y));
+	int right = (.75 * master.get_analog(ANALOG_RIGHT_Y));
 
 	topRightDrive = -right;
 	midRightDrive = -right;
@@ -227,7 +227,7 @@ void activateIntake(){
 //Elevation Lock Activation Buttons: Left to Deploy and Pull Back
 bool elevationToggle = false;
 void activateElevation(){
-	if(master.get_digital_new_press(DIGITAL_LEFT)){
+	if(master.get_digital_new_press(DIGITAL_UP)){
 		elevationToggle = !elevationToggle;
 		eleLock.set_value(elevationToggle);
 		pros::delay(300);
@@ -245,6 +245,30 @@ void flywheelRun(){
 	}
 	else if(!isFlyOn){
 		flywheel = 0;
+	}
+}
+
+//Toggle to Set Wheels at Brake Type hold
+bool isWheelsBrake = false;
+void wheelsBrake(){
+	if(master.get_digital_new_press(DIGITAL_RIGHT)){
+		isWheelsBrake = !isWheelsBrake;
+	}
+	if(isWheelsBrake){
+		topLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+		midLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+		botLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+		topRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+		midRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+		botRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	}
+	else if(!isWheelsBrake){
+		topLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+		midLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+		botLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+		topRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+		midRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+		botRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	}
 }
 
@@ -275,6 +299,9 @@ void opcontrol() {
 
 		//Elevation Lock on Button: Left
 		activateElevation();
+
+		//Wheel Braking set to Button: Right
+		wheelsBrake();
 
 		pros::delay(2);
 	}
