@@ -238,10 +238,7 @@ void activateElevation(){
 bool isFlyOn = true;
 void flywheelRun(){
 	if(master.get_digital_new_press(DIGITAL_X)){
-		isFlyOn = true;
-	}
-	if(master.get_digital_new_press(DIGITAL_B)){
-		isFlyOn = false;
+		isFlyOn = !isFlyOn;
 	}
 	if(isFlyOn){
 		flywheel = 127;
