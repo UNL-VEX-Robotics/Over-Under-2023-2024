@@ -6,7 +6,6 @@
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
-#include <string>
 #include "global_defs.h"
 
 /**
@@ -57,17 +56,17 @@ void competition_initialize() {}
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-pros::Motor topLeftDrive(TOP_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
-pros::Motor midLeftDrive(MID_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE);
-pros::Motor botLeftDrive(BOT_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
+pros::Motor topLeftDrive(TOP_LEFT_DRIVE, true);
+pros::Motor midLeftDrive(MID_LEFT_DRIVE);
+pros::Motor botLeftDrive(BOT_LEFT_DRIVE);
 
 pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
 pros::Motor midRightDrive(MID_RIGHT_DRIVE, true);
-pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
+pros::Motor botRightDrive(BOT_RIGHT_DRIVE, true);
 
 pros::Motor intake(INTAKE, pros::E_MOTOR_GEAR_BLUE);
 
-pros::Motor rightElevation(RIGHT_EVEVATION, pros::E_MOTOR_GEAR_RED, true);
+pros::Motor rightElevation(RIGHT_EVEVATION, true);
 pros::Motor leftElevation(LEFT_ELEVATION);
 
 pros::Motor flywheel(FLYWHEEL);

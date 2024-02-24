@@ -18,14 +18,14 @@ using namespace pros;
 const int circum = wheel_radius*2*M_PI;
 
 Imu imu(IMU);
-Motor lf(TOP_LEFT_DRIVE, true);
-Motor lm(MID_LEFT_DRIVE);
-Motor lb(BOT_LEFT_DRIVE, true);
 
-Motor rf(TOP_RIGHT_DRIVE);
-Motor rm(MID_RIGHT_DRIVE, true);
-Motor rb(BOT_RIGHT_DRIVE);
+pros::Motor topLeftDrive(TOP_LEFT_DRIVE, true);
+pros::Motor midLeftDrive(MID_LEFT_DRIVE);
+pros::Motor botLeftDrive(BOT_LEFT_DRIVE);
 
+pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
+pros::Motor midRightDrive(MID_RIGHT_DRIVE, true);
+pros::Motor botRightDrive(BOT_RIGHT_DRIVE, true);
 
 //straight params
 int tick_margin = 15;
