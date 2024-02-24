@@ -71,10 +71,9 @@ pros::Motor leftElevation(LEFT_ELEVATION);
 
 pros::Motor flywheel(FLYWHEEL);
 
-pros::ADIDigitalOut rightIntake(INTAKE_PNEU_RIGHT);
-pros::ADIDigitalOut leftIntake(INTAKE_PNEU_LEFT);
-pros::ADIDigitalOut rightFlippers(FLIPPERS_RIGHT);
-pros::ADIDigitalOut leftFlippers(FLIPPERS_LEFT);
+pros::ADIDigitalOut intakePneu(INTAKE_PNEU);
+pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
+pros::ADIDigitalOut flippers(FLIPPERS);
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -126,20 +125,20 @@ void rightButton(){
  * task, not resume it from where it left off.
  */
 
-//Function For Drive Code: Sticks
+//Function For Drive Code: Two Stick Arcade
 void moveDrive(){
 	
 	//Arcade Drive
 	int drive = 0.75 * master.get_analog(ANALOG_LEFT_Y);
 	int turn = 0.75 * master.get_analog(ANALOG_RIGHT_X);
 
-	topRightDrive = drive - turn;
-	midRightDrive = drive - turn;
-	botRightDrive = drive - turn;
+	topRightDrive = -(drive - turn);
+	midRightDrive = -(drive - turn);
+	botRightDrive = -(drive - turn);
 
-	topLeftDrive = drive + turn;
-	midLeftDrive = drive + turn;
-	botLeftDrive = drive + turn;
+	topLeftDrive = -(drive + turn);
+	midLeftDrive = -(drive + turn);
+	botLeftDrive = -(drive + turn);
 	
 }
 
@@ -210,8 +209,7 @@ bool flipperToggle = false;
 void actiavteFlippers(){
 	if(master.get_digital_new_press(DIGITAL_R2)){
 		flipperToggle = !flipperToggle;
-		rightFlippers.set_value(flipperToggle);
-		leftFlippers.set_value(flipperToggle);
+		flippers.set_value(flipperToggle);
 		pros::delay(300);
 	}
 }
@@ -221,8 +219,17 @@ bool intakeToggle = false;
 void activateIntake(){
 	if(master.get_digital_new_press(DIGITAL_R1)){
 		intakeToggle = !intakeToggle;
-		rightIntake.set_value(intakeToggle);
-		leftIntake.set_value(intakeToggle);
+		intakePneu.set_value(intakeToggle);
+		pros::delay(300);
+	}
+}
+
+//Intake Activation Buttons: Left to Deploy and Pull Back
+bool eleToggle = false;
+void activateElevation(){
+	if(master.get_digital_new_press(DIGITAL_LEFT)){
+		eleToggle = !eleToggle;
+		eleLock.set_value(eleToggle);
 		pros::delay(300);
 	}
 }
@@ -251,7 +258,7 @@ void opcontrol() {
 		moveDrive();
 
 		//Elevation Button: X for up,  B for down
-		//elevate();
+		elevate();
 
 		//Intake Button: L1 for in, L2 for out
 		intake_func();
@@ -264,6 +271,9 @@ void opcontrol() {
 
 		//Run Flywheel Button: Y
 		flywheelRun();
+
+		//Elevation Activation Button: Left
+		activateElevation();
 
 		pros::delay(2);
 	}

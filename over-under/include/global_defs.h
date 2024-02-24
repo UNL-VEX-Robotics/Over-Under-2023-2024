@@ -6,17 +6,16 @@
 #define MID_RIGHT_DRIVE 4
 #define BOT_RIGHT_DRIVE 5
 
-#define INTAKE 100 
+#define INTAKE 19
 
-#define RIGHT_EVEVATION 100 
-#define LEFT_ELEVATION 100 
+#define RIGHT_EVEVATION 2
+#define LEFT_ELEVATION 6
 
 #define FLYWHEEL 10
 
-#define INTAKE_PNEU_RIGHT 'A'
-#define INTAKE_PNEU_LEFT 'B'
-#define FLIPPERS_RIGHT 'G'
-#define FLIPPERS_LEFT 'H'
+#define INTAKE_PNEU 'A'
+#define FLIPPERS 'B'
+#define ELEVATION_LOCK 'C'
 
 #define IMU 20
 
