@@ -1,4 +1,3 @@
-#include "display/lv_core/lv_obj.h"
 #include "main.h"
 #include "global_defs.h"
 #include "pros/imu.h"
@@ -19,25 +18,25 @@ const int circum = wheel_radius*2*M_PI;
 
 Imu imu(IMU);
 
-pros::Motor lf(TOP_LEFT_DRIVE, true);
+pros::Motor lf(TOP_LEFT_DRIVE);
 pros::Motor lm(MID_LEFT_DRIVE);
 pros::Motor lb(BOT_LEFT_DRIVE);
 
 pros::Motor rf(TOP_RIGHT_DRIVE);
-pros::Motor rm(MID_RIGHT_DRIVE, true);
-pros::Motor rb(BOT_RIGHT_DRIVE, true);
+pros::Motor rm(MID_RIGHT_DRIVE);
+pros::Motor rb(BOT_RIGHT_DRIVE);
 
 //straight params
 int tick_margin = 15;
 int integral_max_error_s= 1000;
 float Kps = 0.22;
-float Kis = 0;
+float Kis = 0.00001;
 float Kds = 0;
 //turning params
 int degree_margin = 5;
 int integral_max_error_t = 14;
 float Kpt = 1.0605;
-float Kit = 0;
+float Kit = 0.00001;
 float Kdt = 0;
 
 void reset_motors(){
@@ -62,13 +61,13 @@ void set_all_voltage(int voltage){
 
 void set_left_voltage(float voltage){
     lf = voltage;
-    lm = voltage;
-    lb = voltage;
+    lm = -voltage;
+    lb = -voltage;
     return;
 }
 
 void set_right_voltage(float voltage){
-    rf = voltage;
+    rf = -voltage;
     rm = voltage;
     rb = voltage;
     return;
@@ -83,44 +82,12 @@ void all_brake(){
     rb.brake();
 }
 
-//motor_encoder_units_e_t: 2 for stank bot, so ticks (you can change this but this is the most granular so is gud)
-void move_distance_proportional(float inches, float p){
-    double revolutions = inches / circum;
-    double encoder_units = revolutions * blue_ticks_per_rev;
-    reset_motors();
-    float avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position() + rf.get_position() + rm.get_position() + rb.get_position()) / 6.0;
-    while(avg_error > 0){
-        avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position() + rf.get_position() + rm.get_position() + rb.get_position()) / 6.0;
-        float normalized_error = avg_error / 2400;
-        set_all_voltage((int) (normalized_error*p*127));
-    }
-    return;
+int convert(int degrees){
+	return degrees + 23;
 }
 
-void move_distance_proportional_individual_sides(float inches, float p){
-    double revolutions = inches / circum;
-    double encoder_units = revolutions * blue_ticks_per_rev;
-    reset_positions();
-    float left_avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
-    float right_avg_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
-    while((left_avg_error > 0) && (right_avg_error > 0)){
-        float left_avg_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
-        float right_avg_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
-        if(left_avg_error*p > 127){
-            set_left_voltage(127);
-        } else{
-            set_left_voltage((int) (left_avg_error * p));
-        }
-        if(right_avg_error*p>127) {
-            set_right_voltage((int) 127);
-        } else {
-            set_right_voltage((int) (right_avg_error * p));
-        }
-    }
-    return;
-}
 
-void move_individual_sides_debug(float inches){
+void go(double inches){
     double revolutions = inches / circum;
     double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev;
     reset_motors();
@@ -176,73 +143,10 @@ void move_individual_sides_debug(float inches){
     return;
 }
 
-void move_individual_sides_debug_SECOND_VERSION(float inches){
-    double revolutions = inches / circum;
-    double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev;
-    reset_motors();
-    int i = 0;
-    double left_error = encoder_units;
-    double right_error = encoder_units;
-    double prev_left_error = left_error;
-    double prev_right_error = right_error;
-    double left_integral = 0;
-    double right_integral = 0;
-    double left_derivative = 0;
-    double right_derivative = 0;
-
-    double left_voltage = 0;
-    double right_voltage = 0;
-    while(( abs(left_error) > tick_margin ) && (abs(right_error) > tick_margin )){ 
-        prev_left_error = left_error;
-        prev_right_error = right_error;
-        left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
-        right_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
-
-        //if each iteration of the loop doesn't take a uniform amount of time, derivative and integral calculations need
-        //to consider time
-        left_derivative = left_error - prev_left_error;
-        right_derivative = right_error - prev_right_error;
-
-        if(abs(left_error) > integral_max_error_s){
-            left_integral = integral_max_error_s; 
-        } else {
-            left_integral = left_integral + Kis * left_error;
-        }
-        if(abs(right_error) > integral_max_error_s){
-            right_integral = integral_max_error_s;
-        } else {
-            right_integral = right_integral + Kis * right_error;
-        }
-        
-        left_voltage = Kps * left_error + Kis * left_integral + Kds * left_derivative;
-        right_voltage = Kps * right_error + Kis * right_integral + Kds * right_derivative;
-        if(left_voltage > 127){
-            float x = 127.0 * (i+100)/25000;
-            set_left_voltage(x > 127 ? 127 : x);
-        } else{
-            set_left_voltage(left_voltage);
-        }
-        if(right_voltage > 127) {
-            float x = 127.0 * (i+100)/25000;
-            set_right_voltage(x > 127 ? 127 : x);
-        } else {
-            set_right_voltage(right_voltage);
-        }
-
-        if(i % 5000 == 0){
-           
-            std::cout << "\n   left: ";
-            std::cout << left_error;
-            std::cout << "\n   right: ";
-            std::cout << right_error;
-            std::cout <<"\n";
-        }
-        i++;
-    }     
-    return;
-}
-
-int move_individual_sides_debug_loop_control(float inches){
+//go but with loop control. Used to push into goal
+//we know we're in a "loop", i.e. bot is against the bars of the goal 
+//when standard deviation of previous x(10?) iterations' error drops below a certain threshold
+void push(double inches){
     std::list<double> error_list;
     double revolutions = inches / circum;
     double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev;
@@ -326,10 +230,10 @@ int move_individual_sides_debug_loop_control(float inches){
         }
         i++;
     }     
-    return 1;
+    return;
 }
 
-void turn_right_relative_debug(int degrees){
+void turn_right_relative_debug(double degrees){
     double end_heading = degrees + imu.get_heading();
     double error = degrees;
     double prev_error = 0;
@@ -416,7 +320,7 @@ void turn_right_relative_debug(int degrees){
     return;
 }
 
-void turn_left_relative_debug(int degrees){
+void turn_left_relative_debug(double degrees){
     double end_heading = imu.get_heading() - degrees;
     double prev_error = 0;
     double error = degrees;
@@ -504,7 +408,7 @@ void turn_left_relative_debug(int degrees){
 }
 
 //Turns the robot to the given heading
-void turn_absolute_debug(int degrees){
+void turn(double degrees){
     int start_heading = imu.get_heading(); 
     //right range = start +1, start + 180 % 360
     //left range = start -1, start - 180 % 360
@@ -544,4 +448,33 @@ void turn_absolute_debug(int degrees){
         }
     }    
     return;
+}
+
+void route1(double start_heading){
+    int i = 0; 
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    imu.set_heading(convert(start_heading));
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    go(-6);
+    turn(convert(0));
+    go(7*12);
+    //deployFlaps();
+    turn(convert(45));
+    go(2.25*12);
+    turn(convert(90));
+    push(1.75*12);
+    //unDeployFlaps();
+    //reset??
+    go(-1*12);
+    turn(convert(180));
+    go(4*12);
+    //deployFlaps();
+    turn(convert(90));
+    go(3*12);
+    turn(convert(0));
+    push(3.5*12);
 }
