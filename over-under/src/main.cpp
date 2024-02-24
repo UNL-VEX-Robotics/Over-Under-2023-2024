@@ -33,7 +33,7 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "mac gets bitches");
+	pros::lcd::set_text(1, "ITS GOONING TIME");
 	pros::lcd::register_btn1_cb(on_center_button);
 }
 
