@@ -19,12 +19,14 @@ using namespace pros;
 const int circum = wheel_radius*2*M_PI;
 
 Imu imu(IMU);
+pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
 
 pros::Motor lf(TOP_LEFT_DRIVE);
 pros::Motor lm(MID_LEFT_DRIVE);
 pros::Motor lb(BOT_LEFT_DRIVE);
 
-pros::Motor fly(FLYWHEELL);
+pros::Motor flyl(FLYWHEELL);
+pros::Motor flyr(FLYWHEELR);
 pros::Motor intk(INTAKE, pros::E_MOTOR_GEAR_BLUE);
 pros::Motor rele(RIGHT_ELEVATION);
 pros::Motor lele(LEFT_ELEVATION);
@@ -100,7 +102,7 @@ int convert(int degrees){
 
 void shoot(int num){
     intk = 127;
-    fly = -127;
+    flyl = -127;
     for(int i=0; i < num; i++){
         intkPNEU.set_value(1);
         pros::delay(600);
@@ -503,6 +505,66 @@ void route_skills(double start_heading){
 }
 
 
+void ez_skills_start_on_left(){
+    shoot(15);
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    imu.set_heading(convert(45));
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    go(-1);
+    turn(convert(315));
+    go(1.5*12);
+    turn(convert(0));
+    rele.set_zero_position(0);
+    double num_revolutions_to_elevate = 1.5;
+    while(rele.get_position() < (double) red_ticks_per_rev*num_revolutions_to_elevate){
+        rele = 127;
+        lele = 127;
+    }
+    rele = 0;
+    lele = 0;
+    push(4*12+3);
+    while(rele.get_position() < (double) red_ticks_per_rev*num_revolutions_to_elevate){
+        rele = -127;
+        lele = -127;
+    }
+    eleLock.set_value(1);
+}
+
+void ez_skills_start_on_right(){
+    shoot(15);
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    imu.set_heading(convert(315));
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    go(-1);
+    turn(convert(45));
+    go(1.5*12);
+    turn(convert(0));
+    rele.set_zero_position(0);
+    double num_revolutions_to_elevate = 1.5;
+    while(rele.get_position() < (double) red_ticks_per_rev*num_revolutions_to_elevate){
+        rele = 127;
+        lele = 127;
+    }
+    rele = 0;
+    lele = 0;
+    push(4*12+3);
+    while(rele.get_position() < (double) red_ticks_per_rev*num_revolutions_to_elevate){
+        rele = -127;
+        lele = -127;
+    }
+    eleLock.set_value(1);
+}
+
+
+
 void route_match_tanner(){
     while (imu.is_calibrating()){
         pros::delay(10);
@@ -543,10 +605,10 @@ void route_match_drew(){
     pros::delay(500);
     go(-1);
     turn(convert(260));
-    fly=-100;
+    flyl=-100;
     intk=-100;
     pros::delay(1000);
-    fly=0;
+    flyl=0;
     intk=0;
     turn(convert(85));
     push(-20);
@@ -560,6 +622,8 @@ void route_match_drew(){
         rele = 127;
         lele = 127;
     } 
+    rele = 0;
+    lele = 0;
     intkPNEU.set_value(0);
     pros::delay(1000);
     push(-28);
