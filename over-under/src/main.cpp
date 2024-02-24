@@ -57,9 +57,9 @@ void competition_initialize() {}
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-pros::Motor topLeftDrive(TOP_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE);
-pros::Motor midLeftDrive(MID_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE);
-pros::Motor botLeftDrive(BOT_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor topLeftDrive(TOP_LEFT_DRIVE);
+pros::Motor midLeftDrive(MID_LEFT_DRIVE);
+pros::Motor botLeftDrive(BOT_LEFT_DRIVE);
 
 pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
 pros::Motor midRightDrive(MID_RIGHT_DRIVE);
@@ -133,12 +133,12 @@ void moveDrive(){
 	int left = (.75 * master.get_analog(ANALOG_LEFT_Y));
 	int right = (.75 * master.get_analog(ANALOG_RIGHT_Y));
 
-	topRightDrive = -right;
-	midRightDrive = -right;
+	topRightDrive = right;
+	midRightDrive = right;
 	botRightDrive = right;
 
-	topLeftDrive = -left;
-	midLeftDrive = -left;
+	topLeftDrive = left;
+	midLeftDrive = left;
 	botLeftDrive = left;
 	
 }

@@ -1,8 +1,8 @@
 #define TOP_LEFT_DRIVE 8
-#define MID_LEFT_DRIVE 20
-#define BOT_LEFT_DRIVE 7
+#define MID_LEFT_DRIVE -20
+#define BOT_LEFT_DRIVE -7
 
-#define TOP_RIGHT_DRIVE 19
+#define TOP_RIGHT_DRIVE -19
 #define MID_RIGHT_DRIVE 3
 #define BOT_RIGHT_DRIVE 17
 

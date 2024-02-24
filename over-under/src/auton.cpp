@@ -18,12 +18,12 @@ using namespace pros;
 const int circum = wheel_radius*2*M_PI;
 
 Imu imu(IMU);
-Motor lf(TOP_LEFT_DRIVE, true);
+Motor lf(TOP_LEFT_DRIVE);
 Motor lm(MID_LEFT_DRIVE);
-Motor lb(BOT_LEFT_DRIVE, true);
+Motor lb(BOT_LEFT_DRIVE);
 
 Motor rf(TOP_RIGHT_DRIVE);
-Motor rm(MID_RIGHT_DRIVE, true);
+Motor rm(MID_RIGHT_DRIVE);
 Motor rb(BOT_RIGHT_DRIVE);
 
 
