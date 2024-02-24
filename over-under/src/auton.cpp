@@ -29,15 +29,20 @@ pros::Motor rb(BOT_RIGHT_DRIVE);
 //straight params
 int tick_margin = 15;
 int integral_max_error_s= 1000;
-float Kps = 0.22;
-float Kis = 0.00001;
+float Kps = 0.225;
+float Kis = 0.01;
 float Kds = 0;
+
 //turning params
-int degree_margin = 5;
+int degree_margin = 1;
 int integral_max_error_t = 14;
 float Kpt = 1.0605;
 float Kit = 0.00001;
 float Kdt = 0;
+
+double convert(double degrees){
+    return degrees + 23;
+}
 
 void reset_motors(){
     lf.set_zero_position(0);
@@ -61,13 +66,13 @@ void set_all_voltage(int voltage){
 
 void set_left_voltage(float voltage){
     lf = voltage;
-    lm = -voltage;
-    lb = -voltage;
+    lm = voltage;
+    lb = voltage;
     return;
 }
 
 void set_right_voltage(float voltage){
-    rf = -voltage;
+    rf = voltage;
     rm = voltage;
     rb = voltage;
     return;
@@ -85,7 +90,6 @@ void all_brake(){
 int convert(int degrees){
 	return degrees + 23;
 }
-
 
 void go(double inches){
     double revolutions = inches / circum;
@@ -139,9 +143,18 @@ void go(double inches){
         } else {
             set_right_voltage(right_voltage);
         }
-    }     
-    return;
-}
+
+        if(i % 5000 == 0){
+           
+            std::cout << "\n   L: ";
+            std::cout << left_error;
+            std::cout << "   R: ";
+            std::cout << right_error;
+            std::cout <<"\n";
+        }
+        i++;
+
+    }}
 
 //go but with loop control. Used to push into goal
 //we know we're in a "loop", i.e. bot is against the bars of the goal 
@@ -459,7 +472,7 @@ void route1(double start_heading){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    go(-6);
+    go(-2);
     turn(convert(0));
     go(7*12);
     //deployFlaps();
@@ -477,4 +490,8 @@ void route1(double start_heading){
     go(3*12);
     turn(convert(0));
     push(3.5*12);
+}
+
+
+void routeTest(){
 }

@@ -86,14 +86,9 @@ pros::ADIDigitalOut flippers(FLIPPERS);
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-int convert(int degrees){
-	return degrees + 23;
-}
-
 
 void autonomous() {
-	
-
+	route1(225);
 }
 
 void leftButton(){
@@ -132,13 +127,13 @@ void moveDrive(){
 	int drive = 0.75 * master.get_analog(ANALOG_LEFT_Y);
 	int turn = 0.75 * master.get_analog(ANALOG_RIGHT_X);
 
-	topRightDrive = -(drive - turn);
-	midRightDrive = -(drive - turn);
-	botRightDrive = -(drive - turn);
+	topRightDrive = drive - turn;
+	midRightDrive = drive - turn;
+	botRightDrive = drive - turn;
 
-	topLeftDrive = -(drive + turn);
-	midLeftDrive = -(drive + turn);
-	botLeftDrive = -(drive + turn);
+	topLeftDrive = drive + turn;
+	midLeftDrive = drive + turn;
+	botLeftDrive = drive + turn;
 	
 }
 

@@ -1,10 +1,10 @@
-#define TOP_LEFT_DRIVE -16 
-#define MID_LEFT_DRIVE 8 
-#define BOT_LEFT_DRIVE 7 
+#define TOP_LEFT_DRIVE 16 
+#define MID_LEFT_DRIVE -8 
+#define BOT_LEFT_DRIVE -7 
 
-#define TOP_RIGHT_DRIVE 3
-#define MID_RIGHT_DRIVE -4
-#define BOT_RIGHT_DRIVE -5
+#define TOP_RIGHT_DRIVE -3
+#define MID_RIGHT_DRIVE 4
+#define BOT_RIGHT_DRIVE 5
 
 #define INTAKE 19
 
