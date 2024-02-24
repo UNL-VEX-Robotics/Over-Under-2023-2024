@@ -13,9 +13,9 @@
 
 #define FLYWHEEL 10
 
-#define INTAKE_PNEU 'A'
-#define FLIPPERS 'B'
-#define ELEVATION_LOCK 'C'
+#define INTAKE_PNEU 'C'
+#define FLIPPERS 'A'
+#define ELEVATION_LOCK 'B'
 
 #define IMU 20
 
