@@ -272,6 +272,23 @@ void wheelsBrake(){
 	}
 }
 
+//THIS FUNCTION SHOULDNT BE CALLED WITHOUT PERMISSION FROM DRIVER AND RYAN
+//Marco for shooting triballs automacticly with a break out option
+void testMacro(){
+	if(master.get_digital_new_press(DIGITAL_B)){
+		for(int i = 0; i < 5; i++){
+			if(master.get_digital_new_press(DIGITAL_Y)){
+				break;
+			}
+			else{
+				intakePneu.set_value(true);
+				pros::delay(250);
+				intakePneu.set_value(false);
+			}
+		}
+	}
+} 
+
 
 void opcontrol() {
 	master.clear();
