@@ -6,7 +6,7 @@
 #define MID_RIGHT_DRIVE 3
 #define BOT_RIGHT_DRIVE 17
 
-#define INTAKE 1
+#define INTAKE 2
 
 #define RIGHT_ELEVATION -10
 #define LEFT_ELEVATION 4
