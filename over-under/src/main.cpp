@@ -14,15 +14,34 @@
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2); 
-	}
+int autonSelector = 0;
+bool skillsAuton = false;
+
+
+void on_center_button() { //Count Up
+	autonSelector ++; 
+	std::string ba = "" + std::to_string(autonSelector);
+	pros::lcd::set_text(3, ba);
 }
+
+void on_right_button() {
+	autonSelector --; 
+	std::string ba = "" + std::to_string(autonSelector);
+	pros::lcd::set_text(3, ba);
+}
+
+void on_left_button() {
+	skillsAuton = !skillsAuton;
+	std::string ba = "";
+	if (skillsAuton){
+		ba = "SKILLS AUTON ON";
+	}
+	else if (!skillsAuton){
+		ba = "MATCH AUTON ON";
+	}
+	pros::lcd::set_text(2, ba);
+}
+
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
