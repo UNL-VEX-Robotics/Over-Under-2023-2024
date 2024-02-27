@@ -79,27 +79,6 @@ void disabled() {}
  */
 void competition_initialize() {}
 
-pros::Controller master(pros::E_CONTROLLER_MASTER);
-
-pros::Motor topLeftDrive(TOP_LEFT_DRIVE);
-pros::Motor midLeftDrive(MID_LEFT_DRIVE);
-pros::Motor botLeftDrive(BOT_LEFT_DRIVE);
-
-pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
-pros::Motor midRightDrive(MID_RIGHT_DRIVE);
-pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
-
-pros::Motor intake(INTAKE, pros::E_MOTOR_GEAR_BLUE);
-
-pros::Motor rightElevation(RIGHT_ELEVATION);
-pros::Motor leftElevation(LEFT_ELEVATION);
-
-pros::Motor flywheelL(FLYWHEEL_L);
-pros::Motor flywheelR(FLYWHEEL_R);
-
-pros::ADIDigitalOut intakePneu(INTAKE_PNEU);
-pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
-pros::ADIDigitalOut flippers(FLIPPERS);
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -116,10 +95,6 @@ pros::ADIDigitalOut flippers(FLIPPERS);
 
 
 void autonomous() {
-
-	//route_skills_simple(45);
-	ez_skills_start_on_left();
-	
 }
 
 
@@ -221,13 +196,13 @@ void activateElevation(){
 
 //Flywheel set to be always running unless turned off Button: X On, B Off
 bool isFlyOn = true;
-void flywheelRun(){
+void rightFlyun(){
 	if(master.get_digital_new_press(DIGITAL_X)){
 		isFlyOn = !isFlyOn;
 	}
 	//if flyweel is on, set both motors to 127, else set to zero
-	flywheelL = 127 * isFlyOn;
-	flywheelR = 127 * isFlyOn;
+	leftFly = 127 * isFlyOn;
+	rightFly = 127 * isFlyOn;
 }
 
 //Toggle to Set Wheels at Brake Type hold
@@ -294,7 +269,7 @@ void opcontrol() {
 		activateIntake();
 
 		//Flywheel On by default
-		flywheelRun();
+		rightFlyun();
 
 		//Elevation Lock on Button: Left
 		activateElevation();
