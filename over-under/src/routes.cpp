@@ -101,9 +101,10 @@ void ez_skills_start_on_right(){
         leftElevation = -127;
     }
     eleLock.set_value(1);
+    pros::delay(500);
+    rightElevation = 0;
+    leftElevation = 0;
 }
-
-
 
 void route_match_tanner(){
     while (imu.is_calibrating()){
