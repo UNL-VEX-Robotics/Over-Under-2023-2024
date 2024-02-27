@@ -3,6 +3,7 @@
 #include "api.h"
 #include "pros/adi.hpp"
 #include "pros/apix.h"
+#include "pros/llemu.hpp"
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
@@ -16,14 +17,33 @@
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2); 
+
+int autonSelector = 0;
+bool skillsAuton = false;
+
+
+void on_center_button() { //Count Up
+	autonSelector ++; 
+	std::string ba = "" + std::to_string(autonSelector);
+	pros::lcd::set_text(3, ba);
+}
+
+void on_right_button() {
+	autonSelector --; 
+	std::string ba = "" + std::to_string(autonSelector);
+	pros::lcd::set_text(3, ba);
+}
+
+void on_left_button() {
+	skillsAuton = !skillsAuton;
+	std::string ba = "";
+	if (skillsAuton){
+		ba = "SKILLS AUTON ON";
 	}
+	else if (!skillsAuton){
+		ba = "MATCH AUTON ON";
+	}
+	pros::lcd::set_text(2, ba);
 }
 
 /**
@@ -34,8 +54,11 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "ITS GOONING TIME");
+	pros::lcd::set_text(1, "CAMEL CASE IS BETTER");
 	pros::lcd::register_btn1_cb(on_center_button);
+	pros::lcd::register_btn2_cb(on_right_button);
+	pros::lcd::register_btn0_cb(on_left_button);
+	pros::lcd::set_text(2, "MATCH AUTON ON");
 }
 
 /**
@@ -57,9 +80,6 @@ void disabled() {}
 void competition_initialize() {}
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
-
-
-pros::Imu imu(IMU);
 
 pros::Motor topLeftDrive(TOP_LEFT_DRIVE);
 pros::Motor midLeftDrive(MID_LEFT_DRIVE);
@@ -96,25 +116,12 @@ pros::ADIDigitalOut flippers(FLIPPERS);
 
 
 void autonomous() {
+
 	//route_skills_simple(45);
 	ez_skills_start_on_left();
 	
 }
 
-void leftButton(){
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::clear();
-	}
-}
-
-void rightButton(){
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-	}
-}
 
 /**
  * Runs the operator control code. This function will be started in its own task

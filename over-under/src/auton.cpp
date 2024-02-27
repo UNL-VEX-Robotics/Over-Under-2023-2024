@@ -19,7 +19,7 @@ using namespace pros;
 const int circum = wheel_radius*2*M_PI;
 
 Imu imu(IMU);
-pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
+pros::ADIDigitalOut lock(ELEVATION_LOCK);
 
 pros::Motor lf(TOP_LEFT_DRIVE);
 pros::Motor lm(MID_LEFT_DRIVE);
@@ -531,7 +531,7 @@ void ez_skills_start_on_left(){
         rele = -127;
         lele = -127;
     }
-    eleLock.set_value(1);
+    lock.set_value(1);
 }
 
 void ez_skills_start_on_right(){
@@ -560,7 +560,7 @@ void ez_skills_start_on_right(){
         rele = -127;
         lele = -127;
     }
-    eleLock.set_value(1);
+    lock.set_value(1);
 }
 
 
