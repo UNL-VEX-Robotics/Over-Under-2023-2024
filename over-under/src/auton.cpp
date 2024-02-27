@@ -16,10 +16,10 @@
 
 using namespace pros;
 
-const int circum = wheel_radius*2*M_PI;
+const int circum = wheel_radius * 2 * M_PI;
 
 Imu imu(IMU);
-pros::ADIDigitalOut lock(ELEVATION_LOCK);
+pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
 
 pros::Motor lf(TOP_LEFT_DRIVE);
 pros::Motor lm(MID_LEFT_DRIVE);
@@ -38,6 +38,7 @@ pros::Motor rb(BOT_RIGHT_DRIVE);
 //straight params
 int tick_margin = 15;
 int integral_max_error_s= 1000;
+//PID values for when we are moving straight
 float Kps = 0.225;
 float Kis = 0.01;
 float Kds = 0;
@@ -45,6 +46,7 @@ float Kds = 0;
 //turning params
 int degree_margin = 1;
 int integral_max_error_t = 14;
+//PID values for when we are turning
 float Kpt = 1.1;
 float Kit = 0.00001;
 float Kdt = 0;
@@ -113,6 +115,33 @@ void shoot(int num){
     pros::delay(500);
 }
 
+double calculateDrivetrainVoltage(double& encoder_units, double error, double PID_Integral, double PID_Derivative){
+    double prevError = error;
+    error = encoder_units - (lf.get_position() + lm.get_position() + rb.get_position()) / 3.0; 
+
+    //if each iteration of the loop doesn't take a uniform amount of time, derivative and integral calculations need
+    //to consider time.
+    PID_Derivative = error - prevError;
+    if(abs(error) > integral_max_error_s){
+        PID_Integral = integral_max_error_s;
+    }
+    else {
+        PID_Integral += Kis * error;
+    }
+    double voltage = Kps * error + Kis * PID_Integral + Kds * PID_Derivative; //error is the proportional factor of the PID calculation
+    return voltage;
+}
+
+double constrainVoltage(double voltage, int i){
+    //keeps voltage <= 127, and gives a continuous ramping effect
+    //TODO: make the ramping scale factor a variable t rather than just a magic number
+    if(voltage > 127){
+        double x = 127.0 * (i+100)/25000;
+        return x > 127 ? 127 : x;
+    }
+    return voltage;
+}
+
 void push(double inches){
     double start = pros::millis();
     double now = pros::millis(); 
@@ -122,55 +151,22 @@ void push(double inches){
     int i = 0;
     double left_error = encoder_units;
     double right_error = encoder_units;
-    double prev_left_error = left_error;
-    double prev_right_error = right_error;
     double left_integral = 0;
     double right_integral = 0;
     double left_derivative = 0;
     double right_derivative = 0;
-
     double left_voltage = 0;
     double right_voltage = 0;
     while(( abs(left_error) > tick_margin ) && (abs(right_error) > tick_margin )){ 
-        prev_left_error = left_error;
-        prev_right_error = right_error;
-        left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
-        right_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
+        left_voltage = calculateDrivetrainVoltage(encoder_units, left_error, left_integral, left_derivative);
+        right_voltage = calculateDrivetrainVoltage(encoder_units, right_error, right_integral, right_derivative);
+        set_left_voltage(constrainVoltage(left_voltage, i));
+        set_right_voltage(constrainVoltage(right_voltage, i));
 
-        //if each iteration of the loop doesn't take a uniform amount of time, derivative and integral calculations need
-        //to consider time
-        left_derivative = left_error - prev_left_error;
-        right_derivative = right_error - prev_right_error;
-
-        if(abs(left_error) > integral_max_error_s){
-            left_integral = integral_max_error_s; 
-        } else {
-            left_integral = left_integral + Kis * left_error;
-        }
-        if(abs(right_error) > integral_max_error_s){
-            right_integral = integral_max_error_s;
-        } else {
-            right_integral = right_integral + Kis * right_error;
-        }
-        
-        left_voltage = Kps * left_error + Kis * left_integral + Kds * left_derivative;
-        right_voltage = Kps * right_error + Kis * right_integral + Kds * right_derivative;
-        if(left_voltage > 127){
-            double x = 127.0 * (i+100)/25000;
-            set_left_voltage(x > 127 ? 127 : x);
-        } else{
-            set_left_voltage(left_voltage);
-        }
-        if(right_voltage > 127) {
-            double x = 127.0 * (i+100)/25000;
-            set_right_voltage(x > 127 ? 127 : x);
-        } else {
-            set_right_voltage(right_voltage);
-        }
-
-        if(i % 5000 == 0){
+        if(i % 5000 == 0){ 
+            //TODO: will this act as intended if each iteration of the while loop takes longer than 1 millisecond? If it is shorter, it will take 10000 iterations to to the timeout
             now = pros::millis();
-            if(now - start > 5*1000){
+            if(now - start > 5*1000){  //after 5 seconds
                 left_error = 0;
                 right_error = 0;
                 set_all_voltage(0);
@@ -193,8 +189,6 @@ void go(double inches){
     int i = 0;
     double left_error = encoder_units;
     double right_error = encoder_units;
-    double prev_left_error = left_error;
-    double prev_right_error = right_error;
     double left_integral = 0;
     double right_integral = 0;
     double left_derivative = 0;
@@ -202,45 +196,12 @@ void go(double inches){
 
     double left_voltage = 0;
     double right_voltage = 0;
-    while(( abs(left_error) > tick_margin ) && (abs(right_error) > tick_margin )){ 
-        prev_left_error = left_error;
-        prev_right_error = right_error;
-        left_error = encoder_units - (lf.get_position() + lm.get_position() + lb.get_position()) / 3.0;
-        right_error = encoder_units - (rf.get_position() + rm.get_position() + rb.get_position()) / 3.0;
-
-        //if each iteration of the loop doesn't take a uniform amount of time, derivative and integral calculations need
-        //to consider time
-        left_derivative = left_error - prev_left_error;
-        right_derivative = right_error - prev_right_error;
-
-        if(abs(left_error) > integral_max_error_s){
-            left_integral = integral_max_error_s; 
-        } else {
-            left_integral = left_integral + Kis * left_error;
-        }
-        if(abs(right_error) > integral_max_error_s){
-            right_integral = integral_max_error_s;
-        } else {
-            right_integral = right_integral + Kis * right_error;
-        }
-        
-        left_voltage = Kps * left_error + Kis * left_integral + Kds * left_derivative;
-        right_voltage = Kps * right_error + Kis * right_integral + Kds * right_derivative;
-        if(left_voltage > 127){
-            double x = 127.0 * (i+100)/25000;
-            set_left_voltage(x > 127 ? 127 : x);
-        } else{
-            set_left_voltage(left_voltage);
-        }
-        if(right_voltage > 127) {
-            double x = 127.0 * (i+100)/25000;
-            set_right_voltage(x > 127 ? 127 : x);
-        } else {
-            set_right_voltage(right_voltage);
-        }
-
+    while(( abs(left_error) > tick_margin ) || (abs(right_error) > tick_margin )){ 
+        left_voltage = calculateDrivetrainVoltage(encoder_units, left_error, left_integral, left_derivative);
+        right_voltage = calculateDrivetrainVoltage(encoder_units, right_error, right_integral, right_derivative);
+        set_left_voltage(constrainVoltage(left_voltage, i));
+        set_right_voltage(constrainVoltage(right_voltage, i));
         if(i % 5000 == 0){
-           
             std::cout << "\n   L: ";
             std::cout << left_error;
             std::cout << "   R: ";
@@ -248,7 +209,6 @@ void go(double inches){
             std::cout <<"\n";
         }
         i++;
-
     }
 }
 
@@ -531,7 +491,7 @@ void ez_skills_start_on_left(){
         rele = -127;
         lele = -127;
     }
-    lock.set_value(1);
+    eleLock.set_value(1);
 }
 
 void ez_skills_start_on_right(){
@@ -560,7 +520,7 @@ void ez_skills_start_on_right(){
         rele = -127;
         lele = -127;
     }
-    lock.set_value(1);
+    eleLock.set_value(1);
 }
 
 
