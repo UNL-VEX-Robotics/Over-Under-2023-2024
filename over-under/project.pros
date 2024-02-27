@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "tanner",
+    "project_name": "BigMoneBot",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -308,6 +308,10 @@
         "version": "4.8.0"
       }
     },
-    "upload_options": {}
+    "upload_options": {
+      "description": "EventSystem-Luke",
+      "slot": 3,
+      "icon": "pizza"
+    }
   }
 }
