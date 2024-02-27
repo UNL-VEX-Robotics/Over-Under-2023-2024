@@ -95,6 +95,85 @@ void shoot(int num){
     pros::delay(500);
 }
 
+class PID{
+    private: 
+        double target;
+        double* currentValue;
+        double toleranceMargin;
+        double integralMaxError;
+        double P_weight, I_weight, D_weight;
+        double error;
+        double previousError;
+        double P_value, I_value, D_value;
+        double outputLimit = INFINITY;
+
+        //set the distance from the intended value
+        void updateCurrentError(){
+            previousError = error;
+            error = target - *currentValue;
+        }
+    public:
+        //P stands for Proportional. How big of changes should we make? Is it going far enough?
+        //I stands for Integral. Ajust this if error isn't being compensated for over time. Helps prevent oscillations.
+        //D stands for Derivative. Adjust this if the values aren't changing fast enough.
+        PID(double& currentValue, double targetValue){
+            this->currentValue = &currentValue; //passes by reference, so we don't need to update this value later. TODO: test if this works as expected
+            this->target = targetValue;
+            this->error = targetValue - currentValue;
+            this->previousError = error;
+            this->P_weight = 1;
+            this->I_weight = 0;
+            this->D_weight = 0;
+            this->toleranceMargin = 0;
+            this->integralMaxError = INFINITY;
+        }
+
+        PID(double& currentValue, double targetValue, double P_weight, double I_weight, double D_weight, double margin, double integralMaxError){
+            this->currentValue = &currentValue;
+            this->target = targetValue;
+            this->error = targetValue - currentValue;
+            this->P_weight = P_weight;
+            this->I_weight = I_weight;
+            this->D_weight = D_weight;
+            this->toleranceMargin = margin;
+            this->integralMaxError = integralMaxError;
+        }
+
+        //Should only be used when reassigning the source of the current value. The pointer handles reassigning the currentValue updates
+        void reassignCurrentValue(double& valueAddress){
+            currentValue = &valueAddress; //currentValue is a pointer too the address of valueAddress
+            error = target - *currentValue; //target - the value of currentValue
+        }
+
+        void tune(double p, double i, double d){
+            P_weight = p;
+            I_weight = i;
+            D_weight = d;
+        }
+
+        void limit(double value){
+            outputLimit = value;
+        }
+        
+        //any error smaller than the margin is considered negligeable.
+        void setMargin(double margin){
+            this->toleranceMargin = margin;
+        }
+
+        double getNextValue(double ){
+            updateCurrentError();
+            double P_value = error;
+            double I_value;
+            double D_value = error - previousError;
+    
+            I_value += I_weight * error;
+            I_value = fmin(abs(I_value), integralMaxError);
+            double output = P_weight * P_value + I_weight * I_value + D_weight * D_value;
+            //if the magnitude of the output is negligeable, return zero. Else, return output, but cappeed at outputLimit.
+            return abs(output) < toleranceMargin ? 0 : fmin(output, outputLimit); //POSSIBLE BUG: negative outputs are not limited
+        }
+};
+
 double calculateDrivetrainVoltage(double error, double previousError, double PID_Integral, double PID_Derivative){
     //if each iteration of the loop doesn't take a uniform amount of time, derivative and integral calculations need to consider time.
     PID_Derivative = error - previousError;
@@ -122,7 +201,7 @@ void push(double inches){
     double start = pros::millis();
     double now = pros::millis(); 
     double revolutions = inches / circum;
-    double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev;
+    double encoder_units = 10.0/6.0 * revolutions * blue_ticks_per_rev; //TODO: is 10.0/6.0 the gear ratio? define this as a variable
     reset_motors();
     int i = 0;
     double left_error = encoder_units;
