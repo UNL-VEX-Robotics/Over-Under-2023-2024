@@ -169,55 +169,29 @@ void elevate(){
 	}
 }
 
-bool isOnFor = false;
-bool isOnRev = false;
+bool intakeSpinningForward = false;
+bool intakeSpinningReverse = false;
 void intake_func(){
-     if(master.get_digital_new_press(DIGITAL_R1)){
-        isOnFor = !isOnFor;
-        isOnRev = false;
-    }else if(master.get_digital_new_press(DIGITAL_R2)){
-        isOnFor = false;
-        isOnRev = !isOnRev;
-    }
-    if (isOnFor){
-        intake = 127;
-    }
-    if (isOnRev){
-        intake = -127;
-    }
-    if(!isOnFor && !isOnRev){
-        intake = 0;
-    }
-}
 
-//Old Code for the Intake keep incase Tanner wants it like this
-/*
-bool direction = true; //True = Forward, False = Reverse
-bool isOn = false;
-void intake_func(){
-	if(master.get_digital_new_press(DIGITAL_L2)){
-		direction = !direction;
-	}
-	if(master.get_digital_new_press(DIGITAL_L1)){
-		isOn = !isOn;
-	}
-	if(isOn){
-		if(direction){
-			intake = 127;
-		}
-		else if(!direction){
-			intake = -127;
-		}
-	}
-	else{
-		intake.brake();
-	}
+
+    if(master.get_digital_new_press(DIGITAL_R1)){ //on spin-forward-button pressed
+        intakeSpinningForward = !intakeSpinningForward;
+    }
+	if(master.get_digital_new_press(DIGITAL_R2)){ //on spin-reverse-button pressed
+        intakeSpinningReverse = !intakeSpinningReverse;
+    }
+    if (intakeSpinningForward && intakeSpinningReverse){ // handles the case where both forward and backward are true.
+		//This isn't entirely necessary, but without it the button presses won't feel as intuitive.
+		intakeSpinningForward = false; 
+		intakeSpinningReverse = false;
+    }
+	//set intake motor speed to 127 if in forward mode, -127 if in reverse mode, and 0 if both false or both true
+	intake = 127 * intakeSpinningForward + -127 * intakeSpinningReverse;
 }
-*/
 
 //Flippers Buttons: R2 to Deploy and Pull Back
 bool flipperToggle = false;
-void actiavteFlippers(){
+void activteFlippers(){
 	if(master.get_digital_new_press(DIGITAL_Y)){
 		flipperToggle = !flipperToggle;
 		flippers.set_value(flipperToggle);
@@ -251,14 +225,9 @@ void flywheelRun(){
 	if(master.get_digital_new_press(DIGITAL_X)){
 		isFlyOn = !isFlyOn;
 	}
-	if(isFlyOn){
-		flywheelL = 127;
-		flywheelR = 127;
-	}
-	else if(!isFlyOn){
-		flywheelL = 0;
-		flywheelR = 0;
-	}
+	//if flyweel is on, set both motors to 127, else set to zero
+	flywheelL = 127 * isFlyOn;
+	flywheelR = 127 * isFlyOn;
 }
 
 //Toggle to Set Wheels at Brake Type hold
@@ -275,7 +244,7 @@ void wheelsBrake(){
 		midRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 		botRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	}
-	else if(!isWheelsBrake){
+	else{
 		topLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 		midLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 		botLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
@@ -319,7 +288,7 @@ void opcontrol() {
 		intake_func();
 
 		//Flippers Button: R2
-		actiavteFlippers();
+		activteFlippers();
 
 		//Intake Activation Button: R1
 		activateIntake();
