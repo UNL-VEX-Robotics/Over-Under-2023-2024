@@ -1,17 +1,11 @@
 #include "main.h"
-#include <chrono>
 #include "global_defs.h"
-#include "pros/imu.h"
 #include "pros/imu.hpp"
-#include "pros/llemu.hpp"
-#include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "auton.h"
-#include "pros/rtos.h"
 #include <cmath>
-#include <string>
+#include <iostream>
 #include <math.h>
-#include <list>
 #include <sys/_stdint.h>
 
 using namespace pros;
