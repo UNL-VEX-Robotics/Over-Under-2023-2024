@@ -73,27 +73,6 @@ void disabled() {}
  */
 void competition_initialize() {}
 
-pros::Controller master(pros::E_CONTROLLER_MASTER);
-
-pros::Motor topLeftDrive(TOP_LEFT_DRIVE);
-pros::Motor midLeftDrive(MID_LEFT_DRIVE);
-pros::Motor botLeftDrive(BOT_LEFT_DRIVE);
-
-pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
-pros::Motor midRightDrive(MID_RIGHT_DRIVE);
-pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
-
-pros::Motor intake(INTAKE, pros::E_MOTOR_GEAR_BLUE);
-
-pros::Motor rightElevation(RIGHT_ELEVATION);
-pros::Motor leftElevation(LEFT_ELEVATION);
-
-pros::Motor flyl(FLYWHEELL);
-pros::Motor flyr(FLYWHEELR);
-pros::ADIDigitalOut intakePneu(INTAKE_PNEU);
-pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
-pros::ADIDigitalOut flippers(FLIPPERS);
-
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -107,7 +86,6 @@ pros::ADIDigitalOut flippers(FLIPPERS);
  */
 
 void autonomous() {
-	route_match_drew();
 }
 
 void leftButton(){
@@ -256,10 +234,10 @@ void flywheelRun(){
 		isFlyOn = !isFlyOn;
 	}
 	if(isFlyOn){
-		flyl = 127;
+		leftFly = 127;
 	}
 	else {
-		flyl = 0;
+		rightFly = 0;
 	}
 }
 

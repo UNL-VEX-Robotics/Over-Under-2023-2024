@@ -1,3 +1,9 @@
+#include "auton.h"
+#include "pros/adi.hpp"
+#include "pros/imu.hpp"
+#include "pros/misc.hpp"
+#include "pros/motors.hpp"
+
 #define TOP_LEFT_DRIVE 16 
 #define MID_LEFT_DRIVE -8 
 #define BOT_LEFT_DRIVE -7 
@@ -20,9 +26,33 @@
 
 #define IMU 20
 
-const float wheel_radius = 1.625;
-const float encoder_wheel_radius = 2.75;
+extern pros::Controller master;
 
-const int blue_ticks_per_rev = 300;
-const int green_ticks_per_rev = 900;
-const int red_ticks_per_rev = 1800;
+extern pros::Motor topLeftDrive;
+extern pros::Motor midLeftDrive;
+extern pros::Motor botLeftDrive;
+
+extern pros::Motor midRightDrive;
+extern pros::Motor botRightDrive;
+extern pros::Motor topRightDrive;
+
+extern pros::Motor intake;
+extern pros::Imu imu;
+
+extern pros::Motor rightElevation;
+extern pros::Motor leftElevation;
+
+extern pros::Motor leftFly;
+extern pros::Motor rightFly;
+
+extern pros::ADIDigitalOut flippers;
+extern pros::ADIDigitalOut eleLock;
+extern pros::ADIDigitalOut intakePneu;
+extern pros::ADIDigitalOut eleLock;
+
+extern float wheel_radius;
+extern float encoder_wheel_radius;
+
+extern int blue_ticks_per_rev;
+extern int green_ticks_per_rev;
+extern int red_ticks_per_rev;
