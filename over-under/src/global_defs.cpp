@@ -1,11 +1,7 @@
-
-#include "api.h"
 #include "pros/adi.hpp"
-#include "pros/apix.h"
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
-#include "pros/rtos.hpp"
 #include "global_defs.h"
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);

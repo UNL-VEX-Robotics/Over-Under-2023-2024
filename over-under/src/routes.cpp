@@ -1,15 +1,7 @@
-#include "main.h"
-#include <chrono>
 #include "global_defs.h"
-#include "pros/imu.h"
 #include "pros/imu.hpp"
-#include "pros/llemu.hpp"
-#include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "auton.h"
-#include "pros/rtos.h"
-#include <string>
-#include <math.h>
 
 void route_skills(double start_heading){
     int i = 0;

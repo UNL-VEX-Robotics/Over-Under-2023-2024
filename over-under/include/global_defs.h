@@ -1,13 +1,8 @@
-#include "main.h"
 #include "auton.h"
-#include "api.h"
 #include "pros/adi.hpp"
-#include "pros/apix.h"
-#include "pros/misc.h"
-#include "pros/motors.h"
+#include "pros/imu.hpp"
+#include "pros/misc.hpp"
 #include "pros/motors.hpp"
-#include "pros/rtos.hpp"
-#include <string>
 
 #define TOP_LEFT_DRIVE 8
 #define MID_LEFT_DRIVE -20
