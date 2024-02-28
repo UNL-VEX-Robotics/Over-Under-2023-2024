@@ -16,7 +16,7 @@ void shoot(int num){
     pros::delay(500);
 }
 
-void route_skills(double start_heading){
+void skills(double start_heading){
     int i = 0;
     shoot(5);
     while (imu.is_calibrating()){
@@ -111,7 +111,7 @@ void ez_skills_start_on_right(){
     leftElevation = 0;
 }
 
-void route_match_tanner(){
+void match_tanner(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
@@ -133,7 +133,7 @@ void route_match_tanner(){
     go(18);
 }
 
-void route_match_drew(){
+void match_drew(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
