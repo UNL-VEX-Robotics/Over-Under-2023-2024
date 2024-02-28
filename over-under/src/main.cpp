@@ -54,12 +54,10 @@ void on_left_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "CAMEL CASE IS BETTER");
-	pros::lcd::register_btn1_cb(on_center_button);
-	pros::lcd::register_btn2_cb(on_right_button);
-	pros::lcd::register_btn0_cb(on_left_button);
-	pros::lcd::set_text(2, "MATCH AUTON ON");
-}
+	pros::lcd::set_text(1, "ACTIVELY JELQUING");
+	pros::lcd::register_btn1_cb(on_center_button); //On Center Cortex Button
+	pros::lcd::register_btn2_cb(on_right_button);  //On Right Cortex Button
+	pros::lcd::register_btn0_cb(on_left_button);}  //On Left Cortex Button
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -147,8 +145,6 @@ void elevate(){
 bool intakeSpinningForward = false;
 bool intakeSpinningReverse = false;
 void intake_func(){
-
-
     if(master.get_digital_new_press(DIGITAL_R1)){ //on spin-forward-button pressed
         intakeSpinningForward = !intakeSpinningForward;
     }
@@ -255,7 +251,6 @@ void opcontrol() {
 	while (true) {
 		//Tank Drive Code Sticks
 		moveDrive();
-
 		//Elevation Button: X for up,  B for down
 		elevate();
 
