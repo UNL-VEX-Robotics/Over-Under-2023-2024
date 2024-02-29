@@ -22,6 +22,54 @@ void shoot(int num){
     pros::delay(500);
 }
 
+void intake_in(int time){
+    intakeRight = 127;
+    intakeLeft = 127;
+    pros::delay(time);
+    intakeRight = 0;
+    intakeLeft = 0;
+}
+
+void intake_out(int time){
+    intakeRight = -127;
+    intakeLeft = -127;
+    pros::delay(time);
+    intakeRight = 0;
+    intakeLeft = 0;
+}
+
+void flywheel_in(int time){
+    leftFly = 127;
+    rightFly = -127;
+    pros::delay(time);
+    leftFly = 0;
+    rightFly = 0;
+}
+
+void flywheel_out(int time){
+    leftFly = -127;
+    rightFly = 127;
+    pros::delay(time);
+    leftFly = 0;
+    rightFly = 0;
+}
+
+void elevate_up(int time){
+    leftElevation = 100;
+    rightElevation = 100;
+    pros::delay(time);
+    leftElevation = 0;
+    rightElevation = 0;
+}
+
+void elevate_down(int time){
+    leftElevation = -100;
+    rightElevation = -100;
+    pros::delay(time);
+    leftElevation = 0;
+    rightElevation = 0;
+}
+
 void route_skills(double start_heading){
     int i = 0;
     shoot(5);
