@@ -322,6 +322,7 @@ void turn_left_relative_debug(double degrees){
 
 //Turns the robot to the given heading
 void turn(double degrees){
+    degrees = convert(degrees);
     int start_heading = imu.get_heading(); 
     //right range = start +1, start + 180 % 360
     //left range = start -1, start - 180 % 360

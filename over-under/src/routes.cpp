@@ -6,6 +6,7 @@
 void shoot(int num){
     intake = 127;
     leftFly = -127;
+    rightFly = -127;
     for(int i=0; i < num; i++){
         intakePneu.set_value(1);
         pros::delay(600);
@@ -13,6 +14,9 @@ void shoot(int num){
         pros::delay(1000);
     }
     intakePneu.set_value(0);
+    intake = 0;
+    leftFly = 0;
+    rightFly = 0;
     pros::delay(500);
 }
 
@@ -173,4 +177,92 @@ void match_drew(){
     intakePneu.set_value(0);
     pros::delay(1000);
     go(-28);
+}
+
+void full_skills_route_part1(){
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    imu.set_heading(convert(135));
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    shoot(22);
+    go(-6);
+    turn(45);
+    go(24);
+    turn(0);
+    intakePneu.set_value(true);
+    go(72);
+    intakePneu.set_value(false);
+    turn(315);
+}
+
+void full_skills_route_part2(){
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    imu.set_heading(convert(315));
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    flippers.set_value(true);
+    go(24);
+    turn(270);
+    go(24);
+    go(-12);
+    go(16);
+    go(-12);
+    flippers.set_value(false);
+    turn(180);
+    flippers.set_value(true);
+    go(24);
+}
+
+void full_skills_route_part3(){
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    imu.set_heading(convert(180));
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    turn(225);
+    go(24);
+    turn(0);
+    go(36);
+    go(-12);
+    flippers.set_value(false);
+    turn(200);
+    go(36);
+    turn(0);
+    flippers.set_value(true);
+    go(36);
+    go(-12);
+    flippers.set_value(false);
+    turn(100);
+}
+
+void full_skills_route_part4(){
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    imu.set_heading(convert(100));
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    go(72);
+    turn(180);
+    rightElevation = 100;
+    leftElevation = 100;
+    pros::delay(2000);
+    intakePneu.set_value(true);
+    go(24);
+    eleLock.set_value(true);
+    rightElevation = -100;
+    leftElevation = -100;
+    pros::delay(2000);
+    rightElevation = 0;
+    leftElevation = 0;
+    intakePneu.set_value(false);
 }
