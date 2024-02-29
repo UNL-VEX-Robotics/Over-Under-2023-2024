@@ -56,7 +56,8 @@ void intake_func(){
 		intakeSpinningReverse = false;
     }
 	//set intake motor speed to 127 if in forward mode, -127 if in reverse mode, and 0 if both false or both true
-	intake = 127 * intakeSpinningForward + -127 * intakeSpinningReverse;
+	intakeRight = 127 * intakeSpinningForward + -127 * intakeSpinningReverse;
+	intakeLeft = -127 * intakeSpinningForward + 127 * intakeSpinningReverse;
 }
 
 //Flippers Buttons: R2 to Deploy and Pull Back

@@ -77,19 +77,6 @@ int convert(int degrees){
 	return degrees + 23;
 }
 
-void shoot(int num){
-    intake = 127;
-    leftFly = -127;
-    for(int i=0; i < num; i++){
-        intakePneu.set_value(1);
-        pros::delay(600);
-        intakePneu.set_value(0);
-        pros::delay(1000);
-    }
-    intakePneu.set_value(0);
-    pros::delay(500);
-}
-
 double calculateDrivetrainVoltage(double error, double previousError, double PID_Integral, double PID_Derivative){
     //if each iteration of the loop doesn't take a uniform amount of time, derivative and integral calculations need to consider time.
     PID_Derivative = error - previousError;
@@ -335,6 +322,7 @@ void turn_left_relative_debug(double degrees){
 
 //Turns the robot to the given heading
 void turn(double degrees){
+    degrees = convert(degrees);
     int start_heading = imu.get_heading(); 
     //right range = start +1, start + 180 % 360
     //left range = start -1, start - 180 % 360

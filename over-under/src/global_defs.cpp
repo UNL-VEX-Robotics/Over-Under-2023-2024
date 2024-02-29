@@ -14,7 +14,8 @@ pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
 pros::Motor midRightDrive(MID_RIGHT_DRIVE);
 pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
 
-pros::Motor intake(INTAKE, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor intakeRight(RIGHT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor intakeLeft(LEFT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
 pros::Imu imu(IMU);
 
 pros::Motor rightElevation(RIGHT_ELEVATION);

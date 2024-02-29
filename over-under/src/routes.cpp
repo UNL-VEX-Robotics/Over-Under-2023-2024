@@ -3,6 +3,25 @@
 #include "pros/motors.hpp"
 #include "auton.h"
 
+void shoot(int num){
+    intakeRight = 127;
+    intakeLeft = 127;
+    leftFly = -127;
+    rightFly = 127;
+    for(int i=0; i < num; i++){
+        intakePneu.set_value(1);
+        pros::delay(600);
+        intakePneu.set_value(0);
+        pros::delay(1000);
+    }
+    intakePneu.set_value(0);
+    leftFly = 0;
+    rightFly = 0;
+    intakeRight = 0;
+    intakeLeft = 0;
+    pros::delay(500);
+}
+
 void route_skills(double start_heading){
     int i = 0;
     shoot(5);
@@ -128,21 +147,25 @@ void route_match_drew(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    intake = 127;
+    intakeRight = 127;
+    intakeLeft = -127;
     pros::delay(500);
     intakePneu.set_value(1);
     pros::delay(500);
     pros::delay(500);
     intakePneu.set_value(0);
-    intake = 0;
+    intakeRight = 0;
+    intakeLeft = 0;
     pros::delay(500);
     go(-1);
     turn(convert(260));
     leftFly=-100;
-    intake=-100;
+    intakeRight = -100;
+    intakeLeft = 100;
     pros::delay(1000);
     leftFly=0;
-    intake=0;
+    intakeRight = 0;
+    intakeLeft = 0;
     turn(convert(85));
     go(-20);
     go(12);

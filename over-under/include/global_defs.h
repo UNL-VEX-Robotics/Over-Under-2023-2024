@@ -12,14 +12,16 @@
 #define MID_RIGHT_DRIVE 3
 #define BOT_RIGHT_DRIVE 17
 
-#define INTAKE 11
+#define RIGHT_INTAKE 2
+#define LEFT_INTAKE 13
+
 #define IMU 13
 
 #define RIGHT_ELEVATION -10
 #define LEFT_ELEVATION 4
 
 #define FLYWHEEL_L 6
-#define FLYWHEEL_R -1
+#define FLYWHEEL_R -11
 
 #define INTAKE_PNEU 'B'
 #define ELEVATION_LOCK 'C'
@@ -35,7 +37,8 @@ extern pros::Motor midRightDrive;
 extern pros::Motor botRightDrive;
 extern pros::Motor topRightDrive;
 
-extern pros::Motor intake;
+extern pros::Motor intakeRight;
+extern pros::Motor intakeLeft;
 extern pros::Imu imu;
 
 extern pros::Motor rightElevation;

@@ -2,8 +2,6 @@ void turn(double degrees);
 void go(double inches);
 double convert(double degrees);
 
-void shoot(int num);
-
 void reset_positions();
 void set_all_voltage(int voltage);
 void set_left_voltage(float voltage);
