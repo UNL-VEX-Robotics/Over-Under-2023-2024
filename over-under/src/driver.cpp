@@ -72,14 +72,17 @@ void intake_func(){
 	}
 	if(isOn){
 		if(direction){
-			intake = 127;
+			intakeRight = 127;
+			intakeLeft = -127;
 		}
 		else if(!direction){
-			intake = -127;
+			intakeRight = -127;
+			intakeLeft = -127;
 		}
 	}
 	else{
-		intake.brake();
+		intakeRight.brake();
+		intakeLeft.brake();
 	}
 }
 
