@@ -12,7 +12,8 @@
 #define MID_RIGHT_DRIVE 4
 #define BOT_RIGHT_DRIVE 5
 
-#define INTAKE 19
+#define RIGHT_INTAKE 19
+#define LEFT_INTAKE 13
 
 #define RIGHT_ELEVATION -2
 #define LEFT_ELEVATION 6
@@ -36,7 +37,8 @@ extern pros::Motor midRightDrive;
 extern pros::Motor botRightDrive;
 extern pros::Motor topRightDrive;
 
-extern pros::Motor intake;
+extern pros::Motor intakeRight;
+extern pros::Motor intakeLeft;
 extern pros::Imu imu;
 
 extern pros::Motor rightElevation;
