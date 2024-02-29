@@ -4,3 +4,7 @@ void match_drew();
 void match_tanner();
 void ez_skills_start_on_right();
 void ez_skills_start_on_left();
+void full_skills_route_part1();
+void full_skills_route_part2();
+void full_skills_route_part3();
+void full_skills_route_part4();

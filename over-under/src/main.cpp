@@ -1,5 +1,6 @@
 #include "main.h"
 #include "auton.h"
+#include "routes.h"
 #include "pros/llemu.hpp"
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
@@ -17,13 +18,19 @@ bool skillsAuton = false;
 
 
 void on_center_button() { //Count Up
-	autonSelector ++; 
+	autonSelector --; 
+	if(autonSelector == -1){
+		autonSelector = 3;
+	}
 	std::string ba = "" + std::to_string(autonSelector);
 	pros::lcd::set_text(3, ba);
 }
 
 void on_right_button() {
-	autonSelector --; 
+	autonSelector ++; 
+	if(autonSelector == 4){
+		autonSelector = 0;
+	}
 	std::string ba = "" + std::to_string(autonSelector);
 	pros::lcd::set_text(3, ba);
 }
@@ -84,21 +91,17 @@ void competition_initialize() {}
  */
 
 void autonomous() {
-}
-
-void leftButton(){
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::clear();
+	if(autonSelector == 0){
+		full_skills_route_part1();
 	}
-}
-
-void rightButton(){
-	static bool pressed = false;
-
-	pressed = !pressed;
-	if (pressed) {
+	else if(autonSelector == 1){
+		full_skills_route_part2();
+	}
+	else if(autonSelector == 2){
+		full_skills_route_part3();
+	}
+	else if(autonSelector == 3){
+		full_skills_route_part4();
 	}
 }
 
