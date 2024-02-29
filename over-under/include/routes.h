@@ -1,4 +1,8 @@
 void shoot(int num);
+void flywheel_in(int num);
+void flywheel_out(int num);
+void elevate_up(int num);
+void elevate_down(int num);
 void skills(double degrees);
 void match_drew();
 void match_tanner();

@@ -2,6 +2,7 @@
 #include "pros/imu.hpp"
 #include "pros/motors.hpp"
 #include "auton.h"
+#include "pros/rtos.hpp"
 
 void shoot(int num){
     intakeRight = 127;
@@ -20,6 +21,38 @@ void shoot(int num){
     leftFly = 0;
     rightFly = 0;
     pros::delay(500);
+}
+
+void flywheel_in(int time){
+    leftFly = 127;
+    rightFly = -127;
+    pros::delay(time);
+    leftFly = 0;
+    rightFly = 0;
+}
+
+void flywheel_out(int time){
+    leftFly = -127;
+    rightFly = 127;
+    pros::delay(time);
+    leftFly = 0;
+    rightFly = 0;
+}
+
+void elevate_up(int time){
+    leftElevation = 100;
+    rightElevation = 100;
+    pros::delay(time);
+    leftElevation = 0;
+    rightElevation = 0;
+}
+
+void elevate_down(int time){
+    leftElevation = -100;
+    rightElevation = -100;
+    pros::delay(time);
+    leftElevation = 0;
+    rightElevation = 0;
 }
 
 void skills(double start_heading){
@@ -51,7 +84,6 @@ void skills(double start_heading){
     turn(convert(0));
     go(3.5*12);
 }
-
 
 void ez_skills_start_on_left(){
     shoot(15);
