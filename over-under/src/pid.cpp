@@ -1,9 +1,12 @@
-#include "pid.h"
+//pid.cpp
+#include "pid.hpp"
 #include <math.h>
+
 //returns the sign of a number. Thanks Stack Overflow!
 template <typename T> int sign(T val) {
     return (T(0) < val) - (val < T(0));
 }
+
 //P stands for Proportional. How big of changes should we make? Is it going far enough?
 //I stands for Integral. Ajust this if error isn't being compensated for over time. Helps prevent oscillations.
 //D stands for Derivative. Adjust this if the values aren't changing fast enough.
@@ -15,6 +18,7 @@ PID::PID(double P_weight, double I_weight, double D_weight, double toleranceMarg
     this->D_weight = D_weight;
     this->toleranceMargin = toleranceMargin;
     this->integralMaxError = integralMaxError;
+    this->outputLimit = 127;
 }
 
 //Set distance from target value
@@ -28,6 +32,9 @@ void PID::tune(double p, double i, double d){
     D_weight = d;
 }
 
+void PID::limit(double value){
+    outputLimit = value;
+}
 
 //any error smaller than the margin is considered negligeable.
 void PID::setMargin(double margin){
@@ -42,14 +49,14 @@ void PID::reset(){
 
 double PID::getNextValue(double currentError){
     i++;
-    if(i==1){
+    if(i == 1)
         previousError = currentError;
-    }else{
+    else
         previousError = error;
-    }
     error = currentError;
-    P_value = error;
-    D_value = error - previousError;
+    double P_value = error;
+    double I_value;
+    double D_value = error - previousError;
 
     I_value += I_weight * error;
     I_value = fmin(abs(I_value), integralMaxError);

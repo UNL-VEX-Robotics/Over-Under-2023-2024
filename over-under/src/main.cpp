@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pid.hpp"
 #include "auton.h"
 #include "routes.h"
 #include "driver.h"
@@ -164,7 +165,6 @@ void opcontrol() {
 	while (true) {
 		//Tank Drive Code Sticks
 		moveDrive();
-
 		//Elevation Button: X for up,  B for down
 		elevate();
 

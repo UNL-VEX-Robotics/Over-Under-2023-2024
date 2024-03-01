@@ -1,8 +1,9 @@
+#include "auton.h"
+#include "pid.hpp"
+#include <chrono>
 #include "global_defs.h"
-#include "pid.h"
 #include "pros/imu.hpp"
 #include "pros/motors.hpp"
-#include "auton.h"
 #include <cmath>
 #include <iostream>
 #include <math.h>
@@ -10,6 +11,10 @@
 using namespace pros;
 
 const int circum = wheel_radius * 2 * M_PI;
+PID leftStraightPID = PID(0.225, 0.01, 0, 15, 1000);
+PID rightStraightPID = PID(0.225, 0.01, 0, 15, 1000);
+
+PID turnPID = PID(1.1, 0.00001, 0, 1, 14);
 
 double convert(double degrees){
     return degrees + 23;
@@ -22,31 +27,23 @@ void reset_motors(){
     topRightDrive.set_zero_position(0);
     midRightDrive.set_zero_position(0);
     botRightDrive.set_zero_position(0);
-    return;
 }
 
-void set_all_voltage(int voltage){
-    topLeftDrive = voltage;
-    midLeftDrive = voltage;
-    botLeftDrive = voltage;
-    topRightDrive = voltage;
-    midRightDrive = voltage;
-    botRightDrive = voltage;
-    return;
+void set_all_voltage(float voltage){
+    set_left_voltage(voltage);
+    set_right_voltage(voltage);
 }
 
 void set_left_voltage(float voltage){
     topLeftDrive = voltage;
     midLeftDrive = voltage;
     botLeftDrive = voltage;
-    return;
 }
 
 void set_right_voltage(float voltage){
     topRightDrive = voltage;
     midRightDrive = voltage;
     botRightDrive = voltage;
-    return;
 }
 
 
@@ -54,17 +51,29 @@ int convert(int degrees){
 	return degrees + 23;
 }
 
-double calculateRequiredPushDistance(double inches){
-    double revolutions = inches / circum;
-    return 10.0/6.0 * revolutions * blue_ticks_per_rev; 
+void shoot(int num){
+    intakeLeft = -127;
+    intakeRight = 127;
+    leftFly = -127;
+    for(int i=0; i < num; i++){
+        intakePneu.set_value(1);
+        pros::delay(600);
+        intakePneu.set_value(0);
+        pros::delay(1000);
+    }
+    intakePneu.set_value(0);
+    pros::delay(500);
 }
 
-void go(double inches, PID leftStraightPID, PID rightStraightPID){
+double calculateRequiredPushDistance(double inches){
+    double revolutions = inches / circum;
+    return 10.0/6.0 * revolutions * blue_ticks_per_rev; //TODO: is 10.0/6.0 the gear ratio? define this as a variable
+}
+
+void push(double inches){
     double now, start = pros::millis();
-    double encoder_units = calculateRequiredPushDistance(inches); 
-    leftStraightPID.reset();
-    rightStraightPID.reset();
-    reset_motors(); 
+    double encoder_units = calculateRequiredPushDistance(inches); //number of encoder units to spin until we reach our destination.
+    reset_motors(); //sets all motor encodor absolute positions to zero
     leftStraightPID.setError(encoder_units); 
     rightStraightPID.setError(encoder_units);
     double leftVoltage = 0;
@@ -85,155 +94,47 @@ void go(double inches, PID leftStraightPID, PID rightStraightPID){
         if(i % 5000 == 0){ 
             now = pros::millis();
             if(now - start > 3*1000){
+                //TODO: will this act as intended if each iteration of the while loop takes longer than 1 millisecond? If it is shorter, it will take 10000 iterations to to the timeout
                 set_all_voltage(0);
                 return;     
             }
-            std::cout << " L: ";
+            std::cout << "\nTarget: ";
+            std::cout << encoder_units;
+            std::cout << "   L: ";
             std::cout << leftPosition;
-            std::cout << " R: ";
+            std::cout << "   R: ";
             std::cout << rightPosition;
             std::cout <<"\n";
         }
+        i++;
     }
     i++;
 }
 
-void turn_right_relative_debug(double degrees, PID turnPID){
-    int i = 0;
-    double end_heading = imu.get_heading() + degrees;
-    double error = degrees;
+//clockwise is positive
+void turnRelative(double deltaTheta){
+    double initialHeading = imu.get_heading();
+    double endHeading = initialHeading + deltaTheta;
+    turnPID.setError(deltaTheta);
     double voltage = 0;
-    turnPID.reset();
-    if(end_heading >= 360){
-        while(imu.get_heading() > 10){
-            error = end_heading - imu.get_heading();
-            voltage = turnPID.getNextValue(error);
-            set_left_voltage(voltage);
-            set_right_voltage(-voltage);
-            if(i%5000 == 0){
-                std::cout << error;
-                std::cout << "  ";
-            }
-            i++;
-        }
-        end_heading -= 360;
-        while(!turnPID.isSettled()){
-            error = end_heading - imu.get_heading();
-            voltage = turnPID.getNextValue(error);
-            set_left_voltage(voltage);
-            set_right_voltage(-voltage);
-            if(i%5000 == 0){
-                std::cout << error;
-                std::cout << "  ";
-            }
-            i++;
-        }
-        return;
-    } else {
-        while(!turnPID.isSettled()){
-            error = end_heading - imu.get_heading();
-            voltage = turnPID.getNextValue(error);
-            set_left_voltage(voltage);
-            set_right_voltage(-voltage);
-            if(i%5000 == 0){
-                std::cout << error;
-                std::cout << "  ";
-            }
-            i++;
-        }
-        return;
+    double degreesTurned = 0;
+    int i = 0;
+    //This seems way too simple something aught to be wrong.
+    while(!turnPID.isSettled()){
+        degreesTurned = imu.get_heading() - initialHeading;
+        voltage = turnPID.getNextValue(degreesTurned);
+        set_right_voltage(voltage);
+        set_left_voltage(-voltage);
     }
 }
 
-void turn_left_relative_debug(double degrees, PID turnPID){
-    int i = 0;
-    double end_heading = imu.get_heading() - degrees;
-    double error = degrees;
-    double voltage = 0;
-    turnPID.reset();
-    if(end_heading < 0){
-        while(imu.get_heading() > 350){
-            error = end_heading - imu.get_heading();
-            voltage = turnPID.getNextValue(error);
-            set_left_voltage(-voltage);
-            set_right_voltage(voltage);
-            if(i%5000 == 0){
-                std::cout << error;
-                std::cout << "  ";
-            }
-            i++;
-        }
-        end_heading += 360;
-        while(!turnPID.isSettled()){
-            error = end_heading - imu.get_heading();
-            voltage = turnPID.getNextValue(error);
-            set_left_voltage(-voltage);
-            set_right_voltage(voltage);
-            if(i%5000 == 0){
-                std::cout << error;
-                std::cout << "  ";
-            }
-            i++;
-        }
-        return;
-    } else {
-        while(!turnPID.isSettled()){
-            error = end_heading - imu.get_heading();
-            voltage = turnPID.getNextValue(error);
-            set_left_voltage(-voltage);
-            set_right_voltage(voltage);
-            if(i%5000 == 0){
-                std::cout << error;
-                std::cout << "  ";
-            }
-            i++;
-        }
-        return;
-    }
-}
-
-
-//turns the robot to the given heading
-void turn(double degrees, PID turnPID){
-    degrees = convert(degrees);
-    turnPID.reset();
-    int start_heading = imu.get_heading(); 
-    //right range = start +1, start + 180 % 360
-    //left range = start -1, start - 180 % 360
-    int low_bound_right_range;
-    int high_bound_right_range;
-    if(start_heading < 180){
-        low_bound_right_range = start_heading;
-        high_bound_right_range = start_heading + 180;
-        if(degrees > low_bound_right_range && degrees < high_bound_right_range) {
-            int x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
-            std::cout << "\nright: ";
-            std::cout << x;
-            std::cout << "\n";
-            turn_right_relative_debug(x, turnPID);
-        } else {
-            int x = ((start_heading-degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
-            std::cout << "\nleft: ";
-            std::cout << x;
-            std::cout << "\n";
-            turn_left_relative_debug(x, turnPID);
-        }
-    } else {
-        low_bound_right_range = 360;
-        high_bound_right_range = start_heading - 180;
-        if(degrees > low_bound_right_range || degrees < high_bound_right_range) {
-            int x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
-            std::cout << "\nright: ";
-            std::cout << x;
-            std::cout << "\n";
-            turn_right_relative_debug(x, turnPID);
-        } else {
-            int x = ((start_heading -degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
-            std::cout << "\nleft: ";
-            std::cout << x;
-            std::cout << "\n";
-            turn_left_relative_debug(x, turnPID);
-        }
-    }    
-    return;
+//Turns the robot to the given heading
+void turnToHeading(double currentHeading, double targetHeading){
+    //TODO: make sure this turns counterclockwise when the delta_theta %360 > 180
+    //TODO: make this keep track of change in direction throughout the entire match to limit drift.
+    //currently this assumes it is exactly where we say it is, so deviations add up over time.
+    double deltaTheta = fmod(targetHeading - currentHeading, 360);
+    //If it is faster to turn counter clockwise, make deltaTheta = 360 - deltaTheta.
+    double fastestTurn = abs(deltaTheta) > 180 ? 360 - deltaTheta : deltaTheta;
+    turnRelative(fastestTurn);    
 }
