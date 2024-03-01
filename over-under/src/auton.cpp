@@ -99,6 +99,7 @@ void go(double inches, PID leftStraightPID, PID rightStraightPID){
 }
 
 void turn_right_relative_debug(double degrees, PID turnPID){
+    int i = 0;
     double end_heading = imu.get_heading() + degrees;
     double error = degrees;
     double voltage = 0;
@@ -109,6 +110,11 @@ void turn_right_relative_debug(double degrees, PID turnPID){
             voltage = turnPID.getNextValue(error);
             set_left_voltage(voltage);
             set_right_voltage(-voltage);
+            if(i%5000 == 0){
+                std::cout << error;
+                std::cout << "  ";
+            }
+            i++;
         }
         end_heading -= 360;
         while(!turnPID.isSettled()){
@@ -116,6 +122,11 @@ void turn_right_relative_debug(double degrees, PID turnPID){
             voltage = turnPID.getNextValue(error);
             set_left_voltage(voltage);
             set_right_voltage(-voltage);
+            if(i%5000 == 0){
+                std::cout << error;
+                std::cout << "  ";
+            }
+            i++;
         }
         return;
     } else {
@@ -124,12 +135,18 @@ void turn_right_relative_debug(double degrees, PID turnPID){
             voltage = turnPID.getNextValue(error);
             set_left_voltage(voltage);
             set_right_voltage(-voltage);
+            if(i%5000 == 0){
+                std::cout << error;
+                std::cout << "  ";
+            }
+            i++;
         }
         return;
     }
 }
 
 void turn_left_relative_debug(double degrees, PID turnPID){
+    int i = 0;
     double end_heading = imu.get_heading() - degrees;
     double error = degrees;
     double voltage = 0;
@@ -140,6 +157,11 @@ void turn_left_relative_debug(double degrees, PID turnPID){
             voltage = turnPID.getNextValue(error);
             set_left_voltage(voltage);
             set_right_voltage(-voltage);
+            if(i%5000 == 0){
+                std::cout << error;
+                std::cout << "  ";
+            }
+            i++;
         }
         end_heading += 360;
         while(!turnPID.isSettled()){
@@ -147,6 +169,11 @@ void turn_left_relative_debug(double degrees, PID turnPID){
             voltage = turnPID.getNextValue(error);
             set_left_voltage(voltage);
             set_right_voltage(-voltage);
+            if(i%5000 == 0){
+                std::cout << error;
+                std::cout << "  ";
+            }
+            i++;
         }
         return;
     } else {
@@ -155,6 +182,11 @@ void turn_left_relative_debug(double degrees, PID turnPID){
             voltage = turnPID.getNextValue(error);
             set_left_voltage(voltage);
             set_right_voltage(-voltage);
+            if(i%5000 == 0){
+                std::cout << error;
+                std::cout << "  ";
+            }
+            i++;
         }
         return;
     }
