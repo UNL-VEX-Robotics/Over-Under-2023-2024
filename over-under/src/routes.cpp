@@ -28,35 +28,6 @@ void shoot(int num){
     pros::delay(500);
 }
 
-void skills_start_on_right(){
-    int i = 0;
-    shoot(5);
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    imu.set_heading(convert(135));
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    go(-2, leftPID, rightPID);
-    turn(convert(0), turnPID);
-    go(7*12, leftPID, rightPID);
-    //deployFlaps();
-    turn(convert(45), turnPID);
-    go(2.25*12, leftPID, rightPID);
-    turn(convert(90), turnPID);
-    go(1.75*12, leftPID, rightPID);
-    //unDeployFlaps();
-    //reset??
-    go(-1*12, leftPID, rightPID);
-    turn(convert(180), turnPID);
-    go(4*12, leftPID, rightPID);
-    //deployFlaps();
-    turn(convert(90), turnPID);
-    go(3*12, leftPID, rightPID);
-    turn(convert(0), turnPID);
-    go(3.5*12, leftPID, rightPID);
-}
 
 void match_drew(){
     while (imu.is_calibrating()){

@@ -14,27 +14,29 @@
 
 
 int autonSelector = 0;
-bool skillsSelector = false;
+bool skillsToggle = false;
 std::list<std::tuple<std::function<void()>, std::string>> skills_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator skills_iter = skills_routes.begin();
 std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter = match_routes.begin();
 
 void route_counter_up() { 
-	if(skillsSelector){
+	if(skillsToggle){
 		if(++skills_iter == skills_routes.end()){
 			skills_iter = skills_routes.begin();
+			++skills_iter;
 		}
 	} else {
 		if(++match_iter == match_routes.end()){
 			match_iter = match_routes.begin();
+			++match_iter;
 		}
 	}
-	pros::lcd::set_text(3, (skillsSelector) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter));
+	pros::lcd::set_text(3, (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter));
 }
 
 void route_counter_down() {
-	if(skillsSelector){
+	if(skillsToggle){
 		if(--skills_iter == skills_routes.begin()){
 			skills_iter = skills_routes.end();
 		}
@@ -43,13 +45,17 @@ void route_counter_down() {
 			match_iter = match_routes.end();
 		}
 	}
-	pros::lcd::set_text(3, (skillsSelector) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter));
+	pros::lcd::set_text(3, (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter));
 }
 
 void skills_toggle() {
-	skillsSelector = !skillsSelector;
+	skillsToggle = !skillsToggle;
+	skills_iter = skills_routes.begin();
+	++skills_iter;
+	match_iter = match_routes.begin();
+	++match_iter;
 	std::string ba = "";
-	if (skillsSelector){
+	if (skillsToggle){
 		ba = "SKILLS AUTON ON";
 	}
 	else {
@@ -64,13 +70,19 @@ void skills_toggle() {
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+void dummy(){
+	return;
+}
 void initialize() {
+	skills_routes.push_back(std::make_tuple(dummy, "DUMMY"));
 	skills_routes.push_back(std::make_tuple(full_skills_route_part1, "full_skills_part_1"));
 	skills_routes.push_back(std::make_tuple(full_skills_route_part2, "full_skills_part_2"));
 	skills_routes.push_back(std::make_tuple(full_skills_route_part3, "full_skills_part_3"));
 	skills_routes.push_back(std::make_tuple(full_skills_route_part4, "full_skills_part_4"));
-	skills_routes.push_back(std::make_tuple(skills_start_on_right, "mac_skills"));
+	match_routes.push_back(std::make_tuple(dummy, "DUMMY"));
 	match_routes.push_back(std::make_tuple(match_drew, "match_drew"));
+	++skills_iter;
+	++match_iter;
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "WE RESPECT WOMEN");
 	pros::lcd::register_btn0_cb(skills_toggle);
@@ -109,7 +121,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	if(skillsSelector){
+	if(skillsToggle){
 		std::get<0>(*skills_iter)();
 	} else {
 		std::get<0>(*match_iter)();
