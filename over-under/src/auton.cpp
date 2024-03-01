@@ -9,13 +9,7 @@
 
 using namespace pros;
 
-PID leftStraightPID = PID(0.225, 0.01, 0, 15, 1000, 127);
-PID rightStraightPID = PID(0.225, 0.01, 0, 15, 1000, 127);
-
-PID turnPID = PID(1.1, 0.00001, 0, 1, 14, 127);
-
 const int circum = wheel_radius * 2 * M_PI;
-
 
 double convert(double degrees){
     return degrees + 23;
@@ -55,14 +49,6 @@ void set_right_voltage(float voltage){
     return;
 }
 
-void all_brake(){
-    topLeftDrive.brake();
-    midLeftDrive.brake();
-    botLeftDrive.brake();
-    topRightDrive.brake();
-    midRightDrive.brake();
-    botRightDrive.brake();
-}
 
 int convert(int degrees){
 	return degrees + 23;
@@ -70,13 +56,15 @@ int convert(int degrees){
 
 double calculateRequiredPushDistance(double inches){
     double revolutions = inches / circum;
-    return 10.0/6.0 * revolutions * blue_ticks_per_rev; //TODO: is 10.0/6.0 the gear ratio? define this as a variable
+    return 10.0/6.0 * revolutions * blue_ticks_per_rev; 
 }
 
-void go(double inches){
+void go(double inches, PID leftStraightPID, PID rightStraightPID){
     double now, start = pros::millis();
-    double encoder_units = calculateRequiredPushDistance(inches); //number of encoder units to spin until we reach our destination.
-    reset_motors(); //sets all motor encodor absolute positions to zero
+    double encoder_units = calculateRequiredPushDistance(inches); 
+    leftStraightPID.reset();
+    rightStraightPID.reset();
+    reset_motors(); 
     leftStraightPID.setError(encoder_units); 
     rightStraightPID.setError(encoder_units);
     double leftVoltage = 0;
@@ -96,7 +84,7 @@ void go(double inches){
         //exit the push function after 5 seconds.
         if(i % 5000 == 0){ 
             now = pros::millis();
-            if(now - start > 5*1000){
+            if(now - start > 3*1000){
                 set_all_voltage(0);
                 return;     
             }
@@ -110,184 +98,73 @@ void go(double inches){
     i++;
 }
 
-
-void turn_right_relative_debug(double degrees){
-    double end_heading = degrees + imu.get_heading();
+void turn_right_relative_debug(double degrees, PID turnPID){
+    double end_heading = imu.get_heading() + degrees;
     double error = degrees;
-    double prev_error = 0;
-    double integral = 0;
-    double derivative = 0;
     double voltage = 0;
-    int i = 0;
+    turnPID.reset();
     if(end_heading >= 360){
-        while(imu.get_heading() > 15){
-            prev_error = error;
+        while(imu.get_heading() > 10){
             error = end_heading - imu.get_heading();
-            if(abs(error) > integral_max_error_t){
-                integral = 0;
-            } else {
-                integral = integral + error;
-            }
-            derivative = error - prev_error;
-            voltage = Kpt * error + Kit * integral + Kdt * derivative;
-            if(voltage > 127){
-                set_left_voltage(127);
-                set_right_voltage(-127);
-            } else {
-                set_left_voltage(voltage);
-                set_right_voltage(-voltage);
-            }
-            if(i%5000 == 0){
-                std::cout << error;
-                std::cout << "  ";
-            }
-            i++;
-        }
-        std::cout << "\nflipped to 0\n";
-        end_heading-=360;
-        error = end_heading - imu.get_heading();
-        int i = 0;
-        while(abs(error) > degree_margin){
-            prev_error = error;
-            error = end_heading - imu.get_heading();
-            if(abs(error) > integral_max_error_t){
-                integral = 0;
-            } else {
-                integral = integral + error;
-            }
-            derivative = error - prev_error;
-            voltage = Kpt * error + Kit * integral + Kdt * derivative;
-            if(voltage > 127){
-                set_left_voltage(127);
-                set_right_voltage(-127);
-            } else {
-                set_left_voltage(voltage);
-                set_right_voltage(-voltage);
-            }
-            if(i%5000 == 0){
-                std::cout << error;
-                std::cout << "  ";
-            }
-            i++;
-        }
-        return;
-    }
-    while(abs(error) > degree_margin){
-        prev_error = error;
-        error = end_heading - imu.get_heading();
-        if(abs(error) > integral_max_error_t){
-            integral = 0;
-        } else {
-            integral = integral + error;
-        }
-        derivative = error - prev_error;
-        voltage = Kpt * error + Kit * integral + Kdt * derivative;
-        if(voltage > 127){
-            set_left_voltage(127);
-            set_right_voltage(-127);
-        } else {
+            voltage = turnPID.getNextValue(error);
             set_left_voltage(voltage);
             set_right_voltage(-voltage);
         }
-        if(i%5000 == 0){
-            std::cout << error;
-            std::cout << "  ";
-        }
-        i++;
-    }
-    return;
-}
-
-void turn_left_relative_debug(double degrees){
-    double end_heading = imu.get_heading() - degrees;
-    double prev_error = 0;
-    double error = degrees;
-    double integral = 0;
-    double derivative = 0;
-    double voltage = 0;
-    int i = 0;
-    if(end_heading < 0){
-         while(imu.get_heading() < 345){
-            prev_error = error;
-            error = imu.get_heading() - end_heading;
-            if(abs(error) > integral_max_error_t){
-                integral = 0;
-            } else {
-                integral = integral + error;
-            }
-            derivative = error - prev_error;
-            voltage = Kpt * error + Kit * integral + Kdt * derivative; 
-            if(voltage > 127){
-                set_left_voltage(-127);
-                set_right_voltage(127);
-            } else {
-                set_left_voltage(-voltage);
-                set_right_voltage(voltage);
-            }
-            if(i%5000 == 0){
-                std::cout << error;
-                std::cout << "  ";
-            }
-            i++;
-        }
-        std::cout << "\nflipped to 0\n";
-        end_heading+=360;
-        error = imu.get_heading() - end_heading;
-        while(abs(error) > degree_margin){
-            prev_error = error;
-            error = imu.get_heading() - end_heading;
-            if(abs(error) > integral_max_error_t){
-                integral = 0;
-            } else {
-                integral = integral + error;
-            }
-            derivative = error - prev_error;
-            voltage = Kpt * error + Kit * integral + Kdt * derivative; 
-            if(voltage > 127){
-                set_left_voltage(-127);
-                set_right_voltage(127);
-            } else {
-                set_left_voltage(-voltage);
-                set_right_voltage(voltage);
-            }
-            if(i%5000 == 0){
-                std::cout << error;
-                std::cout << "  ";
-            }
-            i++;
+        end_heading -= 360;
+        while(!turnPID.isSettled()){
+            error = end_heading - imu.get_heading();
+            voltage = turnPID.getNextValue(error);
+            set_left_voltage(voltage);
+            set_right_voltage(-voltage);
         }
         return;
     } else {
-        while(abs(error) > degree_margin){
-            prev_error = error;
-            error = imu.get_heading() - end_heading;
-            if(abs(error) > integral_max_error_t){
-                integral = 0;
-            } else {
-                integral = integral + error;
-            }
-            derivative = error - prev_error;
-            voltage = Kpt * error + Kit * integral + Kdt * derivative; 
-            if(voltage > 127){
-                set_left_voltage(-127);
-                set_right_voltage(127);
-            } else {
-                set_left_voltage(-voltage);
-                set_right_voltage(voltage);
-            }
-            if(i%5000 == 0){
-                std::cout << error;
-                std::cout << "  ";
-            }
-            i++;
+        while(!turnPID.isSettled()){
+            error = end_heading - imu.get_heading();
+            voltage = turnPID.getNextValue(error);
+            set_left_voltage(voltage);
+            set_right_voltage(-voltage);
         }
-    return;
+        return;
     }
 }
 
-//Turns the robot to the given heading
-void turn(double degrees){
+void turn_left_relative_debug(double degrees, PID turnPID){
+    double end_heading = imu.get_heading() - degrees;
+    double error = degrees;
+    double voltage = 0;
+    turnPID.reset();
+    if(end_heading < 0){
+        while(imu.get_heading() > 350){
+            error = end_heading - imu.get_heading();
+            voltage = turnPID.getNextValue(error);
+            set_left_voltage(voltage);
+            set_right_voltage(-voltage);
+        }
+        end_heading += 360;
+        while(!turnPID.isSettled()){
+            error = end_heading - imu.get_heading();
+            voltage = turnPID.getNextValue(error);
+            set_left_voltage(voltage);
+            set_right_voltage(-voltage);
+        }
+        return;
+    } else {
+        while(!turnPID.isSettled()){
+            error = end_heading - imu.get_heading();
+            voltage = turnPID.getNextValue(error);
+            set_left_voltage(voltage);
+            set_right_voltage(-voltage);
+        }
+        return;
+    }
+}
+
+
+//turns the robot to the given heading
+void turn(double degrees, PID turnPID){
     degrees = convert(degrees);
+    turnPID.reset();
     int start_heading = imu.get_heading(); 
     //right range = start +1, start + 180 % 360
     //left range = start -1, start - 180 % 360
@@ -299,16 +176,15 @@ void turn(double degrees){
         if(degrees > low_bound_right_range && degrees < high_bound_right_range) {
             int x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
             std::cout << "\nright: ";
-}
             std::cout << x;
             std::cout << "\n";
-            turn_right_relative_debug( x);
+            turn_right_relative_debug(x, turnPID);
         } else {
             int x = ((start_heading-degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
             std::cout << "\nleft: ";
             std::cout << x;
             std::cout << "\n";
-            turn_left_relative_debug(x);
+            turn_left_relative_debug(x, turnPID);
         }
     } else {
         low_bound_right_range = 360;
@@ -318,13 +194,13 @@ void turn(double degrees){
             std::cout << "\nright: ";
             std::cout << x;
             std::cout << "\n";
-            turn_right_relative_debug( x);
+            turn_right_relative_debug(x, turnPID);
         } else {
             int x = ((start_heading -degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
             std::cout << "\nleft: ";
             std::cout << x;
             std::cout << "\n";
-            turn_left_relative_debug(x);
+            turn_left_relative_debug(x, turnPID);
         }
     }    
     return;

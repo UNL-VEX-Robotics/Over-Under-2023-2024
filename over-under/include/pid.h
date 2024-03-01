@@ -1,4 +1,3 @@
-//pid.hpp
 #pragma once
 
 class PID{
@@ -7,9 +6,11 @@ class PID{
         void setMargin(double margin);
         void tune(double p, double i, double d);
         void setError(double value);
+        void reset();
         double getNextValue(double currentValue);
         bool isSettled();
     private:
+        int i;
         double toleranceMargin;
         double integralMaxError;
         double P_weight, I_weight, D_weight;
