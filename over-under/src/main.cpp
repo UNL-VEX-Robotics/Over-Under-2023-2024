@@ -12,12 +12,6 @@
 #include <list>
 #include <tuple>
 
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
 
 int autonSelector = 0;
 bool skillsSelector = false;
@@ -115,6 +109,11 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+	if(skillsSelector){
+		std::get<0>(*skills_iter)();
+	} else {
+		std::get<0>(*match_iter)();
+	}
 }
 
 /**
