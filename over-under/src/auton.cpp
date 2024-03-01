@@ -155,8 +155,8 @@ void turn_left_relative_debug(double degrees, PID turnPID){
         while(imu.get_heading() > 350){
             error = end_heading - imu.get_heading();
             voltage = turnPID.getNextValue(error);
-            set_left_voltage(voltage);
-            set_right_voltage(-voltage);
+            set_left_voltage(-voltage);
+            set_right_voltage(voltage);
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
@@ -167,8 +167,8 @@ void turn_left_relative_debug(double degrees, PID turnPID){
         while(!turnPID.isSettled()){
             error = end_heading - imu.get_heading();
             voltage = turnPID.getNextValue(error);
-            set_left_voltage(voltage);
-            set_right_voltage(-voltage);
+            set_left_voltage(-voltage);
+            set_right_voltage(voltage);
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
@@ -180,8 +180,8 @@ void turn_left_relative_debug(double degrees, PID turnPID){
         while(!turnPID.isSettled()){
             error = end_heading - imu.get_heading();
             voltage = turnPID.getNextValue(error);
-            set_left_voltage(voltage);
-            set_right_voltage(-voltage);
+            set_left_voltage(-voltage);
+            set_right_voltage(voltage);
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
