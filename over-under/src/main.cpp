@@ -14,11 +14,13 @@
 
 
 int autonSelector = 0;
-bool skillsToggle = false;
-std::list<std::tuple<std::function<void()>, std::string>> skills_routes;
-std::list<std::tuple<std::function<void()>, std::string>>::iterator skills_iter = skills_routes.begin();
+bool skillsToggle = true;
+std::list<std::tuple<std::function<void(PID a, PID b, PID c)>, std::string>> skills_routes;
+std::list<std::tuple<std::function<void(PID a, PID b, PID c)>, std::string>>::iterator skills_iter = skills_routes.begin();
 std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter = match_routes.begin();
+std::list<std::tuple<PID,PID,PID, std::string>> pids;
+std::list<std::tuple<PID,PID,PID, std::string>>::iterator pid_iter = pids.begin();
 
 void route_counter_up() { 
 	if(skillsToggle){
@@ -48,6 +50,14 @@ void route_counter_down() {
 	pros::lcd::set_text(3, (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter));
 }
 
+void pid_counter_up() {
+	if(++pid_iter == pids.end()){
+		pid_iter = pids.begin();
+	}
+	std::string ba = std::get<3>(*pid_iter);
+	pros::lcd::set_text(2, "PID: " + ba);
+}
+
 void skills_toggle() {
 	skillsToggle = !skillsToggle;
 	skills_iter = skills_routes.begin();
@@ -70,22 +80,28 @@ void skills_toggle() {
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void dummy(){
+void dummy(PID a, PID b, PID c){
 	return;
 }
 void initialize() {
+	std::tuple<PID, PID, PID, std::string> classicPID = std::make_tuple(PID(0.225, 0.01, 0, 15, 1000),PID(0.225, 0.01, 0, 15, 1000), PID(1.1, 0.00001, 0, 1, 14), "classic");
+	std::tuple<PID, PID, PID, std::string> highStraightPID = std::make_tuple(PID(0.3, 0.01, 0, 15, 1000),PID(0.3, 0.01, 0, 15, 1000), PID(1.1, 0.001, 0, 1, 14), "high Straight P");
+	std::tuple<PID, PID, PID, std::string> highTurnPID = std::make_tuple(PID(0.225, 0.01, 0, 15, 1000),PID(0.225, 0.01, 0, 15, 1000), PID(1.3, 0.001, 0, 1, 14), "high Turn P");
+	std::tuple<PID, PID, PID, std::string> precisionPID = std::make_tuple(PID(0.225, 0.01, 0, 5, 1000),PID(0.225, 0.01, 0, 5, 1000), PID(1.1, 0.00001, 0, 1, 14), "precision");
+	pids.push_back(classicPID);
+	pids.push_back(highStraightPID);
+	pids.push_back(highTurnPID);
+	pids.push_back(precisionPID);
 	skills_routes.push_back(std::make_tuple(dummy, "DUMMY"));
 	skills_routes.push_back(std::make_tuple(full_skills_route_part1, "full_skills_part_1"));
 	skills_routes.push_back(std::make_tuple(full_skills_route_part2, "full_skills_part_2"));
 	skills_routes.push_back(std::make_tuple(full_skills_route_part3, "full_skills_part_3"));
 	skills_routes.push_back(std::make_tuple(full_skills_route_part4, "full_skills_part_4"));
-	match_routes.push_back(std::make_tuple(dummy, "DUMMY"));
-	match_routes.push_back(std::make_tuple(match_drew, "match_drew"));
 	++skills_iter;
 	++match_iter;
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "WE RESPECT WOMEN");
-	pros::lcd::register_btn0_cb(skills_toggle);
+	pros::lcd::register_btn0_cb(pid_counter_up);
 	pros::lcd::register_btn1_cb(route_counter_down);
 	pros::lcd::register_btn2_cb(route_counter_up);
 }
@@ -121,11 +137,10 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	if(skillsToggle){
-		std::get<0>(*skills_iter)();
-	} else {
-		std::get<0>(*match_iter)();
-	}
+	PID left = std::get<0>(*pid_iter);
+	PID right = std::get<1>(*pid_iter);
+	PID turn = std::get<2>(*pid_iter);
+	std::get<0>(*skills_iter)(left, right, turn);
 }
 
 /**

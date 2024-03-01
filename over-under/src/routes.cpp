@@ -9,6 +9,7 @@ PID rightPID = PID(0.225, 0.01, 0, 15, 1000);
 
 PID turnPID = PID(1.1, 0.00001, 0, 1, 14);
 
+
 void shoot(int num){
     intakeRight = 127;
     intakeLeft = 127;
@@ -76,7 +77,7 @@ void match_drew(){
 
 }
 
-void full_skills_route_part1(){
+void full_skills_route_part1(PID leftPID, PID rightPID, PID turnPID){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
@@ -95,7 +96,7 @@ void full_skills_route_part1(){
     turn(315, turnPID);
 }
 
-void full_skills_route_part2(){
+void full_skills_route_part2(PID leftPID, PID rightPID, PID turnPID){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
@@ -116,7 +117,7 @@ void full_skills_route_part2(){
     go(24, leftPID, rightPID);
 }
 
-void full_skills_route_part3(){
+void full_skills_route_part3(PID leftPID, PID rightPID, PID turnPID){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
@@ -140,7 +141,7 @@ void full_skills_route_part3(){
     turn(100, turnPID);
 }
 
-void full_skills_route_part4(){
+void full_skills_route_part4(PID leftPID, PID rightPID, PID turnPID){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
