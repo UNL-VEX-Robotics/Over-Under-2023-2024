@@ -28,13 +28,13 @@ void shoot(int num){
     pros::delay(500);
 }
 
-void skills(double start_heading){
+void skills_start_on_right(){
     int i = 0;
     shoot(5);
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    imu.set_heading(convert(start_heading));
+    imu.set_heading(convert(135));
     while (imu.is_calibrating()){
         pros::delay(10);
     }

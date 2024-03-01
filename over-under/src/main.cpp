@@ -1,12 +1,16 @@
 #include "main.h"
 #include "auton.h"
+#include "routes.h"
+#include "driver.h"
 #include "pros/llemu.hpp"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "pros/rtos.hpp"
 #include <string>
 #include "global_defs.h"
-#include "driver.h"
+#include <iostream>
+#include <list>
+#include <tuple>
 
 /**
  * A callback function for LLEMU's center button.
@@ -16,28 +20,45 @@
  */
 
 int autonSelector = 0;
-bool skillsAuton = false;
+bool skillsSelector = false;
+std::list<std::tuple<std::function<void()>, std::string>> skills_routes;
+std::list<std::tuple<std::function<void()>, std::string>>::iterator skills_iter = skills_routes.begin();
+std::list<std::tuple<std::function<void()>, std::string>> match_routes;
+std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter = match_routes.begin();
 
-
-void on_center_button() { //Count Up
-	autonSelector ++; 
-	std::string ba = "" + std::to_string(autonSelector);
-	pros::lcd::set_text(3, ba);
+void route_counter_up() { 
+	if(skillsSelector){
+		if(++skills_iter == skills_routes.end()){
+			skills_iter = skills_routes.begin();
+		}
+	} else {
+		if(++match_iter == match_routes.end()){
+			match_iter = match_routes.begin();
+		}
+	}
+	pros::lcd::set_text(3, (skillsSelector) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter));
 }
 
-void on_right_button() {
-	autonSelector --; 
-	std::string ba = "" + std::to_string(autonSelector);
-	pros::lcd::set_text(3, ba);
+void route_counter_down() {
+	if(skillsSelector){
+		if(--skills_iter == skills_routes.begin()){
+			skills_iter = skills_routes.end();
+		}
+	} else {
+		if(--match_iter == match_routes.begin()){
+			match_iter = match_routes.end();
+		}
+	}
+	pros::lcd::set_text(3, (skillsSelector) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter));
 }
 
-void on_left_button() {
-	skillsAuton = !skillsAuton;
+void skills_toggle() {
+	skillsSelector = !skillsSelector;
 	std::string ba = "";
-	if (skillsAuton){
+	if (skillsSelector){
 		ba = "SKILLS AUTON ON";
 	}
-	else if (!skillsAuton){
+	else {
 		ba = "MATCH AUTON ON";
 	}
 	pros::lcd::set_text(2, ba);
@@ -50,12 +71,17 @@ void on_left_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	skills_routes.push_back(std::make_tuple(full_skills_route_part1, "full_skills_part_1"));
+	skills_routes.push_back(std::make_tuple(full_skills_route_part2, "full_skills_part_2"));
+	skills_routes.push_back(std::make_tuple(full_skills_route_part3, "full_skills_part_3"));
+	skills_routes.push_back(std::make_tuple(full_skills_route_part4, "full_skills_part_4"));
+	skills_routes.push_back(std::make_tuple(skills_start_on_right, "mac_skills"));
+	match_routes.push_back(std::make_tuple(match_drew, "match_drew"));
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "CAMEL CASE IS BETTER");
-	pros::lcd::register_btn1_cb(on_center_button);
-	pros::lcd::register_btn2_cb(on_right_button);
-	pros::lcd::register_btn0_cb(on_left_button);
-	pros::lcd::set_text(2, "MATCH AUTON ON");
+	pros::lcd::set_text(1, "WE RESPECT WOMEN");
+	pros::lcd::register_btn0_cb(skills_toggle);
+	pros::lcd::register_btn1_cb(route_counter_down);
+	pros::lcd::register_btn2_cb(route_counter_up);
 }
 
 /**
