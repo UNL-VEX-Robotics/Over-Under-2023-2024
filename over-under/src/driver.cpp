@@ -73,7 +73,7 @@ void intake_func(){
 	if(isOn){
 		if(direction){
 			intakeRight = 127;
-			intakeLeft = -127;
+			intakeLeft = 127;
 		}
 		else if(!direction){
 			intakeRight = -127;
