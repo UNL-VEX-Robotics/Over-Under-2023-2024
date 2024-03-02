@@ -124,7 +124,7 @@ void flywheelRun(){
 		isFlyOn = !isFlyOn;
 	}
 	if(isFlyOn){
-		rightFly = -127;
+		rightFly = 127;
 		leftFly = 127;
 	}
 	else {

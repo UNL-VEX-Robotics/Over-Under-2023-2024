@@ -8,14 +8,14 @@
 #define MID_LEFT_DRIVE -8 
 #define BOT_LEFT_DRIVE -7 
 
-#define TOP_RIGHT_DRIVE -3
-#define MID_RIGHT_DRIVE 4
+#define TOP_RIGHT_DRIVE 3
+#define MID_RIGHT_DRIVE -4
 #define BOT_RIGHT_DRIVE 5
 
 #define RIGHT_INTAKE -19
 #define LEFT_INTAKE 14 
 
-#define RIGHT_ELEVATION -2
+#define RIGHT_ELEVATION 2
 #define LEFT_ELEVATION 6
 
 #define FLYWHEELL 18
