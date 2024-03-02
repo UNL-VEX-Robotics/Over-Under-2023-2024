@@ -242,7 +242,7 @@ void full_skills_route_part1(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    //shoot(22);
+    shoot(22);
     go(-6);
     pros::delay(500);
     turn(45);
@@ -269,10 +269,6 @@ void full_skills_route_part2(){
     go(-12);
     go(16);
     go(-12);
-    flippers.set_value(false);
-    turn(210);
-    go(24);
-    flippers.set_value(true);
 }
 
 void full_skills_route_part3(){
@@ -285,7 +281,9 @@ void full_skills_route_part3(){
     }
     go(24);
     turn(0);
-    // go(36);
+    go(-4);
+    imu.set_heading(convert(0));
+    go(36);
     // go(-12);
     // flippers.set_value(false);
     // turn(200);
