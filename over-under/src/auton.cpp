@@ -1,3 +1,4 @@
+#include "main.h"
 #include "global_defs.h"
 #include "pros/imu.hpp"
 #include "pros/motors.hpp"
@@ -5,24 +6,23 @@
 #include <cmath>
 #include <iostream>
 #include <math.h>
+#include <sys/_stdint.h>
 
 using namespace pros;
 
-const int circum = wheel_radius * 2 * M_PI;
+const int circum = wheel_radius*2*M_PI;
 
 //straight params
 int tick_margin = 15;
 int integral_max_error_s= 1000;
-//PID values for when we are moving straight
-float Kps = 0.225;
-float Kis = 0.01;
+float Kps = 0.27;
+float Kis = 0;
 float Kds = 0;
 
 //turning params
-int degree_margin = 1;
-int integral_max_error_t = 14;
-//PID values for when we are turning
-float Kpt = 1.1;
+int degree_margin = 2;
+int integral_max_error_t = 100;
+float Kpt = 1;
 float Kit = 0.00001;
 float Kdt = 0;
 
@@ -73,34 +73,7 @@ void all_brake(){
     botRightDrive.brake();
 }
 
-int convert(int degrees){
-	return degrees + 23;
-}
-
-double calculateDrivetrainVoltage(double error, double previousError, double PID_Integral, double PID_Derivative){
-    //if each iteration of the loop doesn't take a uniform amount of time, derivative and integral calculations need to consider time.
-    PID_Derivative = error - previousError;
-    if(abs(error) > integral_max_error_s){
-        PID_Integral = integral_max_error_s;
-    }
-    else {
-        PID_Integral += Kis * error;
-    }
-    double voltage = Kps * error + Kis * PID_Integral + Kds * PID_Derivative; //error is the proportional factor of the PID calculation
-    return voltage;
-}
-
-double constrainVoltage(double voltage, int i){
-    //keeps voltage <= 127, and gives a continuous ramping effect
-    //TODO: make the ramping scale factor a variable t rather than just a magic number
-    if(voltage > 127){
-        double x = 127.0 * (i+100)/25000;
-        return x > 127 ? 127 : x;
-    }
-    return voltage;
-}
-
-void push(double inches){
+void go(double inches){
     double start = pros::millis();
     double now = pros::millis(); 
     double revolutions = inches / circum;
@@ -115,22 +88,49 @@ void push(double inches){
     double right_integral = 0;
     double left_derivative = 0;
     double right_derivative = 0;
+
     double left_voltage = 0;
     double right_voltage = 0;
     while(( abs(left_error) > tick_margin ) && (abs(right_error) > tick_margin )){ 
         prev_left_error = left_error;
-        left_error = encoder_units - (topLeftDrive.get_position() + midLeftDrive.get_position() + botLeftDrive.get_position()) / 3.0; 
         prev_right_error = right_error;
-        right_error = encoder_units - (topRightDrive.get_position() + midRightDrive.get_position() + botRightDrive.get_position()) / 3.0; 
-        left_voltage = calculateDrivetrainVoltage(left_error, prev_left_error, left_integral, left_derivative);
-        right_voltage = calculateDrivetrainVoltage(right_error, prev_right_error, right_integral, right_derivative);
-        set_left_voltage(constrainVoltage(left_voltage, i));
-        set_right_voltage(constrainVoltage(right_voltage, i));
+        left_error = encoder_units - (topLeftDrive.get_position() + midLeftDrive.get_position() + botLeftDrive.get_position()) / 3.0;
+        right_error = encoder_units - (topRightDrive.get_position() + midRightDrive.get_position() + botRightDrive.get_position()) / 3.0;
 
-        if(i % 5000 == 0){ 
-            //TODO: will this act as intended if each iteration of the while loop takes longer than 1 millisecond? If it is shorter, it will take 10000 iterations to to the timeout
+        //if each iteration of the loop doesn't take a unifomidRightDrive amount of time, derivative and integral calculations need
+        //to consider time
+        left_derivative = left_error - prev_left_error;
+        right_derivative = right_error - prev_right_error;
+
+        if(abs(left_error) > integral_max_error_s){
+            left_integral = integral_max_error_s; 
+        } else {
+            left_integral = left_integral + Kis * left_error;
+        }
+        if(abs(right_error) > integral_max_error_s){
+            right_integral = integral_max_error_s;
+        } else {
+            right_integral = right_integral + Kis * right_error;
+        }
+        
+        left_voltage = Kps * left_error + Kis * left_integral + Kds * left_derivative;
+        right_voltage = Kps * right_error + Kis * right_integral + Kds * right_derivative;
+        if(left_voltage > 127){
+            double x = 127.0 * (i+100)/25000;
+            set_left_voltage(x > 127 ? 127 : x);
+        } else{
+            set_left_voltage(left_voltage);
+        }
+        if(right_voltage > 127) {
+            double x = 127.0 * (i+100)/25000;
+            set_right_voltage(x > 127 ? 127 : x);
+        } else {
+            set_right_voltage(right_voltage);
+        }
+
+        if(i % 5000 == 0){
             now = pros::millis();
-            if(now - start > 5*1000){  //after 5 seconds
+            if(now - start > 2*1000){
                 left_error = 0;
                 right_error = 0;
                 set_all_voltage(0);
@@ -175,6 +175,7 @@ void turn_right_relative_debug(double degrees){
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
+                pros::delay(10);
             }
             i++;
         }
@@ -202,6 +203,7 @@ void turn_right_relative_debug(double degrees){
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
+                pros::delay(10);
             }
             i++;
         }
@@ -227,6 +229,7 @@ void turn_right_relative_debug(double degrees){
         if(i%5000 == 0){
             std::cout << error;
             std::cout << "  ";
+            pros::delay(10);
         }
         i++;
     }
@@ -262,12 +265,18 @@ void turn_left_relative_debug(double degrees){
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
+                pros::delay(10);
             }
             i++;
         }
-        std::cout << "\nflipped to 0\n";
+        std::cout << "\nflipped to 0\n\tcurrent heading: ";
+        std::cout << imu.get_heading();
+        std::cout << "\n\tcurrent error: ";
+        std::cout << error;
         end_heading+=360;
         error = imu.get_heading() - end_heading;
+        std::cout << "\n\tcorrected error: ";
+        std::cout << error;
         while(abs(error) > degree_margin){
             prev_error = error;
             error = imu.get_heading() - end_heading;
@@ -288,6 +297,7 @@ void turn_left_relative_debug(double degrees){
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
+                pros::delay(10);
             }
             i++;
         }
@@ -313,6 +323,7 @@ void turn_left_relative_debug(double degrees){
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
+                pros::delay(10);
             }
             i++;
         }

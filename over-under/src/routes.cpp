@@ -5,9 +5,10 @@
 
 void shoot(int num){
     intakeRight = 127;
-    intakeLeft = 127;
-    leftFly = -127;
+    intakeLeft = -127;
+    leftFly = 127;
     rightFly = 127;
+    pros::delay(2000);
     for(int i=0; i < num; i++){
         intakePneu.set_value(1);
         pros::delay(600);
@@ -241,7 +242,7 @@ void full_skills_route_part1(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    shoot(22);
+    //shoot(22);
     go(-6);
     pros::delay(500);
     turn(315);
