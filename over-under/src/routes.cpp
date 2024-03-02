@@ -251,14 +251,14 @@ void full_skills_route_part1(){
     intakePneu.set_value(true);
     go(68);
     intakePneu.set_value(false);
-    turn(305);
+    turn(315);
 }
 
 void full_skills_route_part2(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    imu.set_heading(convert(305));
+    imu.set_heading(convert(315));
     while (imu.is_calibrating()){
         pros::delay(10);
     }
@@ -270,8 +270,7 @@ void full_skills_route_part2(){
     go(16);
     go(-12);
     flippers.set_value(false);
-    turn(180);
-    go(-24);
+    turn(210);
     go(24);
     flippers.set_value(true);
 }
@@ -280,24 +279,23 @@ void full_skills_route_part3(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    imu.set_heading(convert(180));
+    imu.set_heading(convert(210));
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    turn(225);
     go(24);
     turn(0);
-    go(36);
-    go(-12);
-    flippers.set_value(false);
-    turn(200);
-    go(36);
-    turn(0);
-    flippers.set_value(true);
-    go(36);
-    go(-12);
-    flippers.set_value(false);
-    turn(100);
+    // go(36);
+    // go(-12);
+    // flippers.set_value(false);
+    // turn(200);
+    // go(36);
+    // turn(0);
+    // flippers.set_value(true);
+    // go(36);
+    // go(-12);
+    // flippers.set_value(false);
+    // turn(100);
 }
 
 void full_skills_route_part4(){
