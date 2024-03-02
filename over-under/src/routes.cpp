@@ -241,13 +241,15 @@ void full_skills_route_part1(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    shoot(22);
+//    shoot(2);
     go(-6);
+    pros::delay(500);
     turn(45);
-    go(24);
-    turn(0);
+
+    go(17);
+    turn(355);
     intakePneu.set_value(true);
-    go(72);
+    go(68);
     intakePneu.set_value(false);
     turn(315);
 }

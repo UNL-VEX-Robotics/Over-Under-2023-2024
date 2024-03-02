@@ -15,14 +15,14 @@ const int circum = wheel_radius*2*M_PI;
 //straight params
 int tick_margin = 15;
 int integral_max_error_s= 1000;
-float Kps = 0.225;
-float Kis = 0.01;
+float Kps = 0.27;
+float Kis = 0;
 float Kds = 0;
 
 //turning params
 int degree_margin = 1;
-int integral_max_error_t = 14;
-float Kpt = 1.1;
+int integral_max_error_t = 100;
+float Kpt = 1.0;
 float Kit = 0.00001;
 float Kdt = 0;
 
@@ -91,7 +91,7 @@ void go(double inches){
 
     double left_voltage = 0;
     double right_voltage = 0;
-    while(( abs(left_error) > tick_margin ) || (abs(right_error) > tick_margin )){ 
+    while(( abs(left_error) > tick_margin ) && (abs(right_error) > tick_margin )){ 
         prev_left_error = left_error;
         prev_right_error = right_error;
         left_error = encoder_units - (topLeftDrive.get_position() + midLeftDrive.get_position() + botLeftDrive.get_position()) / 3.0;
@@ -175,6 +175,7 @@ void turn_right_relative_debug(double degrees){
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
+                pros::delay(10);
             }
             i++;
         }
@@ -202,6 +203,7 @@ void turn_right_relative_debug(double degrees){
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
+                pros::delay(10);
             }
             i++;
         }
@@ -227,6 +229,7 @@ void turn_right_relative_debug(double degrees){
         if(i%5000 == 0){
             std::cout << error;
             std::cout << "  ";
+            pros::delay(10);
         }
         i++;
     }
@@ -262,12 +265,18 @@ void turn_left_relative_debug(double degrees){
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
+                pros::delay(10);
             }
             i++;
         }
-        std::cout << "\nflipped to 0\n";
+        std::cout << "\nflipped to 0\n\tcurrent heading: ";
+        std::cout << imu.get_heading();
+        std::cout << "\n\tcurrent error: ";
+        std::cout << error;
         end_heading+=360;
         error = imu.get_heading() - end_heading;
+        std::cout << "\n\tcorrected error: ";
+        std::cout << error;
         while(abs(error) > degree_margin){
             prev_error = error;
             error = imu.get_heading() - end_heading;
@@ -288,6 +297,7 @@ void turn_left_relative_debug(double degrees){
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
+                pros::delay(10);
             }
             i++;
         }
@@ -313,6 +323,7 @@ void turn_left_relative_debug(double degrees){
             if(i%5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
+                pros::delay(10);
             }
             i++;
         }
