@@ -54,30 +54,31 @@ int convert(int degrees){
 	return degrees + 23;
 }
 
-double calculateRequiredPushDistance(double inches){
+double inchesToEncoderUnits(double inches){
     double revolutions = inches / circum;
     return 10.0/6.0 * revolutions * blue_ticks_per_rev; 
 }
 
-void go(double inches, PID leftStraightPID, PID rightStraightPID){
+void go(double inches, PID leftPID, PID rightPID){
     double now, start = pros::millis();
-    double encoder_units = calculateRequiredPushDistance(inches); 
-    leftStraightPID.reset();
-    rightStraightPID.reset();
+    double encoder_units = inchesToEncoderUnits(inches); 
+    leftPID.reset();
+    rightPID.reset();
     reset_motors(); 
-    leftStraightPID.setError(encoder_units); 
-    rightStraightPID.setError(encoder_units);
+    leftPID.setError(encoder_units); 
+    rightPID.setError(encoder_units);
     double leftVoltage = 0;
     double rightVoltage = 0;
     double leftError = 0;
     double rightError = 0;
     int i = 0;
-    while(!leftStraightPID.isSettled() || !rightStraightPID.isSettled()){
+    while(!leftPID.isSettled() || !rightPID.isSettled()){
         leftError = encoder_units - (topLeftDrive.get_position() + midLeftDrive.get_position() + botLeftDrive.get_position()) / 3.0;
         rightError = encoder_units - (topRightDrive.get_position() + midRightDrive.get_position() + botRightDrive.get_position()) / 3.0;
-        leftVoltage = leftStraightPID.getNextValue(leftError);
-        rightVoltage = rightStraightPID.getNextValue(rightError);
-        //pid already limits voltage. Might not ramp properly because it isnt as sophisticated. PID algorithm is supposed to do the ramping though.
+
+        leftVoltage = leftPID.getNextValue(leftError);
+        rightVoltage = rightPID.getNextValue(rightError);
+
         set_left_voltage(leftVoltage);
         set_right_voltage(rightVoltage);
 
@@ -117,6 +118,7 @@ void turn_right_relative_debug(double degrees, PID turnPID){
             i++;
         }
         end_heading -= 360;
+        std::cout << "flipped to 0\n";
         while(!turnPID.isSettled()){
             error = end_heading - imu.get_heading();
             voltage = turnPID.getNextValue(error);
@@ -164,6 +166,7 @@ void turn_left_relative_debug(double degrees, PID turnPID){
             i++;
         }
         end_heading += 360;
+        std::cout << "flipped to 0\n";
         while(!turnPID.isSettled()){
             error = end_heading - imu.get_heading();
             voltage = turnPID.getNextValue(error);
