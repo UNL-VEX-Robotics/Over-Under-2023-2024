@@ -10,3 +10,4 @@ void ez_skills_start_on_right();
 void route_match_tanner();
 void route_match_drew();
 void shoot(int num);
+void full_skills_route_part1();

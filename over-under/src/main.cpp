@@ -1,5 +1,6 @@
 #include "main.h"
 #include "auton.h"
+#include "routes.h"
 #include "pros/llemu.hpp"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
@@ -89,6 +90,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+	full_skills_route_part1();
 }
 
 /**

@@ -232,3 +232,25 @@ void route_match_drew(){
     pros::delay(1000);
     go(-28);
 }
+
+void full_skills_route_part1(){
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    imu.set_heading(convert(225));
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    shoot(22);
+    go(-6);
+    pros::delay(500);
+    turn(315);
+    go(17);
+    turn(7);
+    intakePneu.set_value(true);
+    elevate_down(1000);
+    go(34);
+    intakePneu.set_value(false);
+    //eleLock.set_value(true);
+    elevate_down(2000);
+}
