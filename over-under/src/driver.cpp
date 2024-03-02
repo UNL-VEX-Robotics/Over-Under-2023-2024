@@ -10,17 +10,28 @@
 //Function For Drive Code: Sticks
 void moveDrive(){
 	
-	//Arcade Drive
-	int left = (.75 * master.get_analog(ANALOG_LEFT_Y));
-	int right = (.75 * master.get_analog(ANALOG_RIGHT_Y));
+	// //Arcade Drive
+	// int left = (.75 * master.get_analog(ANALOG_LEFT_Y));
+	// int right = (.75 * master.get_analog(ANALOG_RIGHT_Y));
 
-	topRightDrive = right;
-	midRightDrive = right;
-	botRightDrive = right;
+	// topRightDrive = right;
+	// midRightDrive = right;
+	// botRightDrive = right;
 
-	topLeftDrive = left;
-	midLeftDrive = left;
-	botLeftDrive = left;
+	// topLeftDrive = left;
+	// midLeftDrive = left;
+	// botLeftDrive = left;
+		//Arcade Drive
+	int drive = master.get_analog(ANALOG_LEFT_Y);
+	int turn = master.get_analog(ANALOG_RIGHT_X);
+
+	topRightDrive = drive - turn;
+	midRightDrive = drive - turn;
+	botRightDrive = drive - turn;
+//
+	topLeftDrive = drive + turn;
+	midLeftDrive = drive + turn;
+	botLeftDrive = drive + turn;
 	
 }
 
@@ -97,8 +108,8 @@ void rightFlyun(){
 		isFlyOn = !isFlyOn;
 	}
 	//if flyweel is on, set both motors to 127, else set to zero
-	leftFly = 127 * isFlyOn;
-	rightFly = 127 * isFlyOn;
+	leftFly = 115 * isFlyOn;
+	rightFly = 115 * isFlyOn;
 }
 
 //Toggle to Set Wheels at Brake Type hold
