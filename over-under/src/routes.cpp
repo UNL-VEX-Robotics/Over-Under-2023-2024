@@ -7,14 +7,14 @@
 void shoot(int num){
     intakeRight = 127;
     intakeLeft = 127;
-    leftFly = -127;
-    rightFly = -127;
+    leftFly = 127;
+    rightFly = 127;
     pros::delay(2000);
     for(int i=0; i < num; i++){
         intakePneu.set_value(1);
         pros::delay(600);
         intakePneu.set_value(0);
-        pros::delay(1000);
+        pros::delay(1200);
     }
     intakePneu.set_value(0);
     intakeRight = 0;
