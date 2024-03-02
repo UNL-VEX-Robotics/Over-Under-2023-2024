@@ -1,9 +1,11 @@
 #include "pid.h"
 #include <math.h>
+
 //returns the sign of a number. Thanks Stack Overflow!
 template <typename T> int sign(T val) {
     return (T(0) < val) - (val < T(0));
 }
+
 //P stands for Proportional. How big of changes should we make? Is it going far enough?
 //I stands for Integral. Ajust this if error isn't being compensated for over time. Helps prevent oscillations.
 //D stands for Derivative. Adjust this if the values aren't changing fast enough.

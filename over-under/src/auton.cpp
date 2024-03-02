@@ -69,14 +69,14 @@ void go(double inches, PID leftStraightPID, PID rightStraightPID){
     rightStraightPID.setError(encoder_units);
     double leftVoltage = 0;
     double rightVoltage = 0;
-    double leftPosition = 0;
-    double rightPosition = 0;
+    double leftError = 0;
+    double rightError = 0;
     int i = 0;
     while(!leftStraightPID.isSettled() || !rightStraightPID.isSettled()){
-        leftPosition = (topLeftDrive.get_position() + midLeftDrive.get_position() + botLeftDrive.get_position()) / 3.0;
-        rightPosition = (topRightDrive.get_position() + midRightDrive.get_position() + botRightDrive.get_position()) / 3.0;
-        leftVoltage = leftStraightPID.getNextValue(leftPosition);
-        rightVoltage = rightStraightPID.getNextValue(rightPosition);
+        leftError = encoder_units - (topLeftDrive.get_position() + midLeftDrive.get_position() + botLeftDrive.get_position()) / 3.0;
+        rightError = encoder_units - (topRightDrive.get_position() + midRightDrive.get_position() + botRightDrive.get_position()) / 3.0;
+        leftVoltage = leftStraightPID.getNextValue(leftError);
+        rightVoltage = rightStraightPID.getNextValue(rightError);
         //pid already limits voltage. Might not ramp properly because it isnt as sophisticated. PID algorithm is supposed to do the ramping though.
         set_left_voltage(leftVoltage);
         set_right_voltage(rightVoltage);
@@ -89,9 +89,9 @@ void go(double inches, PID leftStraightPID, PID rightStraightPID){
                 return;     
             }
             std::cout << " L: ";
-            std::cout << leftPosition;
+            std::cout << leftError;
             std::cout << " R: ";
-            std::cout << rightPosition;
+            std::cout << rightError;
             std::cout <<"\n";
         }
     }
