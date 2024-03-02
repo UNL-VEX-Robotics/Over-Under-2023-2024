@@ -9,6 +9,7 @@ void shoot(int num){
     intakeLeft = 127;
     leftFly = -127;
     rightFly = -127;
+    pros::delay(2000);
     for(int i=0; i < num; i++){
         intakePneu.set_value(1);
         pros::delay(600);
@@ -241,24 +242,23 @@ void full_skills_route_part1(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-//    shoot(2);
+    //shoot(22);
     go(-6);
     pros::delay(500);
     turn(45);
-
     go(17);
-    turn(355);
+    turn(353);
     intakePneu.set_value(true);
     go(68);
     intakePneu.set_value(false);
-    turn(315);
+    turn(305);
 }
 
 void full_skills_route_part2(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    imu.set_heading(convert(315));
+    imu.set_heading(convert(305));
     while (imu.is_calibrating()){
         pros::delay(10);
     }
@@ -271,8 +271,9 @@ void full_skills_route_part2(){
     go(-12);
     flippers.set_value(false);
     turn(180);
-    flippers.set_value(true);
+    go(-24);
     go(24);
+    flippers.set_value(true);
 }
 
 void full_skills_route_part3(){

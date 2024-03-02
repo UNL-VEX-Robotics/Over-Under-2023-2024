@@ -58,6 +58,8 @@ void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "WE RESPECT WOMEN");
 	pros::lcd::register_btn1_cb(on_center_button);
+	pros::lcd::register_btn0_cb(on_left_button);
+	pros::lcd::register_btn2_cb(on_right_button);
 }
 
 /**
@@ -93,6 +95,7 @@ void competition_initialize() {}
 void autonomous() {
 	if(autonSelector == 0){
 		full_skills_route_part1();
+		full_skills_route_part2();
 	}
 	else if(autonSelector == 1){
 		full_skills_route_part2();

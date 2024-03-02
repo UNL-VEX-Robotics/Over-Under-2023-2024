@@ -22,7 +22,7 @@
 #define FLYWHEELR -1
 
 #define INTAKE_PNEU 'B'
-#define FLIPPERS 'C'
+#define FLIPPERS 'D'
 #define ELEVATION_LOCK 'A'
 
 #define IMU 20

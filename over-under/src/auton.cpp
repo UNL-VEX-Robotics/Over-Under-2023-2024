@@ -20,9 +20,9 @@ float Kis = 0;
 float Kds = 0;
 
 //turning params
-int degree_margin = 1;
+int degree_margin = 3;
 int integral_max_error_t = 100;
-float Kpt = 1.0;
+float Kpt = 1;
 float Kit = 0.00001;
 float Kdt = 0;
 
@@ -130,7 +130,7 @@ void go(double inches){
 
         if(i % 5000 == 0){
             now = pros::millis();
-            if(now - start > 5*1000){
+            if(now - start > 3*1000){
                 left_error = 0;
                 right_error = 0;
                 set_all_voltage(0);
