@@ -19,7 +19,7 @@
 #define LEFT_ELEVATION 6
 
 #define FLYWHEELL 18
-#define FLYWHEELR -1
+#define FLYWHEELR 1
 
 #define INTAKE_PNEU 'B'
 #define FLIPPERS 'D'
