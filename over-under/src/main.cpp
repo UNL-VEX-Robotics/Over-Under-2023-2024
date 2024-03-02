@@ -134,7 +134,7 @@ void opcontrol() {
 		intake_func();
 
 		//Flippers Button: R2
-		actiavteFlippers();
+		activateFlippers();
 
 		//Intake Activation Button: R1
 		activateIntake();
@@ -144,6 +144,9 @@ void opcontrol() {
 
 		//Elevation Activation Button: Left
 		activateElevation();
+
+		//Wheel set to brake mode hold and allowing it to change with Button: RIght
+		wheelsBrake();
 
 		pros::delay(2);
 	}

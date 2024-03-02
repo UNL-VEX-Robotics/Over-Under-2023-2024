@@ -15,7 +15,7 @@
 #define RIGHT_INTAKE -19
 #define LEFT_INTAKE 14 
 
-#define RIGHT_ELEVATION 2
+#define RIGHT_ELEVATION -2
 #define LEFT_ELEVATION 6
 
 #define FLYWHEELL 18

@@ -89,7 +89,7 @@ void intake_func(){
 
 //Flippers Buttons: R2 to Deploy and Pull Back
 bool flipperToggle = false;
-void actiavteFlippers(){
+void activateFlippers(){
 	if(master.get_digital_new_press(DIGITAL_R2)){
 		flipperToggle = !flipperToggle;
 		flippers.set_value(flipperToggle);
