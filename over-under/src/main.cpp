@@ -134,7 +134,7 @@ void opcontrol() {
 		intake_func();
 
 		//Flippers Button: R2
-		actiavteFlippers();
+		activateFlippers();
 
 		//Intake Activation Button: R1
 		activateIntake();

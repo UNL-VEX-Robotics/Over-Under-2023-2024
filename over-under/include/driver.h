@@ -1,7 +1,7 @@
 void moveDrive();
 void elevate();
 void intake_func();
-void actiavteFlippers();
+void activateFlippers();
 void activateIntake();
 void activateElevation();
 void flywheelRun();
