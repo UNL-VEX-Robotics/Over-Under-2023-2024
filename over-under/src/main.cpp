@@ -94,10 +94,10 @@ void competition_initialize() {}
 
 void autonomous() {
 	if(autonSelector == 0){
-		full_skills_route_part1();
-		full_skills_route_part2();
+		match_drew();
 	}
 	else if(autonSelector == 1){
+		full_skills_route_part1();
 		full_skills_route_part2();
 	}
 	else if(autonSelector == 2){

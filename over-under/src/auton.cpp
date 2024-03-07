@@ -15,15 +15,15 @@ const int circum = wheel_radius*2*M_PI;
 //straight params
 int tick_margin = 15;
 int integral_max_error_s= 1000;
-float Kps = 0.27;
+float Kps = .12; //.18 - 12, .16 - 24, .12 - 48
 float Kis = 0;
-float Kds = 0;
+float Kds = 1;
 
 //turning params
-int degree_margin = 2;
+double degree_margin = .1;
 int integral_max_error_t = 100;
-float Kpt = 1;
-float Kit = 0.00001;
+float Kpt = .79; //90 - 1, .79 - 180 
+float Kit = 0;
 float Kdt = 0;
 
 double convert(double degrees){
@@ -65,6 +65,7 @@ void set_right_voltage(float voltage){
 }
 
 void all_brake(){
+
     topLeftDrive.brake();
     midLeftDrive.brake();
     botLeftDrive.brake();
@@ -130,7 +131,7 @@ void go(double inches){
 
         if(i % 5000 == 0){
             now = pros::millis();
-            if(now - start > 2*1000){
+            if(now - start > 5*1000){
                 left_error = 0;
                 right_error = 0;
                 set_all_voltage(0);
@@ -334,22 +335,22 @@ void turn_left_relative_debug(double degrees){
 //Turns the robot to the given heading
 void turn(double degrees){
     degrees = convert(degrees);
-    int start_heading = imu.get_heading(); 
+    double start_heading = imu.get_heading(); 
     //right range = start +1, start + 180 % 360
     //left range = start -1, start - 180 % 360
-    int low_bound_right_range;
-    int high_bound_right_range;
+    double low_bound_right_range;
+    double high_bound_right_range;
     if(start_heading < 180){
         low_bound_right_range = start_heading;
         high_bound_right_range = start_heading + 180;
         if(degrees > low_bound_right_range && degrees < high_bound_right_range) {
-            int x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
+            double x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
             std::cout << "\nright: ";
             std::cout << x;
             std::cout << "\n";
             turn_right_relative_debug( x);
         } else {
-            int x = ((start_heading-degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
+            double x = ((start_heading-degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
             std::cout << "\nleft: ";
             std::cout << x;
             std::cout << "\n";
@@ -359,13 +360,13 @@ void turn(double degrees){
         low_bound_right_range = 360;
         high_bound_right_range = start_heading - 180;
         if(degrees > low_bound_right_range || degrees < high_bound_right_range) {
-            int x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
+            double x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);
             std::cout << "\nright: ";
             std::cout << x;
             std::cout << "\n";
             turn_right_relative_debug( x);
         } else {
-            int x = ((start_heading -degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
+            double x = ((start_heading -degrees) > 0 ) ? (start_heading - degrees) : (start_heading - degrees + 360);
             std::cout << "\nleft: ";
             std::cout << x;
             std::cout << "\n";

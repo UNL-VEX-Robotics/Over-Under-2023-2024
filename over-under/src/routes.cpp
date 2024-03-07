@@ -1,8 +1,10 @@
 #include "global_defs.h"
 #include "pros/imu.hpp"
+#include "pros/llemu.hpp"
 #include "pros/motors.hpp"
 #include "auton.h"
 #include "pros/rtos.hpp"
+#include <string>
 
 void shoot(int num){
     intakeRight = 127;
@@ -24,25 +26,25 @@ void shoot(int num){
     pros::delay(500);
 }
 
-void intake_in(int time){
-    intakeRight = 127;
-    intakeLeft = 127;
+void intake_in(int time, int velo = 127){
+    intakeRight = velo;
+    intakeLeft = velo;
     pros::delay(time);
     intakeRight = 0;
     intakeLeft = 0;
 }
 
-void intake_out(int time){
-    intakeRight = -127;
-    intakeLeft = -127;
+void intake_out(int time, int velo = 127){
+    intakeRight = -velo;
+    intakeLeft = -velo;
     pros::delay(time);
     intakeRight = 0;
     intakeLeft = 0;
 }
 
-void flywheel_in(int time){
-    leftFly = 127;
-    rightFly = -127;
+void flywheel_in(int time, int velo = 127){
+    leftFly = velo;
+    rightFly = -velo;
     pros::delay(time);
     leftFly = 0;
     rightFly = 0;
@@ -192,46 +194,37 @@ void match_drew(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    imu.set_heading(convert(135));
+    imu.set_heading(convert(0));
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    intakeRight = 127;
-    intakeLeft = -127;
-    pros::delay(500);
-    intakePneu.set_value(1);
-    pros::delay(500);
-    pros::delay(500);
-    intakePneu.set_value(0);
-    intakeRight = 0;
-    intakeLeft = 0;
-    pros::delay(500);
-    go(-1);
-    turn(convert(260));
-    leftFly=-100;
-    intakeRight = -100;
-    intakeLeft = 100;
-    pros::delay(1000);
-    leftFly=0;
-    intakeRight = 0;
-    intakeLeft = 0;
-    turn(convert(85));
-    go(-20);
-    go(12);
-    turn(convert(45));
-    go(15);
-    turn(convert(180));
-    rightElevation.set_zero_position(0);
-    leftElevation.set_zero_position(0);
-    while((leftElevation.get_position() < (double)red_ticks_per_rev*0.1)){
-        rightElevation = 127;
-        leftElevation = 127;
-    } 
-    rightElevation = 0;
-    leftElevation = 0;
-    intakePneu.set_value(0);
-    pros::delay(1000);
-    go(-28);
+    // go(48);
+    // turn(0);
+    // set_all_voltage(0);
+    // pros::lcd::set_text(5, "Drive Complete");
+
+
+    pros::lcd::set_text(4, std::to_string(imu.get_heading()));
+    turn(180);
+    pros::lcd::set_text(5, std::to_string(imu.get_heading()));
+    pros::delay(2000);
+    turn(0);
+    pros::lcd::set_text(6, std::to_string(imu.get_heading()));
+
+
+    // intakePneu.set_value(1);
+    // flywheel_in(500, 60);
+    // intake_in(1200, 100);
+    // intakePneu.set_value(0);
+    // go(-5);
+    // turn(220);
+    // pros::lcd::set_text(4, "Completed Turn");
+    // go(10);
+    // pros::lcd::set_text(4, "Drive Finished");
+    // turn(270);
+    // go(5);
+    // intake_out(1000);
+    // 
 }
 
 void full_skills_route_part1(){
@@ -242,7 +235,7 @@ void full_skills_route_part1(){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    shoot(22);
+    //shoot(22);
     go(-6);
     pros::delay(500);
     turn(45);
