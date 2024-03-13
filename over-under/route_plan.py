@@ -20,6 +20,10 @@ def rotate(point: tuple[float, float], center_point: tuple[float, float], theta:
 
     return (x,y)
 
+#gives center point of a rectangle with corner points (a,b), (c,d), (e,f), (g,h)
+def center(a,b,c,d,e,f,g,h, half_width): 
+    pass
+
 class PopupWindow:
     def __init__(self, master, width):
         self.width = width
@@ -155,6 +159,7 @@ class RouteWriter():
                 heading = self.calc_heading_to_point(curr_point, next_point)
                 heading = heading if rotated == 0 else (heading + 180) % 360
                 dist = sqrt((curr_point[0] - next_point[0])**2 + (curr_point[1] - next_point[1])**2)
+                dist = self.pixel_to_inch(dist)
                 if rotated:
                     dist *= -1
                 f.write(f"    turn({heading}, turnPID);\n")
@@ -180,10 +185,11 @@ class FieldDrawer:
 
         self.start_heading = heading
         self.heading = heading
-        #stack of tuples (rectangle_id, arrow_id)
+        #stack of tuples [((x_center,y_center), rotated), rectangle_id, arrow_id)]
         self.route_tuples = []
         self.bot_id = self.canvas.create_oval(0,0,0,0)
         self.arrow_id = self.canvas.create_oval(0,0,0,0)
+        self.line_id = self.canvas.create_line(0,0,0,0)
 
     def draw_field(self):
         # Draw the playing field and other objects here
@@ -218,46 +224,38 @@ class FieldDrawer:
 
         self.bot_id = self.canvas.create_polygon(rot_rectangle_point1, rot_rectangle_point3, rot_rectangle_point4, rot_rectangle_point2, fill="red", outline='black')
         self.arrow_id = self.canvas.create_polygon(rot_triangle_point1, rot_triangle_point2, rot_triangle_point3, fill='purple',outline = 'black')
+        if self.route_tuples != []:
+            self.canvas.delete(self.line_id)
+            self.line_id = self.canvas.create_line(self.route_tuples[-1][0][0][0], self.route_tuples[-1][0][0][1], x,y)
 
     def on_click(self, event):
         bot_coords = self.canvas.coords(self.bot_id)
         arrow_coords = self.canvas.coords(self.arrow_id)
-        point_id = self.canvas.create_polygon(bot_coords,fill='blue', outline='black')
+        box_id = self.canvas.create_polygon(bot_coords,fill='blue', outline='black')
         arrow_id = self.canvas.create_polygon(arrow_coords, fill='dark violet', outline='black')
         rotated = 1 if self.heading == 180 else 0
-        self.route_tuples.append((point_id,arrow_id,rotated))
+        self.route_tuples.append(( ((event.x,event.y) ,rotated), box_id,arrow_id))
         self.heading = 0
         
 
     def remove_last_point(self, event):
         if self.route_tuples != []:
-            a, b, _ = self.route_tuples.pop()
+            _, a, b = self.route_tuples.pop()
             self.canvas.delete(a)
             self.canvas.delete(b)
 
     def clear_points(self):
         self.heading = self.start_heading
         while (self.route_tuples != []) and (x := self.route_tuples.pop()):
-            a,b,c = x
+            _, a,b= x
             self.canvas.delete(a)
             self.canvas.delete(b)
 
     def generate_program(self):
-        box_ids = [tuple[0] for tuple in self.route_tuples]
-        rotateds = [tuple[-1] for tuple in self.route_tuples]
-        point_coords = [self.canvas.coords(point_id) for point_id in box_ids]
-
-        center_points = []
-        i = 0
-        for coords in point_coords:
-            x = [coords[0],coords[2],coords[4],coords[6]]
-            y = [coords[1],coords[3],coords[5],coords[7]]
-            x_min = min(x)
-            y_min = min(y)
-            x_center = x_min + sqrt(2*self.bot_half_width**2)
-            y_center = y_min + sqrt(2*self.bot_half_width**2)
-            center_points.append(((x_center,y_center), rotateds[i]))
-            i+=1
+        center_points = [tuple[0] for tuple in self.route_tuples]
+        for center_point in center_points:
+            x=center_point[0][0]
+            y=center_point[0][1]
         self.file_writer.write_program(self.start_heading,center_points)
 
     def rotate(self, event):
