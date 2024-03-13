@@ -116,6 +116,7 @@ void initialize() {
       std::make_tuple(full_skills_route_part3, "full_skills_part_3"));
   skills_routes.push_back(
       std::make_tuple(full_skills_route_part4, "full_skills_part_4"));
+//DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
   ++match_iter;
   pros::lcd::initialize();
