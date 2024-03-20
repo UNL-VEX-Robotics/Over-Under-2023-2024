@@ -98,7 +98,7 @@ void rightFlyun(){
 	}
 	//if flyweel is on, set both motors to 127, else set to zero
 	leftFly = -127 * isFlyOn;
-	rightFly = -127 * isFlyOn;
+	rightFly = 127 * isFlyOn; //I got rid of the negative sign and it didn't do anything hopefully I didn't break something
 }
 
 //Toggle to Set Wheels at Brake Type hold

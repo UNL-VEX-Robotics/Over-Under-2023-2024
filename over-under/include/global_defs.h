@@ -21,7 +21,7 @@
 #define LEFT_ELEVATION 4
 
 #define FLYWHEEL_L 6
-#define FLYWHEEL_R -11
+#define FLYWHEEL_R 11
 
 #define INTAKE_PNEU 'B'
 #define ELEVATION_LOCK 'C'
