@@ -138,11 +138,15 @@ class RouteWriter():
             f.writelines(lines)
         
 
-    def write_program(self, starting_heading: float, points: list[tuple[float, float], int]):
+    def write_program(self, starting_heading: float, points: list[tuple[float, float], int], utilities: list[str]):
         self.remove_route()
         self.write_header()
         self.write_main()
+
         points.reverse()
+        utilities.reverse()
+        print(f"num points: {len(points)}\nnum utilities: {len(utilities)}")
+        
         with open("src/routes.cpp", "a+") as f:
             f.write(f"\nvoid {route_name}(PID leftPID, PID rightPID, PID turnPID)"+"{\n")
             f.write("    while(imu.is_calibrating()){pros::delay(10);}\n")
@@ -157,6 +161,9 @@ class RouteWriter():
                 dist = self.pixel_to_inch(dist)
                 if rotated:
                     dist *= -1
+                utility = utilities.pop()
+                if utility:
+                    f.write(f"    {utility};\n") 
                 f.write(f"    turn({heading}, turnPID);\n")
                 f.write(f"    go({dist}, leftPID, rightPID);\n")
                 curr_point = next_point
@@ -192,13 +199,13 @@ class FieldDrawer:
     def draw_field(self):
         # Draw the playing field and other objects here
         # For simplicity, let's draw a rectangle representing the field
-        self.canvas.grid(row=1,columnspan=6)
+        self.canvas.grid(row=1,columnspan=8)
 
         self.clear_button = Button(self.master, text="Clear Points", command=self.clear_points)
         self.gen_button = Button(self.master, text="Generate Program", command=self.generate_program)
 
-        self.clear_button.grid(row=2,column=0)
-        self.gen_button.grid(row=2,column=1)
+        self.clear_button.grid(row=2,column=0,columnspan=2)
+        self.gen_button.grid(row=2,column=2,columnspan=2)
 
         self.background = PhotoImage(file="field_750.png")
         self.canvas.create_image(0,0,image=self.background,anchor="nw")
@@ -235,11 +242,18 @@ class FieldDrawer:
             self.line_id = self.canvas.create_line(self.route_tuples[-1][0][0][0], self.route_tuples[-1][0][0][1], x,y)
 
     def on_click(self, event):
-        self.utilities.append(self.current_utility)
-        self.current_utility = ""
+          
         if len(self.route_tuples) == 0:
-            self.pack_utility_buttons()            
+            self.pack_utility_buttons()           
+        elif self.current_utility:
+            utility_duration = self.utility_duration_entry.get()
+            utility_func_call = self.current_utility + "(" + utility_duration + ")"
+            self.utilities.append(utility_func_call)
+            self.current_utility = ""
+        else:
+            self.utilities.append(self.current_utility)
 
+            
         bot_coords = self.canvas.coords(self.bot_id)
         arrow_coords = self.canvas.coords(self.arrow_id)
         box_id = self.canvas.create_polygon(bot_coords,fill='blue', outline='black')
@@ -271,7 +285,7 @@ class FieldDrawer:
         for center_point in center_points:
             x=center_point[0][0]
             y=center_point[0][1]
-        self.file_writer.write_program(self.start_heading,center_points)
+        self.file_writer.write_program(self.start_heading, center_points, self.utilities.copy())
 
     def rotate(self, event):
         self.heading += 180
@@ -284,7 +298,10 @@ class FieldDrawer:
         flyoutbutt = Button(self.master, text="Flywheel Out", command=self.flywheel_out)
         eleupbutt = Button(self.master, text="Elevation Up", command=self.elevate_up)
         eledownbutt = Button(self.master, text="Elevation Down", command=self.elevate_down)
-        self.butts = (ininbutt, inoutbutt, flyinbutt, flyoutbutt, eledownbutt, eleupbutt) 
+        time_label = Label(self.master, text="Duration (ms)")
+        time_entry = Entry(self.master)
+        self.utility_duration_entry = time_entry
+        self.butts = (time_label, time_entry, ininbutt, inoutbutt, flyinbutt, flyoutbutt, eledownbutt, eleupbutt) 
         for i, butt in enumerate(self.butts):
             butt.grid(row=0,column=i)
 
