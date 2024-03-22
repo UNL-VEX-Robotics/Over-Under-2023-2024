@@ -4,28 +4,28 @@
 #include "pros/misc.hpp"
 #include "pros/motors.hpp"
 
-#define TOP_LEFT_DRIVE 8
-#define MID_LEFT_DRIVE -20
-#define BOT_LEFT_DRIVE -7
+#define TOP_LEFT_DRIVE 16 
+#define MID_LEFT_DRIVE -8 
+#define BOT_LEFT_DRIVE -7 
 
-#define TOP_RIGHT_DRIVE -19
-#define MID_RIGHT_DRIVE 3
-#define BOT_RIGHT_DRIVE 17
+#define TOP_RIGHT_DRIVE 3
+#define MID_RIGHT_DRIVE -4
+#define BOT_RIGHT_DRIVE 5
 
-#define RIGHT_INTAKE 2
-#define LEFT_INTAKE 13
+#define RIGHT_INTAKE -19
+#define LEFT_INTAKE 14 
 
-#define IMU 13
+#define RIGHT_ELEVATION -2
+#define LEFT_ELEVATION 6
 
-#define RIGHT_ELEVATION -10
-#define LEFT_ELEVATION 4
-
-#define FLYWHEEL_L 6
-#define FLYWHEEL_R -11
+#define FLYWHEELL 18
+#define FLYWHEELR 1
 
 #define INTAKE_PNEU 'B'
-#define ELEVATION_LOCK 'C'
-#define FLIPPERS 'F'
+#define FLIPPERS 'D'
+#define ELEVATION_LOCK 'A'
+
+#define IMU 20
 
 extern pros::Controller master;
 

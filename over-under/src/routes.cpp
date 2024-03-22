@@ -4,10 +4,10 @@
 #include "auton.h"
 #include "pid.h"
 
-PID leftPID = PID(0.225, 0.01, 0, 15, 1000);
-PID rightPID = PID(0.225, 0.01, 0, 15, 1000);
+PID leftPID = PID(0.12, 0.01, 0, 15, 1000);
+PID rightPID = PID(0.12, 0.01, 0, 15, 1000);
 
-PID turnPID = PID(1.1, 0.00001, 0, 1, 14);
+PID turnPID = PID(0.79, 0.00001, 0, 1, 14);
 
 
 void shoot(int num){
@@ -29,6 +29,53 @@ void shoot(int num){
     pros::delay(500);
 }
 
+void intake_in(int time, int velo = 127){
+    intakeRight = velo;
+    intakeLeft = velo;
+    pros::delay(time);
+    intakeRight = 0;
+    intakeLeft = 0;
+}
+
+void intake_out(int time, int velo = 127){
+    intakeRight = -velo;
+    intakeLeft = -velo;
+    pros::delay(time);
+    intakeRight = 0;
+    intakeLeft = 0;
+}
+
+void flywheel_in(int time, int velo = 127){
+    leftFly = velo;
+    rightFly = -velo;
+    pros::delay(time);
+    leftFly = 0;
+    rightFly = 0;
+}
+
+void flywheel_out(int time){
+    leftFly = -127;
+    rightFly = 127;
+    pros::delay(time);
+    leftFly = 0;
+    rightFly = 0;
+}
+
+void elevate_up(int time){
+    leftElevation = 100;
+    rightElevation = 100;
+    pros::delay(time);
+    leftElevation = 0;
+    rightElevation = 0;
+}
+
+void elevate_down(int time){
+    leftElevation = -100;
+    rightElevation = -100;
+    pros::delay(time);
+    leftElevation = 0;
+    rightElevation = 0;
+}
 
 void match_drew(){
     while (imu.is_calibrating()){
@@ -85,7 +132,7 @@ void full_skills_route_part1(PID leftPID, PID rightPID, PID turnPID){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    shoot(22);
+    shoot(1);
     go(-6, leftPID, rightPID);
     turn(45, turnPID);
     go(24, leftPID, rightPID);

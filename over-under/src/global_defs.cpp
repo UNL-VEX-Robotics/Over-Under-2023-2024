@@ -21,8 +21,8 @@ pros::Imu imu(IMU);
 pros::Motor rightElevation(RIGHT_ELEVATION);
 pros::Motor leftElevation(LEFT_ELEVATION);
 
-pros::Motor leftFly(FLYWHEEL_L);
-pros::Motor rightFly(FLYWHEEL_R);
+pros::Motor leftFly(FLYWHEELL);
+pros::Motor rightFly(FLYWHEELR);
 
 pros::ADIDigitalOut intakePneu(INTAKE_PNEU);
 pros::ADIDigitalOut eleLock(ELEVATION_LOCK);

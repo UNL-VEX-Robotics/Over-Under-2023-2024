@@ -75,11 +75,6 @@ class PopupWindow:
     def end_and_draw_field(self, heading):
         field_drawer = FieldDrawer(self.master, heading, self.width, self.width)
         field_drawer.draw_field()
-        clear_button = Button(self.master, text="Clear Points", command=field_drawer.clear_points)
-        gen_button = Button(self.master, text="Generate Program", command=field_drawer.generate_program)
-
-        clear_button.pack(side=LEFT, expand=1)
-        gen_button.pack(side=RIGHT, expand=1)
 
 class RouteWriter():
     def __init__(self, file: str, width, height):
@@ -183,9 +178,12 @@ class FieldDrawer:
         self.canvas.bind("<Button-4>",self.rotate)
         self.canvas.bind("<Button-5>",self.rotate)
 
+
         self.start_heading = heading
         self.heading = heading
         #stack of tuples [((x_center,y_center), rotated), rectangle_id, arrow_id)]
+        self.current_utility = ""
+        self.utilities = []
         self.route_tuples = []
         self.bot_id = self.canvas.create_oval(0,0,0,0)
         self.arrow_id = self.canvas.create_oval(0,0,0,0)
@@ -194,9 +192,17 @@ class FieldDrawer:
     def draw_field(self):
         # Draw the playing field and other objects here
         # For simplicity, let's draw a rectangle representing the field
-        self.canvas.pack()
-        self.background = PhotoImage(file="field_small.png")
+        self.canvas.grid(row=1,columnspan=6)
+
+        self.clear_button = Button(self.master, text="Clear Points", command=self.clear_points)
+        self.gen_button = Button(self.master, text="Generate Program", command=self.generate_program)
+
+        self.clear_button.grid(row=2,column=0)
+        self.gen_button.grid(row=2,column=1)
+
+        self.background = PhotoImage(file="field_750.png")
         self.canvas.create_image(0,0,image=self.background,anchor="nw")
+
 
     def show_bot(self, event):
         self.canvas.delete(self.bot_id)
@@ -224,11 +230,16 @@ class FieldDrawer:
 
         self.bot_id = self.canvas.create_polygon(rot_rectangle_point1, rot_rectangle_point3, rot_rectangle_point4, rot_rectangle_point2, fill="red", outline='black')
         self.arrow_id = self.canvas.create_polygon(rot_triangle_point1, rot_triangle_point2, rot_triangle_point3, fill='purple',outline = 'black')
+        self.canvas.delete(self.line_id)
         if self.route_tuples != []:
-            self.canvas.delete(self.line_id)
             self.line_id = self.canvas.create_line(self.route_tuples[-1][0][0][0], self.route_tuples[-1][0][0][1], x,y)
 
     def on_click(self, event):
+        self.utilities.append(self.current_utility)
+        self.current_utility = ""
+        if len(self.route_tuples) == 0:
+            self.pack_utility_buttons()            
+
         bot_coords = self.canvas.coords(self.bot_id)
         arrow_coords = self.canvas.coords(self.arrow_id)
         box_id = self.canvas.create_polygon(bot_coords,fill='blue', outline='black')
@@ -245,7 +256,11 @@ class FieldDrawer:
             self.canvas.delete(b)
 
     def clear_points(self):
+        for butt in self.butts:
+            butt.destroy()
         self.heading = self.start_heading
+        self.current_utility = ""
+        self.utilities = []
         while (self.route_tuples != []) and (x := self.route_tuples.pop()):
             _, a,b= x
             self.canvas.delete(a)
@@ -262,10 +277,40 @@ class FieldDrawer:
         self.heading += 180
         self.heading %= 360
 
+    def pack_utility_buttons(self):
+        ininbutt = Button(self.master, text="Intake In", command=self.intake_in)
+        inoutbutt = Button(self.master, text="Intake Out", command=self.intake_out)
+        flyinbutt = Button(self.master, text="Flywheel In", command=self.flywheel_in)
+        flyoutbutt = Button(self.master, text="Flywheel Out", command=self.flywheel_out)
+        eleupbutt = Button(self.master, text="Elevation Up", command=self.elevate_up)
+        eledownbutt = Button(self.master, text="Elevation Down", command=self.elevate_down)
+        self.butts = (ininbutt, inoutbutt, flyinbutt, flyoutbutt, eledownbutt, eleupbutt) 
+        for i, butt in enumerate(self.butts):
+            butt.grid(row=0,column=i)
+
+    def intake_in(self):
+        self.current_utility = "intake_in" 
+
+    def intake_out(self):
+        self.current_utility = "intake_out" 
+
+    def flywheel_out(self):
+        self.current_utility = "flywheel_out" 
+
+    def flywheel_in(self):
+        self.current_utility = "flywheel_in" 
+    
+    def elevate_up(self):
+        self.current_utility = "elevate_up"
+
+    def elevate_down(self):
+        self.current_utility = "elevate_down"
+
+    
 def main():
     root = Tk()
 
-    popup = PopupWindow(root, 800)
+    popup = PopupWindow(root, 750)
     root.wait_window(popup.popup)
 
     root.mainloop()

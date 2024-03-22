@@ -1,9 +1,8 @@
 void moveDrive();
 void elevate();
 void intake_func();
-void activteFlippers();
+void activateFlippers();
 void activateIntake();
 void activateElevation();
-void rightFlyun();
+void flywheelRun();
 void wheelsBrake();
-void testMacro();
