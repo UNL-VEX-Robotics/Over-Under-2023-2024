@@ -11,8 +11,8 @@
 void moveDrive(){
 	
 	//Arcade Drive
-	int left = (.90 * master.get_analog(ANALOG_LEFT_Y));
-	int right = (.90 * master.get_analog(ANALOG_RIGHT_Y));
+	int left = (.70 * master.get_analog(ANALOG_LEFT_Y));
+	int right = (.70 * master.get_analog(ANALOG_RIGHT_Y));
 
 	topRightDrive = right;
 	midRightDrive = right;
@@ -97,8 +97,8 @@ void rightFlyun(){
 		isFlyOn = !isFlyOn;
 	}
 	//if flyweel is on, set both motors to 127, else set to zero
-	leftFly = -127 * isFlyOn;
-	rightFly = 127 * isFlyOn; //I got rid of the negative sign and it didn't do anything hopefully I didn't break something
+	leftFly = 0.84 * -127 * isFlyOn;
+	rightFly = 0.84 * 127 * isFlyOn; //I got rid of the negative sign and it didn't do anything hopefully I didn't break something
 }
 
 //Toggle to Set Wheels at Brake Type hold
