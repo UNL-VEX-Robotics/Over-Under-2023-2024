@@ -4,13 +4,13 @@
 #include "pros/misc.hpp"
 #include "pros/motors.hpp"
 
-#define TOP_LEFT_DRIVE 8
-#define MID_LEFT_DRIVE -20
-#define BOT_LEFT_DRIVE -7
+#define STRAIGHT_LEFT_DRIVE 8
+#define REVERSE_LEFT_DRIVE1 -20
+#define REVERSE_LEFT_DRIVE2 -7
 
-#define TOP_RIGHT_DRIVE -19
-#define MID_RIGHT_DRIVE 3
-#define BOT_RIGHT_DRIVE 17
+#define REVERSE_RIGHT_DRIVE -19
+#define STRAIGHT_RIGHT_DRIVE1 3
+#define STRAIGHT_RIGHT_DRIVE2 17
 
 #define RIGHT_INTAKE 2
 #define LEFT_INTAKE 13
@@ -20,8 +20,8 @@
 #define RIGHT_ELEVATION -10
 #define LEFT_ELEVATION 4
 
-#define FLYWHEEL_L 6
-#define FLYWHEEL_R 11
+#define RIGHT_FLYWHEEL 11
+#define LEFT_FLYWHEEL 6
 
 #define INTAKE_PNEU 'B'
 #define ELEVATION_LOCK 'C'
