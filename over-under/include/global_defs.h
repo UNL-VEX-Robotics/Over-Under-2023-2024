@@ -23,7 +23,8 @@
 #define RIGHT_FLYWHEEL 11
 #define LEFT_FLYWHEEL 6
 
-#define INTAKE_PNEU 'B'
+#define INTAKE_ACTUATION 5
+
 #define ELEVATION_LOCK 'C'
 #define FLIPPERS 'F'
 
@@ -46,6 +47,8 @@ extern pros::Motor leftElevation;
 
 extern pros::Motor leftFly;
 extern pros::Motor rightFly;
+
+extern pros::Motor intakeActuation;
 
 extern pros::ADIDigitalOut flippers;
 extern pros::ADIDigitalOut eleLock;

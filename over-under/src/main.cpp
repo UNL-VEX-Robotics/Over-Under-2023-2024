@@ -1,5 +1,6 @@
 #include "main.h"
 #include "auton.h"
+#include "pros/misc.h"
 #include "routes.h"
 #include "pros/llemu.hpp"
 #include "pros/motors.h"
@@ -111,7 +112,15 @@ void opcontrol() {
 	rightElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	leftElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	int i = 0;
+	double flywheel_percent = 0.80;
 	while (true) {
+		pros::lcd::set_text(3, "flywheel percent: " + std::to_string(flywheel_percent));
+		if (master.get_digital_new_press(DIGITAL_UP)){
+			flywheel_percent+=0.01;
+		}
+		if (master.get_digital_new_press(DIGITAL_DOWN)){
+			flywheel_percent-=0.01;
+		}
 		//Tank Drive Code Sticks
 		moveDrive();
 
@@ -124,11 +133,14 @@ void opcontrol() {
 		//Flippers Button: R2
 		activteFlippers();
 
-		//Intake Activation Button: R1
-		activateIntake();
+		//90 is A
+		activateIntake90();
+
+		//180 is Y
+		activateIntake180();
 
 		//Flywheel On by default
-		rightFlyun();
+		rightFlyun(flywheel_percent);
 
 		//Elevation Lock on Button: Left
 		activateElevation();

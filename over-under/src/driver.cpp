@@ -71,15 +71,17 @@ void activteFlippers(){
 }
 
 //Intake Activation Buttons: R1 to Deploy and Pull Back
-bool intakeToggle = false;
-void activateIntake(){
+void activateIntake90(){
 	if(master.get_digital_new_press(DIGITAL_A)){
-		intakeToggle = !intakeToggle;
-		intakePneu.set_value(intakeToggle);
-		pros::delay(300);
+		intakeActuation.move_relative(red_ticks_per_rev / 4.0, 150);
 	}
 }
 
+void activateIntake180(){
+	if(master.get_digital_new_press(DIGITAL_B)){
+		intakeActuation.move_relative(red_ticks_per_rev / 2.0, 150);
+	}
+}
 //Elevation Lock Activation Buttons: Left to Deploy and Pull Back
 bool elevationToggle = false;
 void activateElevation(){
@@ -92,13 +94,13 @@ void activateElevation(){
 
 //Flywheel set to be always running unless turned off Button: X On, B Off
 bool isFlyOn = true;
-void rightFlyun(){
+void rightFlyun(double percent){
 	if(master.get_digital_new_press(DIGITAL_X)){
 		isFlyOn = !isFlyOn;
 	}
 	//if flyweel is on, set both motors to 127, else set to zero
-	leftFly = 0.84 * -127 * isFlyOn;
-	rightFly = 0.84 * 127 * isFlyOn; //I got rid of the negative sign and it didn't do anything hopefully I didn't break something
+	leftFly = percent * -127 * isFlyOn;
+	rightFly = percent * 127 * isFlyOn; 
 }
 
 //Toggle to Set Wheels at Brake Type hold
@@ -114,6 +116,7 @@ void wheelsBrake(){
 		topRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 		midRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 		botRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+		intakeActuation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	}
 	else{
 		topLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
@@ -127,17 +130,3 @@ void wheelsBrake(){
 
 //THIS FUNCTION SHOULDNT BE CALLED WITHOUT PERMISSION FROM DRIVER AND RYAN
 //Marco for shooting triballs automacticly with a break out option
-void testMacro(){
-	if(master.get_digital_new_press(DIGITAL_B)){
-		for(int i = 0; i < 5; i++){
-			if(master.get_digital_new_press(DIGITAL_Y)){
-				break;
-			}
-			else{
-				intakePneu.set_value(true);
-				pros::delay(250);
-				intakePneu.set_value(false);
-			}
-		}
-	}
-} 
