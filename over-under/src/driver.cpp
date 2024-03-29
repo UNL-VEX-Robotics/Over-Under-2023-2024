@@ -7,6 +7,25 @@
 #include "pros/rtos.hpp"
 #include "global_defs.h"
 
+//Test Code for second controller for tanner
+int velo = 0;
+void changeFlyPower(){
+	if (master.get_digital(DIGITAL_UP)){
+		velo = rightFly.get_voltage();
+		rightFly = velo - 4;
+		velo = leftFly.get_voltage();
+		leftFly = velo + 4;
+	}
+	
+	if (master.get_digital(DIGITAL_DOWN)){
+		velo = rightFly.get_voltage();
+		rightFly = velo + 4;
+		velo = leftFly.get_voltage();
+		leftFly = velo - 4;
+	}
+
+}
+
 //Function For Drive Code: Sticks
 void moveDrive(){
 	
@@ -70,6 +89,12 @@ void activteFlippers(){
 	}
 }
 
+void releaseSwitch(){
+	if(master.get_digital_new_press(DIGITAL_A)){
+		intakeActuation.move_relative(red_ticks_per_rev / 8.0, 150);
+	}
+}
+
 //Intake Activation Buttons: R1 to Deploy and Pull Back
 void activateIntake90(){
 	if(master.get_digital_new_press(DIGITAL_A)){
@@ -127,6 +152,3 @@ void wheelsBrake(){
 		botRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	}
 }
-
-//THIS FUNCTION SHOULDNT BE CALLED WITHOUT PERMISSION FROM DRIVER AND RYAN
-//Marco for shooting triballs automacticly with a break out option

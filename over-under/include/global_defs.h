@@ -1,6 +1,7 @@
 #include "auton.h"
 #include "pros/adi.hpp"
 #include "pros/imu.hpp"
+#include "pros/misc.h"
 #include "pros/misc.hpp"
 #include "pros/motors.hpp"
 
@@ -29,6 +30,7 @@
 #define FLIPPERS 'F'
 
 extern pros::Controller master;
+
 
 extern pros::Motor topLeftDrive;
 extern pros::Motor midLeftDrive;
