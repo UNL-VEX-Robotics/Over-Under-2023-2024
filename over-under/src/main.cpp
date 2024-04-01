@@ -118,7 +118,7 @@ void opcontrol() {
 	pros::delay(50);
 	while (true) {
 		if (i == 2000){
-			master.print(0, 0, "Volt:%8.2f",  pros::battery::get_capacity());
+			//master.print(0, 0, "Volt:%8.2f",  pros::battery::get_capacity());
 			pros::delay(50);
 			master.print(1, 0, "RF:%8.2f",  rightFly.get_actual_velocity());
 			pros::delay(50);

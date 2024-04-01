@@ -9,19 +9,25 @@
 
 //Test Code for second controller for tanner
 int velo = 0;
-void changeFlyPower(){
-	if (master.get_digital(DIGITAL_UP)){
+void changeFlyPowerSecondController(){
+	if (partner.get_digital(DIGITAL_UP)){
 		velo = rightFly.get_voltage();
 		rightFly = velo - 4;
 		velo = leftFly.get_voltage();
 		leftFly = velo + 4;
+		master.clear();
+		pros::delay(50);
+		master.print(0, 0, "IT'S SO OVER");
 	}
 	
-	if (master.get_digital(DIGITAL_DOWN)){
+	if (partner.get_digital(DIGITAL_DOWN)){
 		velo = rightFly.get_voltage();
 		rightFly = velo + 4;
 		velo = leftFly.get_voltage();
 		leftFly = velo - 4;
+		master.clear();
+		pros::delay(50);
+		master.print(0, 0, "WE'RE SO BACK");
 	}
 
 }

@@ -30,6 +30,7 @@
 #define FLIPPERS 'F'
 
 extern pros::Controller master;
+static pros::Controller partner(pros::E_CONTROLLER_PARTNER);
 
 
 extern pros::Motor topLeftDrive;
