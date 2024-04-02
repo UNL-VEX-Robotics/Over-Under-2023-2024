@@ -16,12 +16,13 @@ void shoot(int num){
     leftFly = -127;
     rightFly = -127;
     for(int i=0; i < num; i++){
-        intakePneu.set_value(1);
+        //intake.set_value(1);
         pros::delay(600);
-        intakePneu.set_value(0);
+        //intake.set_value(0);
+        
         pros::delay(1000);
     }
-    intakePneu.set_value(0);
+    //intake.set_value(0);
     intakeRight = 0;
     intakeLeft = 0;
     leftFly = 0;
@@ -88,10 +89,10 @@ void match_drew(){
     intakeRight = 127;
     intakeLeft = -127;
     pros::delay(500);
-    intakePneu.set_value(1);
+    //intake.set_value(1);
     pros::delay(500);
     pros::delay(500);
-    intakePneu.set_value(0);
+    //intake.set_value(0);
     intakeRight = 0;
     intakeLeft = 0;
     pros::delay(500);
@@ -118,7 +119,7 @@ void match_drew(){
     } 
     rightElevation = 0;
     leftElevation = 0;
-    intakePneu.set_value(0);
+    //intake.set_value(0);
     pros::delay(1000);
     go(-28, leftPID, rightPID);
 
@@ -137,9 +138,9 @@ void full_skills_route_part1(PID leftPID, PID rightPID, PID turnPID){
     turn(45, turnPID);
     go(24, leftPID, rightPID);
     turn(0, turnPID);
-    intakePneu.set_value(true);
+    //intake.set_value(true);
     go(72, leftPID, rightPID);
-    intakePneu.set_value(false);
+    //intake.set_value(false);
     turn(315, turnPID);
 }
 
@@ -201,7 +202,7 @@ void full_skills_route_part4(PID leftPID, PID rightPID, PID turnPID){
     rightElevation = 100;
     leftElevation = 100;
     pros::delay(2000);
-    intakePneu.set_value(true);
+    //intake.set_value(true);
     go(24, leftPID, rightPID);
     eleLock.set_value(true);
     rightElevation = -100;
@@ -209,5 +210,5 @@ void full_skills_route_part4(PID leftPID, PID rightPID, PID turnPID){
     pros::delay(2000);
     rightElevation = 0;
     leftElevation = 0;
-    intakePneu.set_value(false);
+    //intake.set_value(false);
 }

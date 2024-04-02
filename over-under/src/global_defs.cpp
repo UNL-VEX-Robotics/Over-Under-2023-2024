@@ -6,13 +6,13 @@
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-pros::Motor topLeftDrive(TOP_LEFT_DRIVE);
-pros::Motor midLeftDrive(MID_LEFT_DRIVE);
-pros::Motor botLeftDrive(BOT_LEFT_DRIVE);
+pros::Motor topLeftDrive(STRAIGHT_LEFT_DRIVE);
+pros::Motor midLeftDrive(REVERSE_LEFT_DRIVE1);
+pros::Motor botLeftDrive(REVERSE_LEFT_DRIVE2);
 
-pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
-pros::Motor midRightDrive(MID_RIGHT_DRIVE);
-pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
+pros::Motor topRightDrive(REVERSE_RIGHT_DRIVE);
+pros::Motor midRightDrive(STRAIGHT_RIGHT_DRIVE1);
+pros::Motor botRightDrive(STRAIGHT_RIGHT_DRIVE2);
 
 pros::Motor intakeRight(RIGHT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
 pros::Motor intakeLeft(LEFT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
@@ -21,10 +21,10 @@ pros::Imu imu(IMU);
 pros::Motor rightElevation(RIGHT_ELEVATION);
 pros::Motor leftElevation(LEFT_ELEVATION);
 
-pros::Motor leftFly(FLYWHEELL);
-pros::Motor rightFly(FLYWHEELR);
+pros::Motor leftFly(LEFT_FLYWHEEL);
+pros::Motor rightFly(RIGHT_FLYWHEEL);
+pros::Motor intakeActuation(INTAKE_ACTUATION);
 
-pros::ADIDigitalOut intakePneu(INTAKE_PNEU);
 pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
 pros::ADIDigitalOut flippers(FLIPPERS);
 

@@ -3,6 +3,7 @@
 #include "driver.h"
 #include "global_defs.h"
 #include "pros/llemu.hpp"
+#include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "pros/rtos.hpp"
@@ -12,7 +13,6 @@
 #include <string>
 #include <tuple>
 
-int autonSelector = 0;
 bool skillsToggle = true;
 std::list<std::tuple<std::function<void(PID a, PID b, PID c)>, std::string>>
     skills_routes;
@@ -21,9 +21,12 @@ std::list<std::tuple<std::function<void(PID a, PID b, PID c)>, std::string>>::
 std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
     match_routes.begin();
-std::list<std::tuple<PID, PID, PID, std::string>> pids;
-std::list<std::tuple<PID, PID, PID, std::string>>::iterator pid_iter =
-    pids.begin();
+
+PID leftpid = PID(0,0,0,15,1000);
+PID rightpid = PID(0,0,0,15,1000);
+PID turnpid = PID(0,0,0,0.5,100);
+int pid_iter = 0;
+int lrt_iter = 0;
 
 void route_counter_up() {
   if (skillsToggle) {
@@ -37,8 +40,9 @@ void route_counter_up() {
       ++match_iter;
     }
   }
-  pros::lcd::set_text(3, (skillsToggle) ? std::get<1>(*skills_iter)
-                                        : std::get<1>(*match_iter));
+  std::string route_name = (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter);
+  pros::lcd::set_text(3, route_name);
+  master.print(0,0,route_name.c_str());
 }
 
 void route_counter_down() {
@@ -52,16 +56,11 @@ void route_counter_down() {
       match_iter = match_routes.end();
     }
   }
-  pros::lcd::set_text(3, (skillsToggle) ? std::get<1>(*skills_iter)
-                                        : std::get<1>(*match_iter));
+  std::string route_name = (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter);
+  pros::lcd::set_text(3, route_name);
+  master.print(0,0,route_name.c_str());
 }
 
-void pid_counter_up() {
-  if (++pid_iter == pids.end()) {
-    pid_iter = pids.begin();
-  }
-  pros::lcd::set_text(2, "PID: " + std::get<3>(*pid_iter));
-}
 
 void skills_toggle() {
   skillsToggle = !skillsToggle;
@@ -78,6 +77,83 @@ void skills_toggle() {
   pros::lcd::set_text(2, ba);
 }
 
+void scroll_routes(){
+  if(master.get_digital_new_press(DIGITAL_X)){
+    route_counter_up();
+  }
+  if(master.get_digital_new_press(DIGITAL_B)){
+    route_counter_down();
+  }
+}
+
+void scroll_pid_selection(){
+  if(master.get_digital_new_press(DIGITAL_RIGHT)){
+    lrt_iter++ ;
+    lrt_iter %= 3;
+    switch (lrt_iter){
+      case 0:
+        master.print(1,0,"Left");
+      case 1:
+        master.print(1,0,"Rite");
+      case 2:
+        master.print(1,0,"Turn");
+    }
+  }
+  if(master.get_digital_new_press(DIGITAL_LEFT)){
+    pid_iter++;
+    pid_iter %= 3;
+    switch (pid_iter){
+      case 0:
+        master.print(1,5,"P");
+      case 1:
+        master.print(1,5,"I");
+      case 2:
+        master.print(1,5,"D");
+    }
+  }
+}
+
+
+void incr_decr_pid_vals() {
+  double p_incr = 0.01;
+  double i_incr = 0.01;
+  double d_incr = 0.1;
+
+  PID pid_to_change = PID(0,0,0,0,0);
+  double *value_to_change; 
+  double incr = 0;
+  switch(lrt_iter){
+    case 0:
+      pid_to_change = leftpid; 
+    case 1:
+      pid_to_change = rightpid; 
+    case 2:
+      pid_to_change = turnpid; 
+  }
+  switch(pid_iter){
+    case 0:
+      value_to_change = &pid_to_change.P_weight;
+      incr = p_incr;
+    case 1:
+      value_to_change = &pid_to_change.I_weight;
+      incr = i_incr;
+    case 2:
+      value_to_change = &pid_to_change.D_weight;
+      incr = d_incr;
+  }
+  if(master.get_digital_new_press(DIGITAL_UP)){
+    *value_to_change += incr;
+  }
+  if(master.get_digital(DIGITAL_DOWN)){
+    *value_to_change -= incr;
+  }
+}
+
+void display_pid_values(){
+  
+}
+
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -86,55 +162,28 @@ void skills_toggle() {
  */
 void dummy(PID a, PID b, PID c) { return; }
 void initialize() {
-  std::tuple<PID, PID, PID, std::string> classicPID = std::make_tuple(
-      PID(0.225, 0.01, 0, 15, 1000), 
-      PID(0.225, 0.01, 0, 15, 1000),
-      PID(1.1, 0.00001, 0, 1, 14), "classic");
-  std::tuple<PID, PID, PID, std::string> highStraightPID =std::make_tuple(
-      PID(0.3, 0.01, 0, 15, 1000), 
-      PID(0.3, 0.01, 0, 15, 1000),
-      PID(1.1, 0.001, 0, 1, 14), "high Straight P");
-  std::tuple<PID, PID, PID, std::string> highTurnPID = std::make_tuple(
-      PID(0.225, 0.01, 0, 15, 1000), 
-      PID(0.225, 0.01, 0, 15, 1000),
-      PID(1.3, 0.001, 0, 1, 14), "high Turn P");
-  std::tuple<PID, PID, PID, std::string> precisionPID = std::make_tuple(
-      PID(0.225, 0.01, 0, 5, 1000), 
-      PID(0.225, 0.01, 0, 5, 1000),
-      PID(1.1, 0.00001, 0, 1, 14), "precision");
-  std::tuple<PID, PID, PID, std::string> zeroPID = std::make_tuple(
-      PID(0, 0, 0, 5, 1000), 
-      PID(0, 0, 0, 5, 1000),
-      PID(0, 0, 0, 1, 14), "zero");
-  pids.push_back(classicPID);
-  pids.push_back(highStraightPID);
-  pids.push_back(highTurnPID);
-  pids.push_back(precisionPID);
-  pids.push_back(zeroPID);
   skills_routes.push_back(std::make_tuple(dummy, "DUMMY"));
   skills_routes.push_back(
-      std::make_tuple(full_skills_route_part1, "full_skills_part_1"));
+      std::make_tuple(full_skills_route_part1, "full_skills_1"));
   skills_routes.push_back(
-      std::make_tuple(full_skills_route_part2, "full_skills_part_2"));
+      std::make_tuple(full_skills_route_part2, "full_skills_2"));
   skills_routes.push_back(
-      std::make_tuple(full_skills_route_part3, "full_skills_part_3"));
+      std::make_tuple(full_skills_route_part3, "full_skills_3"));
   skills_routes.push_back(
-      std::make_tuple(full_skills_route_part4, "full_skills_part_4"));
-  skills_routes.push_back(
-      std::make_tuple(out, "out"));
+      std::make_tuple(full_skills_route_part4, "full_skills_4"));
+  match_routes.push_back(
+      std::make_tuple(match_drew, "match_drew"));
+  match_routes.push_back(
+      std::make_tuple(match_drew, "match_drew2_lol"));
 //DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
-  ++match_iter;
   ++skills_iter;
   ++match_iter;
   pros::lcd::initialize();
-  pros::lcd::set_text(1, "WE RESPECT WOMEN");
-  pros::lcd::register_btn0_cb(pid_counter_up);
+  pros::lcd::set_text(1, "lists populated");
   pros::lcd::register_btn1_cb(route_counter_down);
   pros::lcd::register_btn2_cb(route_counter_up);
-  pros::lcd::set_text(2, "PID: " + std::get<3>(*pid_iter));
-  pros::lcd::set_text(3, (skillsToggle) ? std::get<1>(*skills_iter)
-                                        : std::get<1>(*match_iter));
+  pros::lcd::set_text(3, (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter));
 }
 
 /**
@@ -167,10 +216,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  PID left = std::get<0>(*pid_iter);
-  PID right = std::get<1>(*pid_iter);
-  PID turn = std::get<2>(*pid_iter);
-  std::get<0> (*skills_iter)(left, right, turn);
+  std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
 }
 
 /**
@@ -188,11 +234,15 @@ void autonomous() {
  */
 void opcontrol() {
   master.clear();
-  std::cout << "test test test";
   rightElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   leftElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  int i = 0;
+  double flywheel_percent = 0.80;
+//	std::string x = std::to_string(std::get<0>(*pid_iter).P_weight);
   while (true) {
+    
+    scroll_routes();
+    scroll_pid_selection();
+
     // Tank Drive Code Sticks
     moveDrive();
 
@@ -205,11 +255,13 @@ void opcontrol() {
     // Flippers Button: R2
     activateFlippers();
 
-    // Intake Activation Button: R1
-    activateIntake();
+	// intake up or down: A
+    activateIntake90();
+	// intake up and down at once: B
+    activateIntake180();
 
     // Flywheel On by default
-    flywheelRun();
+    rightFlyun(flywheel_percent);
 
     // Elevation Lock on Button: Left
     activateElevation();

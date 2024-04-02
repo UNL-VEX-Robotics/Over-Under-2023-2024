@@ -9,11 +9,11 @@ class PID{
         void reset();
         double getNextValue(double currentValue);
         bool isSettled();
+        double P_weight, I_weight, D_weight;
     private:
         int i;
         double toleranceMargin;
         double integralMaxError;
-        double P_weight, I_weight, D_weight;
         double error;
         double previousError;
         double P_value, I_value, D_value;
