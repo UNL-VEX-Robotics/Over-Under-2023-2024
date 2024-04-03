@@ -4,7 +4,9 @@ class PID{
     public:
         PID(double P_weight, double I_weight, double D_weight, double toleranceMargin, double integralMaxError);
         void setMargin(double margin);
-        void tune(double p, double i, double d);
+        void tuneD(double incr);
+        void tuneP(double incr);
+        void tuneI(double incr);
         void setError(double value);
         void reset();
         double getNextValue(double currentValue);

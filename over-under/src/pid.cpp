@@ -24,10 +24,14 @@ void PID::setError(double value){
     error = value;
 }
 
-void PID::tune(double p, double i, double d){
-    P_weight = p;
-    I_weight = i;
-    D_weight = d;
+void PID::tuneP(double incr){
+    P_weight += incr;
+}
+void PID::tuneI(double incr){
+    I_weight += incr;
+}
+void PID::tuneD(double incr){
+    D_weight += incr;
 }
 
 

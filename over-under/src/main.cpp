@@ -8,6 +8,7 @@
 #include "pros/motors.hpp"
 #include "pros/rtos.hpp"
 #include "routes.h"
+#include <cstddef>
 #include <iostream>
 #include <list>
 #include <string>
@@ -22,9 +23,9 @@ std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
     match_routes.begin();
 
-PID leftpid = PID(0,0,0,15,1000);
-PID rightpid = PID(0,0,0,15,1000);
-PID turnpid = PID(0,0,0,0.5,100);
+PID leftpid = PID(1.0,0,0,15,1000);
+PID rightpid = PID(2.0,0,0,15,1000);
+PID turnpid = PID(6.0,0,0,0.5,100);
 int pid_iter = 0;
 int lrt_iter = 0;
 
@@ -93,10 +94,13 @@ void scroll_pid_selection(){
     switch (lrt_iter){
       case 0:
         master.print(1,0,"Left");
+        break;
       case 1:
         master.print(1,0,"Rite");
+        break;
       case 2:
         master.print(1,0,"Turn");
+        break;
     }
   }
   if(master.get_digital_new_press(DIGITAL_LEFT)){
@@ -105,53 +109,75 @@ void scroll_pid_selection(){
     switch (pid_iter){
       case 0:
         master.print(1,5,"P");
+        break;
       case 1:
         master.print(1,5,"I");
+        break;
       case 2:
         master.print(1,5,"D");
+        break;
     }
   }
 }
 
+
+void display_pid_values(PID *pid){
+  double p = pid->P_weight;
+  double i = pid->I_weight;
+  double d = pid->D_weight;
+
+  master.print(2,0,"P %f", p);
+}
 
 void incr_decr_pid_vals() {
   double p_incr = 0.01;
   double i_incr = 0.01;
   double d_incr = 0.1;
 
-  PID pid_to_change = PID(0,0,0,0,0);
-  double *value_to_change; 
-  double incr = 0;
+  PID* pid_to_change = nullptr;  
+  double *value_to_change = nullptr; 
+  double incr = 5;
   switch(lrt_iter){
     case 0:
-      pid_to_change = leftpid; 
+      pid_to_change = &leftpid; 
+      break;
     case 1:
-      pid_to_change = rightpid; 
+      pid_to_change = &rightpid; 
+      break;
     case 2:
-      pid_to_change = turnpid; 
+      pid_to_change = &turnpid; 
+      break;
   }
   switch(pid_iter){
     case 0:
-      value_to_change = &pid_to_change.P_weight;
+      value_to_change = &(pid_to_change->P_weight);
       incr = p_incr;
+      break;
     case 1:
-      value_to_change = &pid_to_change.I_weight;
+      value_to_change = &(pid_to_change->I_weight);
       incr = i_incr;
+      break;
     case 2:
-      value_to_change = &pid_to_change.D_weight;
+      value_to_change = &(pid_to_change->D_weight);
       incr = d_incr;
+      break;
   }
   if(master.get_digital_new_press(DIGITAL_UP)){
+    std::cout << *value_to_change;
     *value_to_change += incr;
+    std::cout << *value_to_change;
+    std::cout<<"\n";
+    display_pid_values(pid_to_change);
   }
   if(master.get_digital(DIGITAL_DOWN)){
+    std::cout << *value_to_change;
     *value_to_change -= incr;
+    std::cout << *value_to_change;
+    std::cout<<"\n";
+    display_pid_values(pid_to_change);
   }
 }
 
-void display_pid_values(){
-  
-}
 
 
 /**
@@ -237,11 +263,11 @@ void opcontrol() {
   rightElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   leftElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   double flywheel_percent = 0.80;
-//	std::string x = std::to_string(std::get<0>(*pid_iter).P_weight);
   while (true) {
     
     scroll_routes();
     scroll_pid_selection();
+    incr_decr_pid_vals();
 
     // Tank Drive Code Sticks
     moveDrive();
