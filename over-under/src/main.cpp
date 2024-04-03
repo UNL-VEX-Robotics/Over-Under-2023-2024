@@ -121,12 +121,17 @@ void scroll_pid_selection(){
 }
 
 
-void display_pid_values(PID *pid){
+void display_p_value(PID *pid){
   double p = pid->P_weight;
+  master.print(1,7,"P %f", p);
+}
+void display_i_value(PID *pid){
   double i = pid->I_weight;
+  master.print(2,0,"I %f", i);
+}
+void display_d_value(PID *pid){
   double d = pid->D_weight;
-
-  master.print(2,0,"P %f", p);
+  master.print(2,7,"I %f", d);
 }
 
 void incr_decr_pid_vals() {
@@ -137,44 +142,59 @@ void incr_decr_pid_vals() {
   PID* pid_to_change = nullptr;  
   double *value_to_change = nullptr; 
   double incr = 5;
-  switch(lrt_iter){
-    case 0:
-      pid_to_change = &leftpid; 
-      break;
-    case 1:
-      pid_to_change = &rightpid; 
-      break;
-    case 2:
-      pid_to_change = &turnpid; 
-      break;
-  }
-  switch(pid_iter){
-    case 0:
-      value_to_change = &(pid_to_change->P_weight);
-      incr = p_incr;
-      break;
-    case 1:
-      value_to_change = &(pid_to_change->I_weight);
-      incr = i_incr;
-      break;
-    case 2:
-      value_to_change = &(pid_to_change->D_weight);
-      incr = d_incr;
-      break;
-  }
   if(master.get_digital_new_press(DIGITAL_UP)){
-    std::cout << *value_to_change;
-    *value_to_change += incr;
-    std::cout << *value_to_change;
-    std::cout<<"\n";
-    display_pid_values(pid_to_change);
+    switch(lrt_iter){
+      case 0:
+        pid_to_change = &leftpid; 
+        break;
+      case 1:
+        pid_to_change = &rightpid; 
+        break;
+      case 2:
+        pid_to_change = &turnpid; 
+        break;
+    }
+    switch(pid_iter){
+      case 0:
+        pid_to_change->P_weight += p_incr;
+        display_p_value(pid_to_change);
+        break;
+      case 1:
+        pid_to_change->I_weight += i_incr;
+        display_i_value(pid_to_change);
+        break;
+      case 2:
+        pid_to_change->D_weight += d_incr;
+        display_d_value(pid_to_change);
+        break;
+    }
   }
   if(master.get_digital(DIGITAL_DOWN)){
-    std::cout << *value_to_change;
-    *value_to_change -= incr;
-    std::cout << *value_to_change;
-    std::cout<<"\n";
-    display_pid_values(pid_to_change);
+    switch(lrt_iter){
+      case 0:
+        pid_to_change = &leftpid; 
+        break;
+      case 1:
+        pid_to_change = &rightpid; 
+        break;
+      case 2:
+        pid_to_change = &turnpid; 
+        break;
+    }
+    switch(pid_iter){
+      case 0:
+        pid_to_change->P_weight -= p_incr;
+        display_p_value(pid_to_change);
+        break;
+      case 1:
+        pid_to_change->I_weight -= i_incr;
+        display_i_value(pid_to_change);
+        break;
+      case 2:
+        pid_to_change->D_weight -= d_incr;
+        display_d_value(pid_to_change);
+        break;
+    }
   }
 }
 
@@ -199,14 +219,12 @@ void initialize() {
       std::make_tuple(full_skills_route_part4, "full_skills_4"));
   match_routes.push_back(
       std::make_tuple(match_drew, "match_drew"));
-  match_routes.push_back(
-      std::make_tuple(match_drew, "match_drew2_lol"));
-//DONT DELETE OR MOVE THIS COMMENT SRSLY
+  //DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
   ++skills_iter;
   ++match_iter;
   pros::lcd::initialize();
-  pros::lcd::set_text(1, "lists populated");
+  pros::lcd::set_text(1, "WE ARE SO BACK");
   pros::lcd::register_btn1_cb(route_counter_down);
   pros::lcd::register_btn2_cb(route_counter_up);
   pros::lcd::set_text(3, (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter));
