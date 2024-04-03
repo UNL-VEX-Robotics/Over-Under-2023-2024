@@ -131,7 +131,7 @@ void display_i_value(PID *pid){
 }
 void display_d_value(PID *pid){
   double d = pid->D_weight;
-  master.print(2,7,"I %f", d);
+  master.print(2,7,"D %f", d);
 }
 
 void incr_decr_pid_vals() {
@@ -140,8 +140,6 @@ void incr_decr_pid_vals() {
   double d_incr = 0.1;
 
   PID* pid_to_change = nullptr;  
-  double *value_to_change = nullptr; 
-  double incr = 5;
   if(master.get_digital_new_press(DIGITAL_UP)){
     switch(lrt_iter){
       case 0:
@@ -230,11 +228,6 @@ void initialize() {
   pros::lcd::set_text(3, (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter));
 }
 
-/**
- * Runs while the robot is in the disabled state of Field Management System or
- * the VEX Competition Switch, following either autonomous or opcontrol. When
- * the robot is enabled, this task will exit.
- */
 void disabled() {}
 
 /**
@@ -254,28 +247,12 @@ void competition_initialize() {}
  * the Field Management System or the VEX Competition Switch in the autonomous
  * mode. Alternatively, this function may be called in initialize or opcontrol
  * for non-competition testing purposes.
- *
- * If the robot is disabled or communications is lost, the autonomous task
- * will be stopped. Re-enabling the robot will restart the task, not re-start it
- * from where it left off.
  */
 void autonomous() {
   std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
 }
 
-/**
- * Runs the operator control code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the operator
- * control mode.
- *
- * If no competition control is connected, this function will run immediately
- * following initialize().
- *
- * If the robot is disabled or communications is lost, the
- * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
- */
+//runs in its own task
 void opcontrol() {
   master.clear();
   rightElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
@@ -287,7 +264,6 @@ void opcontrol() {
     scroll_pid_selection();
     incr_decr_pid_vals();
 
-    // Tank Drive Code Sticks
     moveDrive();
 
     // Elevation Button: X for up,  B for down
@@ -299,9 +275,7 @@ void opcontrol() {
     // Flippers Button: R2
     activateFlippers();
 
-	// intake up or down: A
     activateIntake90();
-	// intake up and down at once: B
     activateIntake180();
 
     // Flywheel On by default
