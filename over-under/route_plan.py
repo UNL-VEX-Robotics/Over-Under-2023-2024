@@ -36,7 +36,7 @@ class PopupWindow:
         self.entry_filename = Entry(self.popup)
         self.entry_filename.grid(row=0, column=1, padx=5, pady=5)
 
-        self.label_bot_size = Label(self.popup, text="Bot width (your bot is a square do not argue)")
+        self.label_bot_size = Label(self.popup, text="Bot width (inches)")
         self.label_bot_size.grid(row=1, column=0, padx=5, pady=5)
         self.entry_bot_size = Entry(self.popup)
         self.entry_bot_size.grid(row=1, column=1, padx=5, pady=5)
