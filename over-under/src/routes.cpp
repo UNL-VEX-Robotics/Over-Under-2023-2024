@@ -5,6 +5,7 @@
 #include "auton.h"
 #include "pros/rtos.hpp"
 #include <string>
+#include <list>
 
 void shoot(int num){
     intakeRight = 127;
@@ -97,6 +98,17 @@ void skills(double start_heading){
     go(3.5*12);
 }
 
+void match_drew(){
+    std::list<pros::Motor> motors = {botLeftDrive, midLeftDrive, topLeftDrive, botRightDrive, midRightDrive, topRightDrive};
+    for (pros::Motor m: motors){
+        m.move_relative(-blue_ticks_per_rev*2.0*6/10, 100);
+    }
+    for (pros::Motor m: motors){
+        m.move_relative(blue_ticks_per_rev*5.0*6/10, 100);
+    }
+}
+
+
 void ez_skills_start_on_left(){
     shoot(15);
     while (imu.is_calibrating()){
@@ -180,43 +192,6 @@ void match_tanner(){
     go(24);
     turn(convert(180));
     go(18);
-}
-
-void match_drew(){
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    imu.set_heading(convert(0));
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    // go(48);
-    // turn(0);
-    // set_all_voltage(0);
-    // pros::lcd::set_text(5, "Drive Complete");
-
-
-    pros::lcd::set_text(4, std::to_string(imu.get_heading()));
-    turn(180);
-    pros::lcd::set_text(5, std::to_string(imu.get_heading()));
-    pros::delay(2000);
-    turn(0);
-    pros::lcd::set_text(6, std::to_string(imu.get_heading()));
-
-
-    // intakePneu.set_value(1);
-    // flywheel_in(500, 60);
-    // intake_in(1200, 100);
-    // intakePneu.set_value(0);
-    // go(-5);
-    // turn(220);
-    // pros::lcd::set_text(4, "Completed Turn");
-    // go(10);
-    // pros::lcd::set_text(4, "Drive Finished");
-    // turn(270);
-    // go(5);
-    // intake_out(1000);
-    // 
 }
 
 void full_skills_route_part1(){
