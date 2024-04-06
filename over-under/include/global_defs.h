@@ -49,7 +49,7 @@ extern pros::Motor rightFly;
 
 extern pros::ADIDigitalOut flippers;
 extern pros::ADIDigitalOut eleLock;
-extern pros::ADIDigitalOut intakePneu;
+extern pros::Motor intakeActuation;
 extern pros::ADIDigitalOut eleLock;
 
 extern float wheel_radius;

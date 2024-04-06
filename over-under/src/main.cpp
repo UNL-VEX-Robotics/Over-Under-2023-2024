@@ -9,9 +9,11 @@
 #include "pros/rtos.hpp"
 #include "routes.h"
 #include <cstddef>
+#include <iomanip>
 #include <iostream>
 #include <list>
 #include <string>
+#include <sys/select.h>
 #include <tuple>
 
 bool skillsToggle = true;
@@ -23,9 +25,10 @@ std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
     match_routes.begin();
 
-PID leftpid = PID(1.0,0,0,15,1000);
-PID rightpid = PID(2.0,0,0,15,1000);
-PID turnpid = PID(6.0,0,0,0.5,100);
+PID leftpid = PID(.12,0,1,15,1000);
+PID rightpid = PID(.12,0,1,15,1000);
+PID turnpid = PID(0.79,0.01,0,0.5,100);
+PID *selected_pid = &leftpid;
 int pid_iter = 0;
 int lrt_iter = 0;
 
@@ -43,6 +46,7 @@ void route_counter_up() {
   }
   std::string route_name = (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter);
   pros::lcd::set_text(3, route_name);
+  master.clear_line(0);
   master.print(0,0,route_name.c_str());
 }
 
@@ -59,6 +63,7 @@ void route_counter_down() {
   }
   std::string route_name = (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter);
   pros::lcd::set_text(3, route_name);
+  master.clear_line(0);
   master.print(0,0,route_name.c_str());
 }
 
@@ -87,6 +92,19 @@ void scroll_routes(){
   }
 }
 
+void display_p_value(PID *pid){
+  double p = pid->P_weight;
+  master.print(2,0,"P %.5f", p);
+}
+void display_i_value(PID *pid){
+  double i = pid->I_weight;
+  master.print(2,0,"I %.5f", i);
+}
+void display_d_value(PID *pid){
+  double d = pid->D_weight;
+  master.print(2,0,"D %.5f", d);
+}
+
 void scroll_pid_selection(){
   if(master.get_digital_new_press(DIGITAL_RIGHT)){
     lrt_iter++ ;
@@ -94,12 +112,15 @@ void scroll_pid_selection(){
     switch (lrt_iter){
       case 0:
         master.print(1,0,"Left");
+        selected_pid = &leftpid;
         break;
       case 1:
         master.print(1,0,"Rite");
+        selected_pid = &rightpid;
         break;
       case 2:
         master.print(1,0,"Turn");
+        selected_pid = &turnpid;
         break;
     }
   }
@@ -108,93 +129,58 @@ void scroll_pid_selection(){
     pid_iter %= 3;
     switch (pid_iter){
       case 0:
-        master.print(1,5,"P");
+        display_p_value(selected_pid);
         break;
       case 1:
-        master.print(1,5,"I");
+        display_i_value(selected_pid);
         break;
       case 2:
-        master.print(1,5,"D");
+        display_d_value(selected_pid);
         break;
     }
   }
 }
 
 
-void display_p_value(PID *pid){
-  double p = pid->P_weight;
-  master.print(1,7,"P %f", p);
-}
-void display_i_value(PID *pid){
-  double i = pid->I_weight;
-  master.print(2,0,"I %f", i);
-}
-void display_d_value(PID *pid){
-  double d = pid->D_weight;
-  master.print(2,7,"D %f", d);
-}
 
 void incr_decr_pid_vals() {
   double p_incr = 0.01;
   double i_incr = 0.01;
   double d_incr = 0.1;
 
-  PID* pid_to_change = nullptr;  
   if(master.get_digital_new_press(DIGITAL_UP)){
-    switch(lrt_iter){
-      case 0:
-        pid_to_change = &leftpid; 
-        break;
-      case 1:
-        pid_to_change = &rightpid; 
-        break;
-      case 2:
-        pid_to_change = &turnpid; 
-        break;
-    }
     switch(pid_iter){
       case 0:
-        pid_to_change->P_weight += p_incr;
-        display_p_value(pid_to_change);
+        selected_pid->P_weight += p_incr;
+        display_p_value(selected_pid);
         break;
       case 1:
-        pid_to_change->I_weight += i_incr;
-        display_i_value(pid_to_change);
+        selected_pid->I_weight += i_incr;
+        display_i_value(selected_pid);
         break;
       case 2:
-        pid_to_change->D_weight += d_incr;
-        display_d_value(pid_to_change);
+        selected_pid->D_weight += d_incr;
+        display_d_value(selected_pid);
         break;
     }
   }
-  if(master.get_digital(DIGITAL_DOWN)){
-    switch(lrt_iter){
-      case 0:
-        pid_to_change = &leftpid; 
-        break;
-      case 1:
-        pid_to_change = &rightpid; 
-        break;
-      case 2:
-        pid_to_change = &turnpid; 
-        break;
-    }
+  if(master.get_digital_new_press(DIGITAL_DOWN)){
     switch(pid_iter){
       case 0:
-        pid_to_change->P_weight -= p_incr;
-        display_p_value(pid_to_change);
+        selected_pid->P_weight -= p_incr;
+        display_p_value(selected_pid);
         break;
       case 1:
-        pid_to_change->I_weight -= i_incr;
-        display_i_value(pid_to_change);
+        selected_pid->I_weight -= i_incr;
+        display_i_value(selected_pid);
         break;
       case 2:
-        pid_to_change->D_weight -= d_incr;
-        display_d_value(pid_to_change);
+        selected_pid->D_weight -= d_incr;
+        display_d_value(selected_pid);
         break;
     }
   }
-}
+  }
 
 
 
@@ -206,7 +192,9 @@ void incr_decr_pid_vals() {
  */
 void dummy(PID a, PID b, PID c) { return; }
 void initialize() {
+  master.clear();
   skills_routes.push_back(std::make_tuple(dummy, "DUMMY"));
+  skills_routes.push_back(std::make_tuple(test_route, "test_route"));
   skills_routes.push_back(
       std::make_tuple(full_skills_route_part1, "full_skills_1"));
   skills_routes.push_back(
@@ -215,8 +203,7 @@ void initialize() {
       std::make_tuple(full_skills_route_part3, "full_skills_3"));
   skills_routes.push_back(
       std::make_tuple(full_skills_route_part4, "full_skills_4"));
-  match_routes.push_back(
-      std::make_tuple(match_drew, "match_drew"));
+  
   //DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
   ++skills_iter;
@@ -225,7 +212,9 @@ void initialize() {
   pros::lcd::set_text(1, "WE ARE SO BACK");
   pros::lcd::register_btn1_cb(route_counter_down);
   pros::lcd::register_btn2_cb(route_counter_up);
-  pros::lcd::set_text(3, (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter));
+  std::string route_name = (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter);
+  pros::lcd::set_text(3, route_name);
+  master.print(0, 0, route_name.c_str());
 }
 
 void disabled() {}
@@ -255,9 +244,11 @@ void autonomous() {
 //runs in its own task
 void opcontrol() {
   master.clear();
+  display_d_value(selected_pid);
   rightElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   leftElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   double flywheel_percent = 0.80;
+
   while (true) {
     
     scroll_routes();
@@ -274,12 +265,6 @@ void opcontrol() {
 
     // Flippers Button: R2
     activateFlippers();
-
-    activateIntake90();
-    activateIntake180();
-
-    // Flywheel On by default
-    rightFlyun(flywheel_percent);
 
     // Elevation Lock on Button: Left
     activateElevation();

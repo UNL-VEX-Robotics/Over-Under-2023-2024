@@ -212,3 +212,15 @@ void full_skills_route_part4(PID leftPID, PID rightPID, PID turnPID){
     leftElevation = 0;
     //intake.set_value(false);
 }
+
+
+void test_route(PID left, PID right, PID turnP){
+    turn(270, turnP);
+    go(24, left, right);
+    turn(90, turnP);
+    go(24, left, right);
+    turn(270, turnP);
+    go(12, left, right);
+    turn(0, turnP);
+    go(-12, left, right);
+}

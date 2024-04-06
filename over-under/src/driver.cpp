@@ -102,7 +102,6 @@ bool intakeToggle = false;
 void activateIntake(){
 	if(master.get_digital_new_press(DIGITAL_R1)){
 		intakeToggle = !intakeToggle;
-		intakePneu.set_value(intakeToggle);
 		pros::delay(300);
 	}
 }
