@@ -7,20 +7,12 @@
 #include "pros/rtos.hpp"
 #include "global_defs.h"
 
-//Changes All Elevation Pistions to Given Position
-void elevationPistions(bool isActivated){
-	elevation1.set_value(isActivated);
-	elevation2.set_value(isActivated);
-	elevation3.set_value(isActivated);
-	elevation4.set_value(isActivated);
-}
-
 //Activate Elevation Button: Right Arrow
 bool elevationToggle = false;
 void elevationActive(){
-	if(master.get_digital_new_press(DIGITAL_RIGHT)){
+	if(master.get_digital_new_press(DIGITAL_LEFT)){
 		elevationToggle = !elevationToggle;
-		elevationPistions(elevationToggle);
+        elevation1.set_value(elevationToggle);
 		pros::delay(300);
 	}
 }
@@ -30,8 +22,8 @@ void elevationActive(){
 void moveDrive(){
 	
 	//Arcade Drive
-	int left = (.70 * master.get_analog(ANALOG_LEFT_Y));
-	int right = (.70 * master.get_analog(ANALOG_RIGHT_Y));
+	int left = (.93 * master.get_analog(ANALOG_LEFT_Y));
+	int right = (.83 * master.get_analog(ANALOG_RIGHT_Y));
 
 	topRightDrive = right;
 	midRightDrive = right;

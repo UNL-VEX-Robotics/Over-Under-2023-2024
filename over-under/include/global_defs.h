@@ -1,7 +1,6 @@
 #include "auton.h"
 #include "pros/adi.hpp"
 #include "pros/imu.hpp"
-#include "pros/misc.h"
 #include "pros/misc.hpp"
 #include "pros/motors.hpp"
 
@@ -30,10 +29,7 @@
 
 #define ELEVATION_LOCK 'V'
 
-#define ELEVATION1 'A'
-#define ELEVATION2 'B'
-#define ELEVATION3 'G'
-#define ELEVATION4 'H'
+#define ELEVATION1 'B'
 
 extern pros::Controller master;
 
@@ -62,9 +58,6 @@ extern pros::ADIDigitalOut eleLock;
 extern pros::ADIDigitalOut intakePneu;
 
 extern pros::ADIDigitalOut elevation1;
-extern pros::ADIDigitalOut elevation2;
-extern pros::ADIDigitalOut elevation3;
-extern pros::ADIDigitalOut elevation4;
 
 extern float wheel_radius;
 extern float encoder_wheel_radius;

@@ -29,10 +29,6 @@ pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
 pros::ADIDigitalOut flippers(FLIPPERS);
 
 pros::ADIDigitalOut elevation1(ELEVATION1);
-pros::ADIDigitalOut elevation2(ELEVATION2);
-pros::ADIDigitalOut elevation3(ELEVATION3);
-pros::ADIDigitalOut elevation4(ELEVATION4);
-
 float wheel_radius=1.625;
 float encoder_wheel_radius=2.75;
 

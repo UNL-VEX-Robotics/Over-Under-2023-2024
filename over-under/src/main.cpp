@@ -92,7 +92,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	full_skills_route_part1();
+	match_shoot_tanner();
 }
 
 /**
@@ -152,6 +152,8 @@ void opcontrol() {
 
 		//Elevation Activate Button: Right
 		elevationActive();
+
+		wheelsBrake();
 
 		i++;
 		pros::delay(2);

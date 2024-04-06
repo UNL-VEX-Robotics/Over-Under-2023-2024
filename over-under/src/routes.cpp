@@ -2,13 +2,22 @@
 #include "pros/imu.hpp"
 #include "pros/motors.hpp"
 #include "auton.h"
+#include "driver.h"
+#include "list"
 
 void shoot(int num){
     intakeRight = 127;
     intakeLeft = -127;
-    leftFly = 127;
-    rightFly = 127;
-    pros::delay(2000);
+    leftFly = .71 * -127;
+	rightFly = .71 * 127; 
+    intakeActuation.move_relative(-red_ticks_per_rev / 4.0, 100);
+
+    pros::delay(1000);
+    for(int i = 0; i < num; i++){
+        intakeActuation.move_relative(red_ticks_per_rev / 2.0, 100);
+        pros::delay(1000);
+    }
+    pros::delay(2500);
     leftFly = 0;
     rightFly = 0;
     intakeRight = 0;
@@ -242,4 +251,9 @@ void full_skills_route_part1(){
     go(47);
     eleLock.set_value(true);
     elevate_up(4000);
+}
+
+void match_shoot_tanner(){
+    wheelsBrake();
+    shoot(18);
 }
