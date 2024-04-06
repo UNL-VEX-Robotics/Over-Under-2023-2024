@@ -7,4 +7,6 @@ void activateIntake180();
 void activateElevation();
 void rightFlyun(double percent);
 void wheelsBrake();
-void changeFlyPowerSecondController();
+void elevationActive();
+void elevationPistions(bool isActivated);
+void activateIntake45();

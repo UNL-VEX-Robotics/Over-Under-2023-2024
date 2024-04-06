@@ -7,30 +7,24 @@
 #include "pros/rtos.hpp"
 #include "global_defs.h"
 
-//Test Code for second controller for tanner
-int velo = 0;
-void changeFlyPowerSecondController(){
-	if (partner.get_digital(DIGITAL_UP)){
-		velo = rightFly.get_voltage();
-		rightFly = velo - 4;
-		velo = leftFly.get_voltage();
-		leftFly = velo + 4;
-		master.clear();
-		pros::delay(50);
-		master.print(0, 0, "IT'S SO OVER");
-	}
-	
-	if (partner.get_digital(DIGITAL_DOWN)){
-		velo = rightFly.get_voltage();
-		rightFly = velo + 4;
-		velo = leftFly.get_voltage();
-		leftFly = velo - 4;
-		master.clear();
-		pros::delay(50);
-		master.print(0, 0, "WE'RE SO BACK");
-	}
-
+//Changes All Elevation Pistions to Given Position
+void elevationPistions(bool isActivated){
+	elevation1.set_value(isActivated);
+	elevation2.set_value(isActivated);
+	elevation3.set_value(isActivated);
+	elevation4.set_value(isActivated);
 }
+
+//Activate Elevation Button: Right Arrow
+bool elevationToggle = false;
+void elevationActive(){
+	if(master.get_digital_new_press(DIGITAL_LEFT)){
+		elevationToggle = !elevationToggle;
+		elevationPistions(elevationToggle);
+		pros::delay(300);
+	}
+}
+
 
 //Function For Drive Code: Sticks
 void moveDrive(){
@@ -113,12 +107,18 @@ void activateIntake180(){
 		intakeActuation.move_relative(red_ticks_per_rev / 2.0, 150);
 	}
 }
+
+void activateIntake45(){
+	if(master.get_digital_new_press(DIGITAL_Y)){
+		intakeActuation.move_relative(-red_ticks_per_rev / 8.0, 150);
+	}
+}
 //Elevation Lock Activation Buttons: Left to Deploy and Pull Back
-bool elevationToggle = false;
+bool elevationLockToggle = false;
 void activateElevation(){
 	if(master.get_digital_new_press(DIGITAL_UP)){
-		elevationToggle = !elevationToggle;
-		eleLock.set_value(elevationToggle);
+		elevationLockToggle = !elevationLockToggle;
+		eleLock.set_value(elevationLockToggle);
 		pros::delay(300);
 	}
 }

@@ -147,8 +147,11 @@ void opcontrol() {
 		//90 is A
 		activateIntake90();
 
-		//180 is Y
+		//180 is X
 		activateIntake180();
+
+		//45 is Y
+		activateIntake45();
 
 		//Flywheel On by default
 		rightFlyun(flywheel_percent);
@@ -158,6 +161,9 @@ void opcontrol() {
 
 		//Wheel Braking set to Button: Right
 		wheelsBrake();
+
+		//Elevation Activate Button: Right
+		elevationActive();
 
 		i++;
 		pros::delay(2);

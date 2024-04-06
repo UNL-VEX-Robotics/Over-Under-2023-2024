@@ -26,12 +26,16 @@
 
 #define INTAKE_ACTUATION 5
 
-#define ELEVATION_LOCK 'C'
 #define FLIPPERS 'F'
 
-extern pros::Controller master;
-static pros::Controller partner(pros::E_CONTROLLER_PARTNER);
+#define ELEVATION_LOCK 'V'
 
+#define ELEVATION1 'A'
+#define ELEVATION2 'B'
+#define ELEVATION3 'G'
+#define ELEVATION4 'H'
+
+extern pros::Controller master;
 
 extern pros::Motor topLeftDrive;
 extern pros::Motor midLeftDrive;
@@ -56,7 +60,11 @@ extern pros::Motor intakeActuation;
 extern pros::ADIDigitalOut flippers;
 extern pros::ADIDigitalOut eleLock;
 extern pros::ADIDigitalOut intakePneu;
-extern pros::ADIDigitalOut eleLock;
+
+extern pros::ADIDigitalOut elevation1;
+extern pros::ADIDigitalOut elevation2;
+extern pros::ADIDigitalOut elevation3;
+extern pros::ADIDigitalOut elevation4;
 
 extern float wheel_radius;
 extern float encoder_wheel_radius;
