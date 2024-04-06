@@ -24,7 +24,8 @@ pros::Motor leftElevation(LEFT_ELEVATION);
 pros::Motor leftFly(LEFT_FLYWHEEL);
 pros::Motor rightFly(RIGHT_FLYWHEEL);
 
-pros::ADIDigitalOut intakePneu(INTAKE_PNEU);
+pros::Motor intakeActuation(INTAKEACTUATION);
+
 pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
 pros::ADIDigitalOut flippers(FLIPPERS);
 

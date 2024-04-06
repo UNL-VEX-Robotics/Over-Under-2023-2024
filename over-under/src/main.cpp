@@ -139,8 +139,7 @@ void opcontrol() {
 		//Flippers Button: R2
 		activateFlippers();
 
-		//Intake Activation Button: R1
-		activateIntake();
+    activateIntake180();
 
 		//Run Flywheel Button: Y
 		flywheelRun();

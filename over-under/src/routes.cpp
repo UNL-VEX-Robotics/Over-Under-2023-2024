@@ -12,13 +12,6 @@ void shoot(int num){
     leftFly = 127;
     rightFly = -127;
     pros::delay(2000);
-    for(int i=0; i < num; i++){
-        intakePneu.set_value(1);
-        pros::delay(600);
-        intakePneu.set_value(0);
-        pros::delay(1200);
-    }
-    intakePneu.set_value(0);
     intakeRight = 0;
     intakeLeft = 0;
     leftFly = 0;
@@ -179,7 +172,6 @@ void match_tanner(){
     go(50);
     turn(convert(45));
     go(12);
-    intakePneu.set_value(1);
     go(-6);
     turn(convert(270));
     go(30);
@@ -241,9 +233,7 @@ void full_skills_route_part1(){
     turn(45);
     go(17);
     turn(353);
-    intakePneu.set_value(true);
     go(68);
-    intakePneu.set_value(false);
     turn(315);
 }
 
@@ -301,7 +291,6 @@ void full_skills_route_part4(){
     rightElevation = 100;
     leftElevation = 100;
     pros::delay(2000);
-    intakePneu.set_value(true);
     go(24);
     eleLock.set_value(true);
     rightElevation = -100;
@@ -309,5 +298,4 @@ void full_skills_route_part4(){
     pros::delay(2000);
     rightElevation = 0;
     leftElevation = 0;
-    intakePneu.set_value(false);
 }
