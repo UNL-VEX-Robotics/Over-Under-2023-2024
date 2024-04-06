@@ -100,7 +100,7 @@ void activateFlippers(){
 
 void activateIntake180(){
 	if(master.get_digital_new_press(DIGITAL_R1)){
-		intakeActuation.move_relative(red_ticks_per_rev / 2.0, 150);
+		intakeActuation.move_relative(red_ticks_per_rev / 2.0, 65);
 	}
 }
 
