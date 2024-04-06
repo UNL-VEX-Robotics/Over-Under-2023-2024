@@ -4,9 +4,9 @@
 #include "pros/misc.hpp"
 #include "pros/motors.hpp"
 
-#define STRAIGHT_LEFT_DRIVE 16 
-#define REVERSE_LEFT_DRIVE1 -8 
-#define REVERSE_LEFT_DRIVE2 -7 
+#define STRAIGHT_LEFT_DRIVE 16
+#define REVERSE_LEFT_DRIVE1 -8
+#define REVERSE_LEFT_DRIVE2 -7
 
 #define REVERSE_RIGHT_DRIVE -4
 #define STRAIGHT_RIGHT_DRIVE1 3
