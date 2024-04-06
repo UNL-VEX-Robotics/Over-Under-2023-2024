@@ -113,36 +113,30 @@ void opcontrol() {
 	rightElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	leftElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	int i = 0;
-	double flywheel_percent = 0.80;
+	double flywheel_percent = 0.82;
 	master.clear();
-	pros::delay(50);
 	while (true) {
-		if (i == 2000){
-			//master.print(0, 0, "Volt:%8.2f",  pros::battery::get_capacity());
-			pros::delay(50);
-			master.print(1, 0, "RF:%8.2f",  rightFly.get_actual_velocity());
-			pros::delay(50);
-			master.print(2, 0, "LF:%8.2f",  -leftFly.get_actual_velocity());
-			i = 0;
-		}
-		pros::lcd::set_text(3, "flywheel percent: " + std::to_string(flywheel_percent));
 		if (master.get_digital_new_press(DIGITAL_UP)){
+			master.print(0, 0, "Volt:%8.2f",  pros::battery::get_capacity());
+			pros::delay(50);
+			master.print(1, 0, "RF:%8.2f",  flywheel_percent);
+			pros::delay(50);
+			master.print(2, 0, "LF:%8.2f", flywheel_percent);
 			flywheel_percent+=0.01;
 		}
 		if (master.get_digital_new_press(DIGITAL_DOWN)){
+			master.print(0, 0, "Volt:%8.2f",  pros::battery::get_capacity());
+			pros::delay(50);
+			master.print(1, 0, "RF:%8.2f",  flywheel_percent);
+			pros::delay(50);
+			master.print(2, 0, "LF:%8.2f", flywheel_percent);
 			flywheel_percent-=0.01;
 		}
 		//Tank Drive Code Sticks
 		moveDrive();
 
-		//Elevation Button: X for up,  B for down
-		elevate();
-
 		//Intake Button: L1 for in, L2 for out
 		intake_func();
-
-		//Flippers Button: R2
-		activteFlippers();
 
 		//90 is A
 		activateIntake90();
@@ -155,12 +149,6 @@ void opcontrol() {
 
 		//Flywheel On by default
 		rightFlyun(flywheel_percent);
-
-		//Elevation Lock on Button: Left
-		activateElevation();
-
-		//Wheel Braking set to Button: Right
-		wheelsBrake();
 
 		//Elevation Activate Button: Right
 		elevationActive();

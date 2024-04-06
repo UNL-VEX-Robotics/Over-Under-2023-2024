@@ -82,7 +82,7 @@ void intake_func(){
 //Flippers Buttons: R2 to Deploy and Pull Back
 bool flipperToggle = false;
 void activteFlippers(){
-	if(master.get_digital_new_press(DIGITAL_Y)){
+	if(master.get_digital_new_press(DIGITAL_L2)){
 		flipperToggle = !flipperToggle;
 		flippers.set_value(flipperToggle);
 		pros::delay(300);
@@ -137,9 +137,6 @@ void rightFlyun(double percent){
 //Toggle to Set Wheels at Brake Type hold
 bool isWheelsBrake = true;
 void wheelsBrake(){
-	if(master.get_digital_new_press(DIGITAL_RIGHT)){
-		isWheelsBrake = !isWheelsBrake;
-	}
 	if(isWheelsBrake){
 		topLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 		midLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
