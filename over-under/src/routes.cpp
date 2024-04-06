@@ -4,14 +4,15 @@
 #include "auton.h"
 #include "driver.h"
 #include "list"
+#include "pros/rtos.hpp"
 
 void shoot(int num){
     intakeRight = 127;
     intakeLeft = -127;
     leftFly = .71 * -127;
 	rightFly = .71 * 127; 
+    pros::delay(1000);
     intakeActuation.move_relative(-red_ticks_per_rev / 4.0, 100);
-
     pros::delay(1000);
     for(int i = 0; i < num; i++){
         intakeActuation.move_relative(red_ticks_per_rev / 2.0, 100);
