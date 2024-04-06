@@ -18,7 +18,7 @@ void elevationPistions(bool isActivated){
 //Activate Elevation Button: Right Arrow
 bool elevationToggle = false;
 void elevationActive(){
-	if(master.get_digital_new_press(DIGITAL_LEFT)){
+	if(master.get_digital_new_press(DIGITAL_RIGHT)){
 		elevationToggle = !elevationToggle;
 		elevationPistions(elevationToggle);
 		pros::delay(300);
