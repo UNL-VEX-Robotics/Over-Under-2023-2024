@@ -2,7 +2,11 @@
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
-#include "global_defs.h"
+#include "global_defs_tanner.h"
+
+pros::controller_analog_e_t intakeButton = pros::E_CONTROLLER_ANALOG_LEFT_Y;
+
+
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 

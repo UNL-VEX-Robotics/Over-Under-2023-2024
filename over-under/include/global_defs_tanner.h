@@ -1,6 +1,6 @@
-#include "auton.h"
 #include "pros/adi.hpp"
 #include "pros/imu.hpp"
+#include "pros/misc.h"
 #include "pros/misc.hpp"
 #include "pros/motors.hpp"
 
@@ -31,6 +31,9 @@
 
 #define ELEVATION1 'B'
 
+
+
+extern pros::controller_analog_e_t intakeButton;
 extern pros::Controller master;
 
 extern pros::Motor topLeftDrive;

@@ -1,5 +1,5 @@
 #include "main.h"
-#include "global_defs.h"
+#include "global_defs_tanner.h"
 #include "pros/imu.hpp"
 #include "pros/motors.hpp"
 #include "auton.h"

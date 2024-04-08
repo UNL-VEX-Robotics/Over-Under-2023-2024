@@ -8,7 +8,7 @@
 #include "pros/motors.hpp"
 #include "pros/rtos.hpp"
 #include <string>
-#include "global_defs.h"
+#include "global_defs_tanner.h"
 #include "driver.h"
 
 /**
@@ -132,6 +132,7 @@ void opcontrol() {
 			master.print(2, 0, "LF:%8.2f", flywheel_percent);
 			flywheel_percent-=0.01;
 		}
+
 		//Tank Drive Code Sticks
 		moveDrive();
 

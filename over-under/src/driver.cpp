@@ -5,7 +5,7 @@
 #include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "pros/rtos.hpp"
-#include "global_defs.h"
+#include "global_defs_tanner.h"
 
 //Activate Elevation Button: Right Arrow
 bool elevationToggle = false;
