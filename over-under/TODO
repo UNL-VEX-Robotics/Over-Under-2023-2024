@@ -1,0 +1,7 @@
+1. Write button mappings for both bots, make common functions use these buttons
+2. Make a main loop function for both bots
+3. Clean everything up
+4. IMPORTANT: Everything regarding auton selector
+ - Can I move initialization & adding stuff to the lists to routes.cpp? If so, have to update route planner
+ - Clean up routes.
+
