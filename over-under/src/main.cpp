@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <iostream>
 #include <list>
+#include <regex>
 #include <string>
 #include <sys/select.h>
 #include <tuple>
@@ -195,15 +196,9 @@ void initialize() {
   master.clear();
   skills_routes.push_back(std::make_tuple(dummy, "DUMMY"));
   skills_routes.push_back(std::make_tuple(test_route, "test_route"));
+  skills_routes.push_back(std::make_tuple(match_drew, "fart poop"));
   skills_routes.push_back(
-      std::make_tuple(full_skills_route_part1, "full_skills_1"));
-  skills_routes.push_back(
-      std::make_tuple(full_skills_route_part2, "full_skills_2"));
-  skills_routes.push_back(
-      std::make_tuple(full_skills_route_part3, "full_skills_3"));
-  skills_routes.push_back(
-      std::make_tuple(full_skills_route_part4, "full_skills_4"));
-  
+      std::make_tuple(match_drew_MONEY, "match_drew_MONEY"));
   //DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
   ++skills_iter;
@@ -265,6 +260,8 @@ void opcontrol() {
 
     // Flippers Button: R2
     activateFlippers();
+
+	activateIntake180();
 
     // Elevation Lock on Button: Left
     activateElevation();

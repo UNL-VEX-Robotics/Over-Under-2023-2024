@@ -97,12 +97,9 @@ void activateFlippers(){
 	}
 }
 
-//Intake Activation Buttons: R1 to Deploy and Pull Back
-bool intakeToggle = false;
-void activateIntake(){
+void activateIntake180(){
 	if(master.get_digital_new_press(DIGITAL_R1)){
-		intakeToggle = !intakeToggle;
-		pros::delay(300);
+		intakeActuation.move_relative(red_ticks_per_rev / 2.0, 65);
 	}
 }
 

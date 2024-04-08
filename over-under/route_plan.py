@@ -296,8 +296,8 @@ class FieldDrawer:
         inoutbutt = Button(self.master, text="Intake Out", command=self.intake_out)
         flyinbutt = Button(self.master, text="Flywheel In", command=self.flywheel_in)
         flyoutbutt = Button(self.master, text="Flywheel Out", command=self.flywheel_out)
-        eleupbutt = Button(self.master, text="Elevation Up", command=self.elevate_up)
-        eledownbutt = Button(self.master, text="Elevation Down", command=self.elevate_down)
+        eleupbutt = Button(self.master, text="Intake180", command=self.elevate_up)
+        eledownbutt = Button(self.master, text="Intake90", command=self.elevate_down)
         time_label = Label(self.master, text="Duration (ms)")
         time_entry = Entry(self.master)
         self.utility_duration_entry = time_entry
@@ -318,10 +318,10 @@ class FieldDrawer:
         self.current_utility = "flywheel_in" 
     
     def elevate_up(self):
-        self.current_utility = "elevate_up"
+        self.current_utility = "intakeActivate180GO"
 
     def elevate_down(self):
-        self.current_utility = "elevate_down"
+        self.current_utility = "intakeUpDown"
 
     
 def main():

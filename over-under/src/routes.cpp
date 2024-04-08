@@ -30,6 +30,14 @@ void shoot(int num){
     pros::delay(500);
 }
 
+void activateIntake180GO(){
+    intakeActuation.move_relative(red_ticks_per_rev / 2.0, 65);
+}
+
+void intakeUpDown(){
+    intakeActuation.move_relative(red_ticks_per_rev / 4.0, 65);
+}
+
 void intake_in(int time, int velo = 127){
     intakeRight = velo;
     intakeLeft = velo;
@@ -39,11 +47,7 @@ void intake_in(int time, int velo = 127){
 }
 
 void intake_out(int time, int velo = 127){
-    intakeRight = -velo;
-    intakeLeft = -velo;
-    pros::delay(time);
-    intakeRight = 0;
-    intakeLeft = 0;
+    intake_in(time, -velo);
 }
 
 void flywheel_in(int time, int velo = 127){
@@ -62,23 +66,7 @@ void flywheel_out(int time){
     rightFly = 0;
 }
 
-void elevate_up(int time){
-    leftElevation = 100;
-    rightElevation = 100;
-    pros::delay(time);
-    leftElevation = 0;
-    rightElevation = 0;
-}
-
-void elevate_down(int time){
-    leftElevation = -100;
-    rightElevation = -100;
-    pros::delay(time);
-    leftElevation = 0;
-    rightElevation = 0;
-}
-
-void match_drew(){
+void match_drew(PID left, PID right, PID turnP){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
@@ -125,94 +113,6 @@ void match_drew(){
 
 }
 
-void full_skills_route_part1(PID leftPID, PID rightPID, PID turnPID){
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    imu.set_heading(convert(135));
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    shoot(1);
-    go(-6, leftPID, rightPID);
-    turn(45, turnPID);
-    go(24, leftPID, rightPID);
-    turn(0, turnPID);
-    //intake.set_value(true);
-    go(72, leftPID, rightPID);
-    //intake.set_value(false);
-    turn(315, turnPID);
-}
-
-void full_skills_route_part2(PID leftPID, PID rightPID, PID turnPID){
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    imu.set_heading(convert(315));
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    flippers.set_value(true);
-    go(24, leftPID, rightPID);
-    turn(270, turnPID);
-    go(24, leftPID, rightPID);
-    go(-12, leftPID, rightPID);
-    go(16, leftPID, rightPID);
-    go(-12, leftPID, rightPID);
-    flippers.set_value(false);
-    turn(180, turnPID);
-    flippers.set_value(true);
-    go(24, leftPID, rightPID);
-}
-
-void full_skills_route_part3(PID leftPID, PID rightPID, PID turnPID){
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    imu.set_heading(convert(180));
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    turn(225, turnPID);
-    go(24, leftPID, rightPID);
-    turn(0, turnPID);
-    go(36, leftPID, rightPID);
-    go(-12, leftPID, rightPID);
-    flippers.set_value(false);
-    turn(200, turnPID);
-    go(36, leftPID, rightPID);
-    turn(0, turnPID);
-    flippers.set_value(true);
-    go(36, leftPID, rightPID);
-    go(-12, leftPID, rightPID);
-    flippers.set_value(false);
-    turn(100, turnPID);
-}
-
-void full_skills_route_part4(PID leftPID, PID rightPID, PID turnPID){
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    imu.set_heading(convert(100));
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    go(72, leftPID, rightPID);
-    turn(180, turnPID);
-    rightElevation = 100;
-    leftElevation = 100;
-    pros::delay(2000);
-    //intake.set_value(true);
-    go(24, leftPID, rightPID);
-    eleLock.set_value(true);
-    rightElevation = -100;
-    leftElevation = -100;
-    pros::delay(2000);
-    rightElevation = 0;
-    leftElevation = 0;
-    //intake.set_value(false);
-}
-
 
 void test_route(PID left, PID right, PID turnP){
     turn(270, turnP);
@@ -223,4 +123,43 @@ void test_route(PID left, PID right, PID turnP){
     go(12, left, right);
     turn(0, turnP);
     go(-12, left, right);
+}
+
+void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
+    while(imu.is_calibrating()){pros::delay(10);}
+    imu.set_heading(convert(270));
+    while(imu.is_calibrating()){pros::delay(10);}
+    turn(269.19307054489764, turnPID);
+    go(54.53340818250772, leftPID, rightPID);
+    turn(0.7690246825780491, turnPID);
+    go(28.610577065134493, leftPID, rightPID);
+    turn(173.46786331214756, turnPID);
+    go(25.31634855187454, leftPID, rightPID);
+    turn(96.5646842913341, turnPID);
+    go(48.703327196404146, leftPID, rightPID);
+    intakeUpDown();
+    turn(359.683451952727, turnPID);
+    go(69.505060765386, leftPID, rightPID);
+    intakeUpDown();
+    turn(327.4028831217652, turnPID);
+    go(33.50111162334766, leftPID, rightPID);
+    turn(270.6986943829835, turnPID);
+    go(15.745170688182457, leftPID, rightPID);
+    turn(124.42647658143909, turnPID);
+    go(20.71643521458265, leftPID, rightPID);
+    turn(61.020292302071226, turnPID);
+    go(14.266258934983622, leftPID, rightPID);
+    intakeUpDown();
+    turn(294.26129085247777, turnPID);
+    go(14.95259709883203, leftPID, rightPID);
+    turn(263.74596725608353, turnPID);
+    go(14.099913191222138, leftPID, rightPID);
+    turn(154.71203173817696, turnPID);
+    go(26.96831207176304, leftPID, rightPID);
+    turn(190.76253722314246, turnPID);
+    go(23.647978349110524, leftPID, rightPID);
+    turn(266.5167285310023, turnPID);
+    go(22.120866529139406, leftPID, rightPID);
+    turn(1.0809241866606953, turnPID);
+    go(30.533433478729506, leftPID, rightPID);
 }
