@@ -113,7 +113,6 @@ void match_drew(PID left, PID right, PID turnP){
 
 }
 
-
 void test_route(PID left, PID right, PID turnP){
     turn(270, turnP);
     go(24, left, right);
@@ -129,7 +128,6 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     while(imu.is_calibrating()){pros::delay(10);}
     imu.set_heading(convert(270));
     while(imu.is_calibrating()){pros::delay(10);}
-    turn(269.19307054489764, turnPID);
     go(54.53340818250772, leftPID, rightPID);
     turn(0.7690246825780491, turnPID);
     go(28.610577065134493, leftPID, rightPID);

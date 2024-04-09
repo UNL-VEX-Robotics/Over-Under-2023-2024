@@ -4,28 +4,30 @@
 #include "pros/misc.hpp"
 #include "pros/motors.hpp"
 
-#define STRAIGHT_LEFT_DRIVE 16
-#define REVERSE_LEFT_DRIVE1 -8
-#define REVERSE_LEFT_DRIVE2 -7
+#define STRAIGHT_LEFT_DRIVE 8 
+#define REVERSE_LEFT_DRIVE1 -17 
+#define REVERSE_LEFT_DRIVE2 -7 
 
-#define REVERSE_RIGHT_DRIVE -4
+#define REVERSE_RIGHT_DRIVE -5
 #define STRAIGHT_RIGHT_DRIVE1 3
-#define STRAIGHT_RIGHT_DRIVE2 5
+#define STRAIGHT_RIGHT_DRIVE2 4
 
-#define RIGHT_INTAKE -19
-#define LEFT_INTAKE 14 
+#define RIGHT_INTAKE 12
+#define LEFT_INTAKE -11 
 
 #define RIGHT_ELEVATION -2
 #define LEFT_ELEVATION 6
 
-#define RIGHT_FLYWHEEL 1
-#define LEFT_FLYWHEEL 18
+#define RIGHT_FLYWHEEL -19
+#define LEFT_FLYWHEEL 14
 
 #define INTAKE_PNEU 'B'
 #define FLIPPERS 'D'
 #define ELEVATION_LOCK 'A'
 
-#define IMU 20
+#define INTAKEACTUATION 18
+
+#define IMU 20 
 
 extern pros::Controller master;
 
@@ -47,9 +49,11 @@ extern pros::Motor leftElevation;
 extern pros::Motor leftFly;
 extern pros::Motor rightFly;
 
+extern pros::Motor intakeActuation;
+
 extern pros::ADIDigitalOut flippers;
 extern pros::ADIDigitalOut eleLock;
-extern pros::Motor intakeActuation;
+extern pros::ADIDigitalOut intakePneu;
 extern pros::ADIDigitalOut eleLock;
 
 extern float wheel_radius;

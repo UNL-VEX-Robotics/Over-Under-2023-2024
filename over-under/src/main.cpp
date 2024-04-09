@@ -26,8 +26,8 @@ std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
     match_routes.begin();
 
-PID leftpid = PID(.12,0,1,15,1000);
-PID rightpid = PID(.12,0,1,15,1000);
+PID leftpid = PID(.12,0.01,0,15,1000);
+PID rightpid = PID(.12,0.01,0,15,1000);
 PID turnpid = PID(0.79,0.01,0,0.5,100);
 PID *selected_pid = &leftpid;
 int pid_iter = 0;
@@ -48,6 +48,8 @@ void route_counter_up() {
   std::string route_name = (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter);
   pros::lcd::set_text(3, route_name);
   master.clear_line(0);
+  pros::delay(50);
+  std::cout << route_name.c_str();
   master.print(0,0,route_name.c_str());
 }
 
@@ -65,6 +67,8 @@ void route_counter_down() {
   std::string route_name = (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter);
   pros::lcd::set_text(3, route_name);
   master.clear_line(0);
+  pros::delay(50);
+  std::cout << route_name.c_str();
   master.print(0,0,route_name.c_str());
 }
 
@@ -85,10 +89,10 @@ void skills_toggle() {
 }
 
 void scroll_routes(){
-  if(master.get_digital_new_press(DIGITAL_X)){
+  if(master.get_digital_new_press(DIGITAL_R1)){
     route_counter_up();
   }
-  if(master.get_digital_new_press(DIGITAL_B)){
+  if(master.get_digital_new_press(DIGITAL_R2)){
     route_counter_down();
   }
 }
@@ -196,7 +200,6 @@ void initialize() {
   master.clear();
   skills_routes.push_back(std::make_tuple(dummy, "DUMMY"));
   skills_routes.push_back(std::make_tuple(test_route, "test_route"));
-  skills_routes.push_back(std::make_tuple(match_drew, "fart poop"));
   skills_routes.push_back(
       std::make_tuple(match_drew_MONEY, "match_drew_MONEY"));
   //DONT DELETE OR MOVE THIS COMMENT SRSLY
@@ -204,7 +207,7 @@ void initialize() {
   ++skills_iter;
   ++match_iter;
   pros::lcd::initialize();
-  pros::lcd::set_text(1, "WE ARE SO BACK");
+  pros::lcd::set_text(1, "its over...");
   pros::lcd::register_btn1_cb(route_counter_down);
   pros::lcd::register_btn2_cb(route_counter_up);
   std::string route_name = (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter);
@@ -233,6 +236,8 @@ void competition_initialize() {}
  * for non-competition testing purposes.
  */
 void autonomous() {
+std::cout << "so it begins";
+std::cout << std::get<1>(*skills_iter);
   std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
 }
 
