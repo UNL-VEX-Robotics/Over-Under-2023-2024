@@ -6,6 +6,8 @@
 #include "pros/rtos.hpp"
 #include <string>
 #include <list>
+#include "math.h"
+
 
 void shoot(int num){
     intakeRight = 127;
@@ -98,14 +100,29 @@ void skills(double start_heading){
     go(3.5*12);
 }
 
+double relative_math(double inches){
+    double e_units = (10.0/6.0)*300*(inches/(2.0*1.625*M_PI));
+    return e_units;
+}
+
+void moveRelative(double inches, double velo = 100){
+    pros::Motor_Group leftMotors({botLeftDrive, midLeftDrive, topLeftDrive});
+    pros::Motor_Group rightMotors({botRightDrive, midRightDrive, topRightDrive});
+    leftMotors.move_relative(relative_math(inches), velo);
+    rightMotors.move_relative(relative_math(inches), velo);
+}
+
 void match_drew(){
-    std::list<pros::Motor> motors = {botLeftDrive, midLeftDrive, topLeftDrive, botRightDrive, midRightDrive, topRightDrive};
-    for (pros::Motor m: motors){
-        m.move_relative(-blue_ticks_per_rev*2.0*6/10, 100);
+    while (imu.is_calibrating()){
+        pros::delay(10);
     }
-    for (pros::Motor m: motors){
-        m.move_relative(blue_ticks_per_rev*5.0*6/10, 100);
+    imu.set_heading(convert(270));
+    while (imu.is_calibrating()){
+        pros::delay(10);
     }
+    moveRelative(60, 75);
+    turn(0);
+    moveRelative(24, 75);
 }
 
 
@@ -274,3 +291,4 @@ void full_skills_route_part4(){
     rightElevation = 0;
     leftElevation = 0;
 }
+
