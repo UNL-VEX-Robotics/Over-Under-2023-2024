@@ -109,6 +109,14 @@ void display_d_value(PID *pid){
   double d = pid->D_weight;
   master.print(2,0,"D %.5f", d);
 }
+void display_all_values(PID *pid){
+  display_p_value(pid);
+  pros::delay(50);
+  display_i_value(pid);
+  pros::delay(50);
+  display_d_value(pid);
+  pros::delay(50);
+}
 
 void scroll_pid_selection(){
   if(master.get_digital_new_press(DIGITAL_RIGHT)){
@@ -132,19 +140,23 @@ void scroll_pid_selection(){
   if(master.get_digital_new_press(DIGITAL_LEFT)){
     pid_iter++;
     pid_iter %= 3;
-    switch (pid_iter){
-      case 0:
-        display_p_value(selected_pid);
-        break;
-      case 1:
-        display_i_value(selected_pid);
-        break;
-      case 2:
-        display_d_value(selected_pid);
-        break;
-    }
+  }
+  switch (pid_iter){
+    case 0:
+      pros::delay(50);
+      display_p_value(selected_pid);
+      break;
+    case 1:
+      pros::delay(50);
+      display_i_value(selected_pid);
+      break;
+    case 2:
+      pros::delay(50);
+      display_d_value(selected_pid);
+      break;
   }
 }
+
 
 
 
