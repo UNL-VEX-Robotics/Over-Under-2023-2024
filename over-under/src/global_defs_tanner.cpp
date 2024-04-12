@@ -7,7 +7,6 @@
 pros::controller_analog_e_t intakeButton = pros::E_CONTROLLER_ANALOG_LEFT_Y;
 
 
-
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 pros::Motor topLeftDrive(STRAIGHT_LEFT_DRIVE);
@@ -22,17 +21,14 @@ pros::Motor intakeRight(RIGHT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
 pros::Motor intakeLeft(LEFT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
 pros::Imu imu(IMU);
 
-pros::Motor rightElevation(RIGHT_ELEVATION);
-pros::Motor leftElevation(LEFT_ELEVATION);
 
 pros::Motor leftFly(LEFT_FLYWHEEL);
 pros::Motor rightFly(RIGHT_FLYWHEEL);
 pros::Motor intakeActuation(INTAKE_ACTUATION);
 
-pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
 pros::ADIDigitalOut flippers(FLIPPERS);
+pros::ADIDigitalOut elevation(ELEVATION);
 
-pros::ADIDigitalOut elevation1(ELEVATION1);
 float wheel_radius=1.625;
 float encoder_wheel_radius=2.75;
 

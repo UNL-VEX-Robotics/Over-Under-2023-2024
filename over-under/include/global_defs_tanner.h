@@ -15,25 +15,21 @@
 #define RIGHT_INTAKE 2
 #define LEFT_INTAKE 13
 
-#define IMU 16
-
-#define RIGHT_ELEVATION -10
-#define LEFT_ELEVATION 4
-
 #define RIGHT_FLYWHEEL 11
 #define LEFT_FLYWHEEL 6
 
 #define INTAKE_ACTUATION 5
 
 #define FLIPPERS 'F'
+#define ELEVATION 'B'
 
-#define ELEVATION_LOCK 'V'
-
-#define ELEVATION1 'B'
-
+#define IMU 16
 
 
 extern pros::controller_analog_e_t intakeButton;
+
+
+
 extern pros::Controller master;
 
 extern pros::Motor topLeftDrive;
@@ -48,19 +44,13 @@ extern pros::Motor intakeRight;
 extern pros::Motor intakeLeft;
 extern pros::Imu imu;
 
-extern pros::Motor rightElevation;
-extern pros::Motor leftElevation;
-
 extern pros::Motor leftFly;
 extern pros::Motor rightFly;
 
 extern pros::Motor intakeActuation;
 
 extern pros::ADIDigitalOut flippers;
-extern pros::ADIDigitalOut eleLock;
-extern pros::ADIDigitalOut intakePneu;
-
-extern pros::ADIDigitalOut elevation1;
+extern pros::ADIDigitalOut elevation;
 
 extern float wheel_radius;
 extern float encoder_wheel_radius;
