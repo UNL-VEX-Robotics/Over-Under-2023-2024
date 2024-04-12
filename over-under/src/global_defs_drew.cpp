@@ -2,7 +2,9 @@
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
-#include "global_defs.h"
+#include "global_defs_tanner.h"
+
+
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
