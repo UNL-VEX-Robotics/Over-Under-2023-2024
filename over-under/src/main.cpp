@@ -121,10 +121,10 @@ void display_all_values(PID *pid){
 void scroll_pid_selection(){
   if(master.get_digital_new_press(DIGITAL_RIGHT)){
     lrt_iter++ ;
-    lrt_iter %= 3;
+    lrt_iter %= 2;
     switch (lrt_iter){
       case 0:
-        master.print(1,0,"Left");
+        master.print(1,0,"Right");
         selected_pid = &leftpid;
         break;
       case 1:
@@ -182,14 +182,23 @@ void incr_decr_pid_vals() {
   if(master.get_digital_new_press(DIGITAL_UP)){
     switch(pid_iter){
       case 0:
+	  	if(selected_pid==&leftpid){
+			rightpid.P_weight += p_incr;
+		}
         selected_pid->P_weight += p_incr;
         display_p_value(selected_pid);
         break;
       case 1:
+	  	if(selected_pid==&leftpid){
+			rightpid.I_weight += i_incr;
+		}
         selected_pid->I_weight += i_incr;
         display_i_value(selected_pid);
         break;
       case 2:
+	  	if(selected_pid==&leftpid){
+			rightpid.D_weight += d_incr;
+		}
         selected_pid->D_weight += d_incr;
         display_d_value(selected_pid);
         break;
@@ -198,21 +207,27 @@ void incr_decr_pid_vals() {
   if(master.get_digital_new_press(DIGITAL_DOWN)){
     switch(pid_iter){
       case 0:
+	  	if(selected_pid==&leftpid){
+			rightpid.P_weight -= p_incr;
+		}
         selected_pid->P_weight -= p_incr;
         display_p_value(selected_pid);
         break;
       case 1:
+	  	if(selected_pid==&leftpid){
+			rightpid.I_weight -= i_incr;
+		}
         selected_pid->I_weight -= i_incr;
         display_i_value(selected_pid);
         break;
       case 2:
+	  	if(selected_pid==&leftpid){
+			rightpid.D_weight -= d_incr;
+		}
         selected_pid->D_weight -= d_incr;
         display_d_value(selected_pid);
         break;
-    }
-  }
-  }
-
+    }}}
 
 
 /**
@@ -224,6 +239,7 @@ void incr_decr_pid_vals() {
 void dummy(PID a, PID b, PID c) { return; }
 void initialize() {
   master.clear();
+  pros::delay(50);
   skills_routes.push_back(std::make_tuple(dummy, "DUMMY"));
   skills_routes.push_back(std::make_tuple(test_route, "test_route"));
   skills_routes.push_back(
@@ -232,6 +248,7 @@ void initialize() {
   ++skills_iter;
   ++skills_iter;
   ++match_iter;
+  pros::lcd::clear();
   pros::lcd::initialize();
   pros::lcd::set_text(1, "its over...");
   pros::lcd::register_btn1_cb(route_counter_down);
