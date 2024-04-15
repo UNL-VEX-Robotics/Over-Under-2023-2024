@@ -18,8 +18,10 @@
 #define RIGHT_FLYWHEEL -19
 #define LEFT_FLYWHEEL 14
 
-#define FLIPPERS 'D'
 #define INTAKE_ACTUATION 18
+
+#define FLIPPERS 'D'
+#define ELEVATION 'A'
 
 #define IMU 20
 
