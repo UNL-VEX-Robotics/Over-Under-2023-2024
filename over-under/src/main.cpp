@@ -124,14 +124,10 @@ void scroll_pid_selection(){
     lrt_iter %= 2;
     switch (lrt_iter){
       case 0:
-        master.print(1,0,"Right");
+        master.print(1,0,"Straight");
         selected_pid = &leftpid;
         break;
       case 1:
-        master.print(1,0,"Rite");
-        selected_pid = &rightpid;
-        break;
-      case 2:
         master.print(1,0,"Turn");
         selected_pid = &turnpid;
         break;
@@ -152,22 +148,22 @@ void scroll_pid_selection(){
     }
   }
   if(master.get_digital_new_press(DIGITAL_LEFT)){
-    pid_iter++;
+    pid_iter ++;
     pid_iter %= 3;
-      switch (pid_iter){
-        case 0:
-          pros::delay(50);
-          display_p_value(selected_pid);
-          break;
-        case 1:
-          pros::delay(50);
-          display_i_value(selected_pid);
-          break;
-        case 2:
-          pros::delay(50);
-          display_d_value(selected_pid);
-          break;
-      }
+	switch (pid_iter){
+		case 0:
+			pros::delay(50);
+			display_p_value(selected_pid);
+			break;
+		case 1:
+			pros::delay(50);
+			display_i_value(selected_pid);
+			break;
+		case 2:
+			pros::delay(50);
+			display_d_value(selected_pid);
+			break;
+		}
   }
 }
 
@@ -248,7 +244,7 @@ void initialize() {
   ++skills_iter;
   ++skills_iter;
   ++match_iter;
-  pros::lcd::clear();
+  ++match_iter;
   pros::lcd::initialize();
   pros::lcd::set_text(1, "its over...");
   pros::lcd::register_btn1_cb(route_counter_down);
@@ -279,9 +275,9 @@ void competition_initialize() {}
  * for non-competition testing purposes.
  */
 void autonomous() {
-std::cout << "so it begins";
-std::cout << std::get<1>(*skills_iter);
-  std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
+	std::cout << "so it begins";
+	std::cout << std::get<1>(*skills_iter);
+	std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
 }
 
 //runs in its own task
