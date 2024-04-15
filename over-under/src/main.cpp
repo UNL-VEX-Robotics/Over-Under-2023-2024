@@ -121,39 +121,49 @@ void display_all_values(PID *pid){
 void scroll_pid_selection(){
   if(master.get_digital_new_press(DIGITAL_RIGHT)){
     lrt_iter++ ;
-    lrt_iter %= 3;
+    lrt_iter %= 2;
     switch (lrt_iter){
       case 0:
-        master.print(1,0,"Left");
+        master.print(1,0,"Straight");
         selected_pid = &leftpid;
         break;
       case 1:
-        master.print(1,0,"Rite");
-        selected_pid = &rightpid;
-        break;
-      case 2:
         master.print(1,0,"Turn");
         selected_pid = &turnpid;
         break;
     }
+    switch (pid_iter){
+      case 0:
+        pros::delay(50);
+        display_p_value(selected_pid);
+        break;
+      case 1:
+        pros::delay(50);
+        display_i_value(selected_pid);
+        break;
+      case 2:
+        pros::delay(50);
+        display_d_value(selected_pid);
+        break;
+    }
   }
   if(master.get_digital_new_press(DIGITAL_LEFT)){
-    pid_iter++;
+    pid_iter ++;
     pid_iter %= 3;
-  }
-  switch (pid_iter){
-    case 0:
-      pros::delay(50);
-      display_p_value(selected_pid);
-      break;
-    case 1:
-      pros::delay(50);
-      display_i_value(selected_pid);
-      break;
-    case 2:
-      pros::delay(50);
-      display_d_value(selected_pid);
-      break;
+	switch (pid_iter){
+		case 0:
+			pros::delay(50);
+			display_p_value(selected_pid);
+			break;
+		case 1:
+			pros::delay(50);
+			display_i_value(selected_pid);
+			break;
+		case 2:
+			pros::delay(50);
+			display_d_value(selected_pid);
+			break;
+		}
   }
 }
 
@@ -168,14 +178,23 @@ void incr_decr_pid_vals() {
   if(master.get_digital_new_press(DIGITAL_UP)){
     switch(pid_iter){
       case 0:
+	  	if(selected_pid==&leftpid){
+			rightpid.P_weight += p_incr;
+		}
         selected_pid->P_weight += p_incr;
         display_p_value(selected_pid);
         break;
       case 1:
+	  	if(selected_pid==&leftpid){
+			rightpid.I_weight += i_incr;
+		}
         selected_pid->I_weight += i_incr;
         display_i_value(selected_pid);
         break;
       case 2:
+	  	if(selected_pid==&leftpid){
+			rightpid.D_weight += d_incr;
+		}
         selected_pid->D_weight += d_incr;
         display_d_value(selected_pid);
         break;
@@ -184,21 +203,27 @@ void incr_decr_pid_vals() {
   if(master.get_digital_new_press(DIGITAL_DOWN)){
     switch(pid_iter){
       case 0:
+	  	if(selected_pid==&leftpid){
+			rightpid.P_weight -= p_incr;
+		}
         selected_pid->P_weight -= p_incr;
         display_p_value(selected_pid);
         break;
       case 1:
+	  	if(selected_pid==&leftpid){
+			rightpid.I_weight -= i_incr;
+		}
         selected_pid->I_weight -= i_incr;
         display_i_value(selected_pid);
         break;
       case 2:
+	  	if(selected_pid==&leftpid){
+			rightpid.D_weight -= d_incr;
+		}
         selected_pid->D_weight -= d_incr;
         display_d_value(selected_pid);
         break;
-    }
-  }
-  }
-
+    }}}
 
 
 /**
@@ -210,6 +235,7 @@ void incr_decr_pid_vals() {
 void dummy(PID a, PID b, PID c) { return; }
 void initialize() {
   master.clear();
+  pros::delay(50);
   skills_routes.push_back(std::make_tuple(dummy, "DUMMY"));
   skills_routes.push_back(std::make_tuple(test_route, "test_route"));
   skills_routes.push_back(
@@ -217,6 +243,7 @@ void initialize() {
   //DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
   ++skills_iter;
+  ++match_iter;
   ++match_iter;
   pros::lcd::initialize();
   pros::lcd::set_text(1, "its over...");
@@ -248,9 +275,9 @@ void competition_initialize() {}
  * for non-competition testing purposes.
  */
 void autonomous() {
-std::cout << "so it begins";
-std::cout << std::get<1>(*skills_iter);
-  std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
+	std::cout << "so it begins";
+	std::cout << std::get<1>(*skills_iter);
+	std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
 }
 
 //runs in its own task
@@ -278,7 +305,7 @@ void opcontrol() {
     // Flippers Button: R2
     activateFlippers();
 
-	activateIntake180();
+    activateIntake180();
 
     // Elevation Lock on Button: Left
     activateElevation();
