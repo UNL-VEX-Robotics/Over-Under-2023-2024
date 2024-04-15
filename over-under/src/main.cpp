@@ -92,7 +92,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	match_shoot_tanner();
+	test_route();
 }
 
 /**
