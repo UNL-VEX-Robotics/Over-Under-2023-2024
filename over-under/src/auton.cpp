@@ -14,7 +14,7 @@ const int circum = wheel_radius * 2 * M_PI;
 double convert(double degrees){
     return degrees + 23;
 }
-
+int debug_frequency = 7000;
 void reset_motors(){
     topLeftDrive.set_zero_position(0);
     midLeftDrive.set_zero_position(0);
@@ -83,7 +83,7 @@ void go(double inches, PID leftPID, PID rightPID){
         set_right_voltage(rightVoltage);
 
         //exit the push function after 5 seconds.
-        if(i % 5000 == 0){ 
+        if(i % debug_frequency){ 
             now = pros::millis();
             if(now - start > 3*1000){
                 set_all_voltage(0);
@@ -111,7 +111,7 @@ void turn_right_relative_debug(double degrees, PID turnPID){
             voltage = turnPID.getNextValue(error);
             set_left_voltage(voltage);
             set_right_voltage(-voltage);
-            if(i%5000 == 0){
+            if(i%debug_frequency== 0){
                 std::cout << error;
                 std::cout << "  ";
             }
@@ -124,7 +124,7 @@ void turn_right_relative_debug(double degrees, PID turnPID){
             voltage = turnPID.getNextValue(error);
             set_left_voltage(voltage);
             set_right_voltage(-voltage);
-            if(i%5000 == 0){
+            if(i%debug_frequency == 0){
                 std::cout << error;
                 std::cout << "  ";
             }
@@ -137,7 +137,7 @@ void turn_right_relative_debug(double degrees, PID turnPID){
             voltage = turnPID.getNextValue(error);
             set_left_voltage(voltage);
             set_right_voltage(-voltage);
-            if(i%5000 == 0){
+            if(i%debug_frequency == 0){
                 std::cout << error;
                 std::cout << "  ";
             }
@@ -159,7 +159,7 @@ void turn_left_relative_debug(double degrees, PID turnPID){
             voltage = turnPID.getNextValue(error);
             set_left_voltage(-voltage);
             set_right_voltage(voltage);
-            if(i%5000 == 0){
+            if(i%debug_frequency == 0){
                 std::cout << error;
                 std::cout << "  ";
             }
@@ -172,7 +172,7 @@ void turn_left_relative_debug(double degrees, PID turnPID){
             voltage = turnPID.getNextValue(error);
             set_left_voltage(-voltage);
             set_right_voltage(voltage);
-            if(i%5000 == 0){
+            if(i%debug_frequency == 0){
                 std::cout << error;
                 std::cout << "  ";
             }
@@ -185,7 +185,7 @@ void turn_left_relative_debug(double degrees, PID turnPID){
             voltage = turnPID.getNextValue(error);
             set_left_voltage(-voltage);
             set_right_voltage(voltage);
-            if(i%5000 == 0){
+            if(i%debug_frequency == 0){
                 std::cout << error;
                 std::cout << "  ";
             }

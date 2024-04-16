@@ -275,9 +275,24 @@ void competition_initialize() {}
  * for non-competition testing purposes.
  */
 void autonomous() {
-	std::cout << "so it begins";
-	std::cout << std::get<1>(*skills_iter);
-	std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
+	//std::cout << "so it begins";
+	//std::cout << std::get<1>(*skills_iter);
+	//std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
+  while (imu.is_calibrating()){
+      pros::delay(10);
+  }
+  double start = pros::millis();
+  double now = pros::millis();
+  while(true){
+    now = pros::millis();
+    if(now > start + 5000){
+      start = pros::millis();
+      now = start;
+      std::cout << botLeftDrive.get_position();
+      std::cout << imu.get_heading();
+      std::cout << "god bless us everyone\n";
+    }
+  }
 }
 
 //runs in its own task
