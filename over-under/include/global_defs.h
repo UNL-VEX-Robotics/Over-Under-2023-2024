@@ -12,7 +12,7 @@
 #define STRAIGHT_RIGHT_DRIVE1 3
 #define STRAIGHT_RIGHT_DRIVE2 17
 
-#define RIGHT_INTAKE 2
+#define RIGHT_INTAKE 1
 #define LEFT_INTAKE 13
 
 #define IMU 15
@@ -21,7 +21,7 @@
 #define LEFT_ELEVATION 4
 
 #define RIGHT_FLYWHEEL 11
-#define LEFT_FLYWHEEL 6
+#define LEFT_FLYWHEEL 9
 
 #define INTAKE_ACTUATION 5
 
