@@ -131,8 +131,9 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     go(54.53340818250772, leftPID, rightPID);
     turn(0.7690246825780491, turnPID);
     go(28.610577065134493, leftPID, rightPID);
+    go(-6, leftPID, rightPID);
     turn(173.46786331214756, turnPID);
-    go(25.31634855187454, leftPID, rightPID);
+    go(18.31634855187454, leftPID, rightPID);
     turn(96.5646842913341, turnPID);
     go(48.703327196404146, leftPID, rightPID);
     intakeUpDown();
