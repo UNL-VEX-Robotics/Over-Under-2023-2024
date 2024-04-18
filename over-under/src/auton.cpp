@@ -12,6 +12,8 @@ using namespace pros;
 
 const int circum = wheel_radius*2*M_PI;
 
+int debug_frequency = 7000;
+
 //straight params
 int tick_margin = 15;
 int integral_max_error_s= 1000;
@@ -128,7 +130,7 @@ void go(double inches){
             set_right_voltage(right_voltage);
         }
 
-        if(i % 5000 == 0){
+        if(i % debug_frequency == 0){
             now = pros::millis();
             if(now - start > 2*1000){
                 left_error = 0;
@@ -172,7 +174,7 @@ void turn_right_relative_debug(double degrees){
                 set_left_voltage(voltage);
                 set_right_voltage(-voltage);
             }
-            if(i%5000 == 0){
+            if(i % debug_frequency == 0){
                 std::cout << error;
                 std::cout << "  ";
                 pros::delay(10);
@@ -200,7 +202,7 @@ void turn_right_relative_debug(double degrees){
                 set_left_voltage(voltage);
                 set_right_voltage(-voltage);
             }
-            if(i%5000 == 0){
+            if(i % debug_frequency == 0){
                 std::cout << error;
                 std::cout << "  ";
                 pros::delay(10);
@@ -226,7 +228,7 @@ void turn_right_relative_debug(double degrees){
             set_left_voltage(voltage);
             set_right_voltage(-voltage);
         }
-        if(i%5000 == 0){
+        if(i % debug_frequency == 0){
             std::cout << error;
             std::cout << "  ";
             pros::delay(10);
@@ -262,7 +264,7 @@ void turn_left_relative_debug(double degrees){
                 set_left_voltage(-voltage);
                 set_right_voltage(voltage);
             }
-            if(i%5000 == 0){
+            if(i % debug_frequency== 0){
                 std::cout << error;
                 std::cout << "  ";
                 pros::delay(10);
@@ -294,7 +296,7 @@ void turn_left_relative_debug(double degrees){
                 set_left_voltage(-voltage);
                 set_right_voltage(voltage);
             }
-            if(i%5000 == 0){
+            if(i % debug_frequency== 0){
                 std::cout << error;
                 std::cout << "  ";
                 pros::delay(10);
@@ -320,7 +322,7 @@ void turn_left_relative_debug(double degrees){
                 set_left_voltage(-voltage);
                 set_right_voltage(voltage);
             }
-            if(i%5000 == 0){
+            if(i % 5000 == 0){
                 std::cout << error;
                 std::cout << "  ";
                 pros::delay(10);
