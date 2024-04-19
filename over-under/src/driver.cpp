@@ -11,26 +11,26 @@
 void moveDrive(){
 	
 	//Arcade Drive
-	int left = (.70 * master.get_analog(ANALOG_LEFT_Y));
-	int right = (.70 * master.get_analog(ANALOG_RIGHT_Y));
+	int drive = (1.00 * master.get_analog(ANALOG_LEFT_Y));
+	int turn = (1.00 * master.get_analog(ANALOG_RIGHT_Y));
 
-	topRightDrive = right;
-	midRightDrive = right;
-	botRightDrive = right;
+	topRightDrive = drive - turn;
+	midRightDrive = drive - turn;
+	botRightDrive = drive - turn;
 
-	topLeftDrive = left;
-	midLeftDrive = left;
-	botLeftDrive = left;
+	topLeftDrive = drive + turn;
+	midLeftDrive = drive + turn;
+	botLeftDrive = drive + turn;
 	
 }
 
 
 //Code for Elevation Button: X for up,  B for down
 void elevate(){
-	if (master.get_digital(DIGITAL_L1)){ //Comes out of storage
+	if (master.get_digital(DIGITAL_UP)){ //Comes out of storage
 		rightElevation = -100;
 		leftElevation = -100;
-	} else if(master.get_digital(DIGITAL_L2)){ //Climbs
+	} else if(master.get_digital(DIGITAL_DOWN)){ //Climbs
 		rightElevation = 100;
 		leftElevation = 100;
 	} else{
@@ -42,12 +42,10 @@ void elevate(){
 bool intakeSpinningForward = false;
 bool intakeSpinningReverse = false;
 void intake_func(){
-
-
-    if(master.get_digital_new_press(DIGITAL_R1)){ //on spin-forward-button pressed
+    if(master.get_digital_new_press(DIGITAL_L2)){ //on spin-forward-button pressed
         intakeSpinningForward = !intakeSpinningForward;
     }
-	if(master.get_digital_new_press(DIGITAL_R2)){ //on spin-reverse-button pressed
+	if(master.get_digital_new_press(DIGITAL_L1)){ //on spin-reverse-button pressed
         intakeSpinningReverse = !intakeSpinningReverse;
     }
     if (intakeSpinningForward && intakeSpinningReverse){ // handles the case where both forward and backward are true.
@@ -63,29 +61,22 @@ void intake_func(){
 //Flippers Buttons: R2 to Deploy and Pull Back
 bool flipperToggle = false;
 void activateFlippers(){
-	if(master.get_digital_new_press(DIGITAL_Y)){
+	if(master.get_digital_new_press(DIGITAL_R2)){
 		flipperToggle = !flipperToggle;
 		flippers.set_value(flipperToggle);
 		pros::delay(300);
 	}
 }
 
-//Intake Activation Buttons: R1 to Deploy and Pull Back
-void activateIntake90(){
-	if(master.get_digital_new_press(DIGITAL_A)){
-		intakeActuation.move_relative(red_ticks_per_rev / 4.0, 150);
-	}
-}
-
 void activateIntake180(){
-	if(master.get_digital_new_press(DIGITAL_B)){
+	if(master.get_digital_new_press(DIGITAL_R1)){
 		intakeActuation.move_relative(red_ticks_per_rev / 2.0, 150);
 	}
 }
 //Elevation Lock Activation Buttons: Left to Deploy and Pull Back
 bool elevationToggle = false;
 void activateElevation(){
-	if(master.get_digital_new_press(DIGITAL_UP)){
+	if(master.get_digital_new_press(DIGITAL_LEFT)){
 		elevationToggle = !elevationToggle;
 		eleLock.set_value(elevationToggle);
 		pros::delay(300);
@@ -94,13 +85,18 @@ void activateElevation(){
 
 //Flywheel set to be always running unless turned off Button: X On, B Off
 bool isFlyOn = true;
-void rightFlyun(double percent){
+void flywheelRun(){
 	if(master.get_digital_new_press(DIGITAL_X)){
 		isFlyOn = !isFlyOn;
 	}
-	//if flyweel is on, set both motors to 127, else set to zero
-	leftFly = percent * -127 * isFlyOn;
-	rightFly = percent * 127 * isFlyOn; 
+	if(isFlyOn){
+		rightFly = 127;
+		leftFly = 127;
+	}
+	else {
+		rightFly = 0;
+		leftFly = 0;
+	}
 }
 
 //Toggle to Set Wheels at Brake Type hold
@@ -127,6 +123,3 @@ void wheelsBrake(){
 		botRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	}
 }
-
-//THIS FUNCTION SHOULDNT BE CALLED WITHOUT PERMISSION FROM DRIVER AND RYAN
-//Marco for shooting triballs automacticly with a break out option

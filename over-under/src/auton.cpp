@@ -3,9 +3,8 @@
 #include "pros/imu.hpp"
 #include "pros/motors.hpp"
 #include "auton.h"
-#include <cmath>
+#include "math.h"
 #include <iostream>
-#include <math.h>
 
 using namespace pros;
 
@@ -14,7 +13,9 @@ const int circum = wheel_radius * 2 * M_PI;
 double convert(double degrees){
     return degrees + 23;
 }
+
 int debug_frequency = 6000;
+
 void reset_motors(){
     topLeftDrive.set_zero_position(0);
     midLeftDrive.set_zero_position(0);

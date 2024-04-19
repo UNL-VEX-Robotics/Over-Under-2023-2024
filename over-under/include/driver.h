@@ -5,5 +5,5 @@ void activateFlippers();
 void activateIntake90();
 void activateIntake180();
 void activateElevation();
-void rightFlyun(double percent);
+void flywheelRun(double percent);
 void wheelsBrake();

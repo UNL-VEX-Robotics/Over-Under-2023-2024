@@ -3,6 +3,7 @@
 #include "pros/motors.hpp"
 #include "auton.h"
 #include "pid.h"
+#include "math.h"
 
 PID leftPID = PID(0.12, 0.01, 0, 15, 1000);
 PID rightPID = PID(0.12, 0.01, 0, 15, 1000);
@@ -64,6 +65,31 @@ void flywheel_out(int time){
     pros::delay(time);
     leftFly = 0;
     rightFly = 0;
+}
+
+double relative_math(double inches){
+    double e_units = (10.0/6.0)*300*(inches/(2.0*1.625*M_PI));
+    return e_units;
+}
+
+void moveRelative(double inches, double velo = 100){
+    pros::Motor_Group leftMotors({botLeftDrive, midLeftDrive, topLeftDrive});
+    pros::Motor_Group rightMotors({botRightDrive, midRightDrive, topRightDrive});
+    leftMotors.move_relative(relative_math(inches), velo);
+    rightMotors.move_relative(relative_math(inches), velo);
+}
+
+void match_drew(){
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    imu.set_heading(convert(270));
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    moveRelative(60, 75);
+    turn(0, turnPID);
+    moveRelative(24, 75);
 }
 
 void match_drew(PID left, PID right, PID turnP){

@@ -8,11 +8,8 @@
 #include "pros/motors.hpp"
 #include "pros/rtos.hpp"
 #include "routes.h"
-#include <cstddef>
-#include <iomanip>
 #include <iostream>
 #include <list>
-#include <regex>
 #include <string>
 #include <sys/select.h>
 #include <tuple>

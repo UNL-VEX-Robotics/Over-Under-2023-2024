@@ -5,26 +5,27 @@
 #include "pros/motors.hpp"
 
 #define STRAIGHT_LEFT_DRIVE 8
-#define REVERSE_LEFT_DRIVE1 -20
+#define REVERSE_LEFT_DRIVE1 -17
 #define REVERSE_LEFT_DRIVE2 -7
 
-#define REVERSE_RIGHT_DRIVE -19
+#define REVERSE_RIGHT_DRIVE -5
 #define STRAIGHT_RIGHT_DRIVE1 3
-#define STRAIGHT_RIGHT_DRIVE2 17
+#define STRAIGHT_RIGHT_DRIVE2 4
 
-#define RIGHT_INTAKE 1
-#define LEFT_INTAKE 13
+#define RIGHT_INTAKE 12
+#define LEFT_INTAKE -11
 
-#define IMU 15
+#define IMU 20
 
-#define RIGHT_ELEVATION -10
-#define LEFT_ELEVATION 4
+#define RIGHT_ELEVATION -2
+#define LEFT_ELEVATION 6
 
-#define RIGHT_FLYWHEEL 11
-#define LEFT_FLYWHEEL 9
+#define RIGHT_FLYWHEEL -19
+#define LEFT_FLYWHEEL 14
 
-#define INTAKE_ACTUATION 5
+#define INTAKE_ACTUATION 18
 
+//Change to correct
 #define ELEVATION_LOCK 'C'
 #define FLIPPERS 'F'
 
