@@ -279,6 +279,8 @@ void turn_left_relative_debug(double degrees){
         error = imu.get_heading() - end_heading;
         std::cout << "\n\tcorrected error: ";
         std::cout << error;
+        std::cout << "\n\tNew end_heading: ";
+        std::cout << end_heading;
         while(abs(error) > degree_margin){
             prev_error = error;
             error = imu.get_heading() - end_heading;
