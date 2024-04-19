@@ -144,8 +144,6 @@ void autonomous() {
 //runs in its own task
 void opcontrol() {
   master.clear();
-  rightElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  leftElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   double flywheel_percent = 0.82;
   master.clear();
   while (true) {

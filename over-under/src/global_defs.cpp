@@ -25,7 +25,7 @@ pros::Motor leftFly(LEFT_FLYWHEEL);
 pros::Motor rightFly(RIGHT_FLYWHEEL);
 pros::Motor intakeActuation(INTAKE_ACTUATION);
 
-pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
+pros::ADIDigitalOut elevation(ELEVATION_LOCK);
 pros::ADIDigitalOut flippers(FLIPPERS);
 
 float wheel_radius=1.625;

@@ -66,53 +66,6 @@ void flywheel_out(int time){
     rightFly = 0;
 }
 
-void match_drew(PID left, PID right, PID turnP){
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    imu.set_heading(convert(convert(135)));
-    while (imu.is_calibrating()){
-        pros::delay(10);
-    }
-    intakeRight = 127;
-    intakeLeft = -127;
-    pros::delay(500);
-    //intake.set_value(1);
-    pros::delay(500);
-    pros::delay(500);
-    //intake.set_value(0);
-    intakeRight = 0;
-    intakeLeft = 0;
-    pros::delay(500);
-    go(-1, leftPID, rightPID);
-    turn(convert(260), turnPID);
-    leftFly=-100;
-    intakeRight = -100;
-    intakeLeft = 100;
-    pros::delay(1000);
-    leftFly=0;
-    intakeRight = 0;
-    intakeLeft = 0;
-    turn(convert(85), turnPID);
-    go(-20, leftPID, rightPID);
-    go(12, leftPID, rightPID);
-    turn(convert(45), turnPID);
-    go(15, leftPID, rightPID);
-    turn(convert(180), turnPID);
-    rightElevation.set_zero_position(0);
-    leftElevation.set_zero_position(0);
-    while((leftElevation.get_position() < (double)red_ticks_per_rev*0.1)){
-        rightElevation = 127;
-        leftElevation = 127;
-    } 
-    rightElevation = 0;
-    leftElevation = 0;
-    //intake.set_value(0);
-    pros::delay(1000);
-    go(-28, leftPID, rightPID);
-
-}
-
 void test_route(PID left, PID right, PID turnP){
     turn(270, turnP);
     go(24, left, right);
