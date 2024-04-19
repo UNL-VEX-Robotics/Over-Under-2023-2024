@@ -7,12 +7,23 @@
 #include "pros/rtos.hpp"
 #include "global_defs.h"
 
+//Activate Elevation Button: Right Arrow
+bool elevationToggle = false;
+void elevationActive(){
+	if(master.get_digital_new_press(DIGITAL_LEFT)){
+		elevationToggle = !elevationToggle;
+        leftElevation.set_value(elevationToggle);
+		pros::delay(300);
+	}
+}
+
+
 //Function For Drive Code: Sticks
 void moveDrive(){
 	
 	//Arcade Drive
-	int left = (.70 * master.get_analog(ANALOG_LEFT_Y));
-	int right = (.70 * master.get_analog(ANALOG_RIGHT_Y));
+	int left = (.93 * master.get_analog(ANALOG_LEFT_Y));
+	int right = (.83 * master.get_analog(ANALOG_RIGHT_Y));
 
 	topRightDrive = right;
 	midRightDrive = right;
@@ -62,11 +73,17 @@ void intake_func(){
 
 //Flippers Buttons: R2 to Deploy and Pull Back
 bool flipperToggle = false;
-void activateFlippers(){
-	if(master.get_digital_new_press(DIGITAL_Y)){
+void activteFlippers(){
+	if(master.get_digital_new_press(DIGITAL_L2)){
 		flipperToggle = !flipperToggle;
 		flippers.set_value(flipperToggle);
 		pros::delay(300);
+	}
+}
+
+void releaseSwitch(){
+	if(master.get_digital_new_press(DIGITAL_A)){
+		intakeActuation.move_relative(red_ticks_per_rev / 8.0, 150);
 	}
 }
 
@@ -82,12 +99,18 @@ void activateIntake180(){
 		intakeActuation.move_relative(red_ticks_per_rev / 2.0, 150);
 	}
 }
+
+void activateIntake45(){
+	if(master.get_digital_new_press(DIGITAL_Y)){
+		intakeActuation.move_relative(-red_ticks_per_rev / 8.0, 150);
+	}
+}
 //Elevation Lock Activation Buttons: Left to Deploy and Pull Back
-bool elevationToggle = false;
+bool elevationLockToggle = false;
 void activateElevation(){
 	if(master.get_digital_new_press(DIGITAL_UP)){
-		elevationToggle = !elevationToggle;
-		eleLock.set_value(elevationToggle);
+		elevationLockToggle = !elevationLockToggle;
+		eleLock.set_value(elevationLockToggle);
 		pros::delay(300);
 	}
 }
@@ -106,9 +129,6 @@ void rightFlyun(double percent){
 //Toggle to Set Wheels at Brake Type hold
 bool isWheelsBrake = true;
 void wheelsBrake(){
-	if(master.get_digital_new_press(DIGITAL_RIGHT)){
-		isWheelsBrake = !isWheelsBrake;
-	}
 	if(isWheelsBrake){
 		topLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 		midLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
@@ -127,6 +147,3 @@ void wheelsBrake(){
 		botRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	}
 }
-
-//THIS FUNCTION SHOULDNT BE CALLED WITHOUT PERMISSION FROM DRIVER AND RYAN
-//Marco for shooting triballs automacticly with a break out option

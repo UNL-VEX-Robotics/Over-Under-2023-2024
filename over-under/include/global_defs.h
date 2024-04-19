@@ -51,7 +51,7 @@ extern pros::Motor rightFly;
 extern pros::Motor intakeActuation;
 
 extern pros::ADIDigitalOut flippers;
-extern pros::ADIDigitalOut eleLock;
+extern pros::ADIDigitalOut elevationPneu;
 extern pros::ADIDigitalOut intakePneu;
 extern pros::ADIDigitalOut eleLock;
 

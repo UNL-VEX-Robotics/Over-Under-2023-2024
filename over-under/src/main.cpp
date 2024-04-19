@@ -88,143 +88,6 @@ void skills_toggle() {
   pros::lcd::set_text(2, ba);
 }
 
-void scroll_routes(){
-  if(master.get_digital_new_press(DIGITAL_R1)){
-    route_counter_up();
-  }
-  if(master.get_digital_new_press(DIGITAL_R2)){
-    route_counter_down();
-  }
-}
-
-void display_p_value(PID *pid){
-  double p = pid->P_weight;
-  master.print(2,0,"P %.5f", p);
-}
-void display_i_value(PID *pid){
-  double i = pid->I_weight;
-  master.print(2,0,"I %.5f", i);
-}
-void display_d_value(PID *pid){
-  double d = pid->D_weight;
-  master.print(2,0,"D %.5f", d);
-}
-void display_all_values(PID *pid){
-  display_p_value(pid);
-  pros::delay(50);
-  display_i_value(pid);
-  pros::delay(50);
-  display_d_value(pid);
-  pros::delay(50);
-}
-
-void scroll_pid_selection(){
-  if(master.get_digital_new_press(DIGITAL_RIGHT)){
-    lrt_iter++ ;
-    lrt_iter %= 2;
-    switch (lrt_iter){
-      case 0:
-        master.print(1,0,"Straight");
-        selected_pid = &leftpid;
-        break;
-      case 1:
-        master.print(1,0,"Turn");
-        selected_pid = &turnpid;
-        break;
-    }
-    switch (pid_iter){
-      case 0:
-        pros::delay(50);
-        display_p_value(selected_pid);
-        break;
-      case 1:
-        pros::delay(50);
-        display_i_value(selected_pid);
-        break;
-      case 2:
-        pros::delay(50);
-        display_d_value(selected_pid);
-        break;
-    }
-  }
-  if(master.get_digital_new_press(DIGITAL_LEFT)){
-    pid_iter ++;
-    pid_iter %= 3;
-	switch (pid_iter){
-		case 0:
-			pros::delay(50);
-			display_p_value(selected_pid);
-			break;
-		case 1:
-			pros::delay(50);
-			display_i_value(selected_pid);
-			break;
-		case 2:
-			pros::delay(50);
-			display_d_value(selected_pid);
-			break;
-		}
-  }
-}
-
-
-
-
-void incr_decr_pid_vals() {
-  double p_incr = 0.01;
-  double i_incr = 0.01;
-  double d_incr = 0.1;
-
-  if(master.get_digital_new_press(DIGITAL_UP)){
-    switch(pid_iter){
-      case 0:
-	  	if(selected_pid==&leftpid){
-			rightpid.P_weight += p_incr;
-		}
-        selected_pid->P_weight += p_incr;
-        display_p_value(selected_pid);
-        break;
-      case 1:
-	  	if(selected_pid==&leftpid){
-			rightpid.I_weight += i_incr;
-		}
-        selected_pid->I_weight += i_incr;
-        display_i_value(selected_pid);
-        break;
-      case 2:
-	  	if(selected_pid==&leftpid){
-			rightpid.D_weight += d_incr;
-		}
-        selected_pid->D_weight += d_incr;
-        display_d_value(selected_pid);
-        break;
-    }
-  }
-  if(master.get_digital_new_press(DIGITAL_DOWN)){
-    switch(pid_iter){
-      case 0:
-	  	if(selected_pid==&leftpid){
-			rightpid.P_weight -= p_incr;
-		}
-        selected_pid->P_weight -= p_incr;
-        display_p_value(selected_pid);
-        break;
-      case 1:
-	  	if(selected_pid==&leftpid){
-			rightpid.I_weight -= i_incr;
-		}
-        selected_pid->I_weight -= i_incr;
-        display_i_value(selected_pid);
-        break;
-      case 2:
-	  	if(selected_pid==&leftpid){
-			rightpid.D_weight -= d_incr;
-		}
-        selected_pid->D_weight -= d_incr;
-        display_d_value(selected_pid);
-        break;
-    }}}
-
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -281,36 +144,49 @@ void autonomous() {
 //runs in its own task
 void opcontrol() {
   master.clear();
-  display_d_value(selected_pid);
   rightElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   leftElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  double flywheel_percent = 0.80;
-
+  double flywheel_percent = 0.82;
+  master.clear();
   while (true) {
-    
-    scroll_routes();
-    scroll_pid_selection();
-    incr_decr_pid_vals();
-
+    if (master.get_digital_new_press(DIGITAL_UP)){
+      master.print(0, 0, "Volt:%8.2f",  pros::battery::get_capacity());
+      pros::delay(50);
+      master.print(1, 0, "RF:%8.2f",  flywheel_percent);
+      pros::delay(50);
+      master.print(2, 0, "LF:%8.2f", flywheel_percent);
+      flywheel_percent+=0.01;
+    }
+    if (master.get_digital_new_press(DIGITAL_DOWN)){
+      master.print(0, 0, "Volt:%8.2f",  pros::battery::get_capacity());
+      pros::delay(50);
+      master.print(1, 0, "RF:%8.2f",  flywheel_percent);
+      pros::delay(50);
+      master.print(2, 0, "LF:%8.2f", flywheel_percent);
+      flywheel_percent-=0.01;
+    }
+    //Tank Drive Code Sticks
     moveDrive();
 
-    // Elevation Button: X for up,  B for down
-    elevate();
-
-    // Intake Button: L1 for in, L2 for out
+    //Intake Button: L1 for in, L2 for out
     intake_func();
 
-    // Flippers Button: R2
-    activateFlippers();
+    //90 is A
+    activateIntake90();
 
+    //180 is X
     activateIntake180();
 
-    // Elevation Lock on Button: Left
+    //45 is Y
+    activateIntake45();
+
+    //Flywheel On by default
+    rightFlyun(flywheel_percent);
+
+    //Elevation Activate Button: Right
     activateElevation();
 
-    // Wheel Braking set to Button: Right
     wheelsBrake();
 
     pros::delay(2);
-  }
-}
+  }}
