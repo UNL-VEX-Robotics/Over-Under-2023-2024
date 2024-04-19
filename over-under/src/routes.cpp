@@ -259,7 +259,9 @@ void match_shoot_tanner(){
     shoot(18);
 }
 void test_route(){
-    turn(270);
+    while(imu.is_calibrating()){pros::delay(10);}
+    imu.set_heading(convert(270));
+    while(imu.is_calibrating()){pros::delay(10);}
     go(24);
     turn(90);
     go(24);

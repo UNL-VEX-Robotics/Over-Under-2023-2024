@@ -24,7 +24,7 @@ float Kds = 0;
 //turning params
 int degree_margin = 2;
 int integral_max_error_t = 100;
-float Kpt = 1;
+float Kpt = 0.55;
 float Kit = 0.00001;
 float Kdt = 0;
 
