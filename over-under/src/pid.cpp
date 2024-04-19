@@ -58,8 +58,9 @@ double PID::getNextValue(double currentError){
     D_value = error - previousError;
 
     I_value += I_weight * error;
+    double I = I_value * I_weight;
     I_value = fmin(abs(I_value), integralMaxError);
-    double output = P_weight * P_value + I_weight * I_value + D_weight * D_value;
+    double output = P_weight * P_value + D_weight * D_value + I_value;
     //ramp up
     output = output * (i+100)/25000;
     //constrains the outputs to [-outputLimit, outputLimit]

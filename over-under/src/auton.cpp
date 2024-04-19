@@ -167,8 +167,14 @@ void turn_left_relative_debug(double degrees, PID turnPID){
             }
             i++;
         }
-        end_heading += 360;
         std::cout << "flipped to 0\n";
+        std::cout << imu.get_heading();
+        std::cout << "\n\tcurrent error: ";
+        std::cout << error;
+        end_heading+=360;
+        error = imu.get_heading() - end_heading;
+        std::cout << "\n\tcorrected error: ";
+        std::cout << error;
         while(!turnPID.isSettled()){
             error = end_heading - imu.get_heading();
             voltage = turnPID.getNextValue(error);
