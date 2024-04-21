@@ -26,9 +26,9 @@ std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
     match_routes.begin();
 
-PID leftpid = PID(.08,0.01,0,15,1000);
-PID rightpid = PID(.08,0.01,0,15,1000);
-PID turnpid = PID(0.55,0,0.005,0.5,100);
+PID leftpid = PID(.08,0,0,15,1000);
+PID rightpid = PID(.08,0,0,15,1000);
+PID turnpid = PID(0.55,0,0.005,0.5,10);
 
 PID *selected_pid = &leftpid;
 int pid_iter = 0;
@@ -50,7 +50,6 @@ void route_counter_up() {
   pros::lcd::set_text(3, route_name);
   master.clear_line(0);
   pros::delay(50);
-  std::cout << route_name.c_str();
   master.print(0,0,route_name.c_str());
 }
 
@@ -69,7 +68,6 @@ void route_counter_down() {
   pros::lcd::set_text(3, route_name);
   master.clear_line(0);
   pros::delay(50);
-  std::cout << route_name.c_str();
   master.print(0,0,route_name.c_str());
 }
 
