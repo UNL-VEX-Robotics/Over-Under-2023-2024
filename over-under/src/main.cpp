@@ -26,9 +26,10 @@ std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
     match_routes.begin();
 
-PID leftpid = PID(.12,0.01,0,15,1000);
-PID rightpid = PID(.12,0.01,0,15,1000);
-PID turnpid = PID(0.79,0.01,0,0.5,100);
+PID leftpid = PID(.075,0,0,15,1000);
+PID rightpid = PID(.07,0,0,15,1000);
+PID turnpid = PID(0.55,0,0.01,0,10);
+
 PID *selected_pid = &leftpid;
 int pid_iter = 0;
 int lrt_iter = 0;
@@ -49,7 +50,6 @@ void route_counter_up() {
   pros::lcd::set_text(3, route_name);
   master.clear_line(0);
   pros::delay(50);
-  std::cout << route_name.c_str();
   master.print(0,0,route_name.c_str());
 }
 
@@ -68,7 +68,6 @@ void route_counter_down() {
   pros::lcd::set_text(3, route_name);
   master.clear_line(0);
   pros::delay(50);
-  std::cout << route_name.c_str();
   master.print(0,0,route_name.c_str());
 }
 
@@ -275,13 +274,11 @@ void competition_initialize() {}
  * for non-competition testing purposes.
  */
 void autonomous() {
-	std::cout << "so it begins";
-	std::cout << std::get<1>(*skills_iter);
-	std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
+  std::get<0>(*skills_iter)(leftpid,rightpid, turnpid);
 }
 
-//runs in its own task
 void opcontrol() {
+//runs in its own ta
   master.clear();
   display_d_value(selected_pid);
   rightElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
