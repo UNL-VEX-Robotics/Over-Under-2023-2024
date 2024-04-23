@@ -6,24 +6,23 @@
 #include "auton.h"
 #include "pid.h"
 
-
 void shoot(int num){
     intakeRight = 127;
-    intakeLeft = 127;
-    leftFly = -127;
-    rightFly = -127;
-    for(int i=0; i < num; i++){
-        //intake.set_value(1);
-        pros::delay(600);
-        //intake.set_value(0);
-        
-        pros::delay(1000);
+    intakeLeft = -127;
+    leftFly = .71 * -127;
+	rightFly = .71 * 127; 
+    pros::delay(1000);
+    intakeActuation.move_relative(-red_ticks_per_rev / 4.0, 85);
+    pros::delay(1000);
+    for(int i = 0; i < num; i++){
+        intakeActuation.move_relative(red_ticks_per_rev / 2.0, 85);
+        pros::delay(2000);
     }
-    //intake.set_value(0);
-    intakeRight = 0;
-    intakeLeft = 0;
+    pros::delay(2500);
     leftFly = 0;
     rightFly = 0;
+    intakeRight = 0;
+    intakeLeft = 0;
     pros::delay(500);
 }
 
@@ -121,21 +120,23 @@ void match_tanner(PID leftPID, PID rightPID, PID turnPID){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    intakeActuation.move_relative(-red_ticks_per_rev / 8.0, 150);
+    intakeActuation.move_relative(-red_ticks_per_rev / 4.0, 150);
     intakeRight = 80;
     intakeLeft = -80;
-    pros::delay(1500);
+    pros::delay(500);
     intakeRight = 0;
     intakeLeft = 0;
 
-    go(-1, leftPID, rightPID);
-    turn(260, turnPID);
+    go(-2, leftPID, rightPID);
+    turn(255, turnPID);
     go(8, leftPID, rightPID);
-    leftFly = 70;
-    rightFly = -70;
-    intakeRight = -80;
-    intakeLeft = 80;
-    pros::delay(2000);
+    //WE RELY ON THIS BEING INACCURATE AND PUTTING US TO THE LEFT
+    //potentially need a turn(255)
+    leftFly = 50;
+    rightFly = -50;
+    intakeRight = -60;
+    intakeLeft = 60;
+    pros::delay(500);
     leftFly = 0;
     rightFly = 0;
     intakeRight = 0;
@@ -145,4 +146,7 @@ void match_tanner(PID leftPID, PID rightPID, PID turnPID){
     go(18, leftPID, rightPID);
     pros::Motor_Group left( {topLeftDrive, midLeftDrive, botLeftDrive});
     left.move_relative(4*10.0/(4 *wheel_radius* M_PI) * blue_ticks_per_rev, 75);
+    activateIntake90GO();
+    pros::delay(1000);
+    shoot(2);
 }
