@@ -26,8 +26,8 @@ std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
     match_routes.begin();
 
-PID leftpid = PID(.08,0.01,0,15,1000);
-PID rightpid = PID(.08,0.01,0,15,1000);
+PID leftpid = PID(.08,0.05,0,15,25);
+PID rightpid = PID(.08,0.05,0,15,25);
 PID turnpid = PID(0.4,0.02,0,1,10);
 PID *selected_pid = &leftpid;
 int pid_iter = 0;
