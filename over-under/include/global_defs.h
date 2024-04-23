@@ -12,7 +12,7 @@
 #define STRAIGHT_RIGHT_DRIVE1 3
 #define STRAIGHT_RIGHT_DRIVE2 17
 
-#define RIGHT_INTAKE 1
+#define RIGHT_INTAKE 2
 #define LEFT_INTAKE 13
 
 #define IMU 15

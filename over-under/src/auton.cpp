@@ -14,7 +14,7 @@ const int circum = wheel_radius * 2 * M_PI;
 double convert(double degrees){
     return degrees + 23;
 }
-int debug_frequency = 6000;
+int debug_frequency = 4000;
 void reset_motors(){
     topLeftDrive.set_zero_position(0);
     midLeftDrive.set_zero_position(0);
@@ -157,7 +157,7 @@ void turn_left_relative_debug(double degrees, PID turnPID){
     turnPID.setError(degrees);
     if(end_heading < 0){
         while(imu.get_heading() < 350){
-            error = imu.get_heading() -end_heading;
+            error = imu.get_heading() - end_heading;
             voltage = turnPID.getNextValue(error);
             set_left_voltage(-voltage);
             set_right_voltage(voltage);
@@ -167,7 +167,7 @@ void turn_left_relative_debug(double degrees, PID turnPID){
             }
             i++;
         }
-        std::cout << "flipped to 0\n";
+        std::cout << "\nflipped to 0.\n\tcurrent heading:";
         std::cout << imu.get_heading();
         std::cout << "\n\tcurrent error: ";
         std::cout << error;
@@ -208,6 +208,10 @@ void turn_left_relative_debug(double degrees, PID turnPID){
 void turn(double degrees, PID turnPID){
     degrees = convert(degrees);
     turnPID.reset();
+    std::cout << "current heading: ";
+    std::cout << imu.get_heading();
+    std::cout << "\nturning to: ";
+    std::cout << degrees;
     int start_heading = imu.get_heading(); 
     //right range = start +1, start + 180 % 360
     //left range = start -1, start - 180 % 360
@@ -230,7 +234,7 @@ void turn(double degrees, PID turnPID){
             turn_left_relative_debug(x, turnPID);
         }
     } else {
-        low_bound_right_range = 360;
+        low_bound_right_range = start_heading;
         high_bound_right_range = start_heading - 180;
         if(degrees > low_bound_right_range || degrees < high_bound_right_range) {
             int x = ((degrees - start_heading) > 0 ) ? (degrees - start_heading) : (degrees - start_heading + 360);

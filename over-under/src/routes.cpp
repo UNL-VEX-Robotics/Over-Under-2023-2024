@@ -1,13 +1,10 @@
 #include "global_defs.h"
+#include <math.h>
 #include "pros/imu.hpp"
+#include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "auton.h"
 #include "pid.h"
-
-PID leftPID = PID(0.12, 0.01, 0, 15, 1000);
-PID rightPID = PID(0.12, 0.01, 0, 15, 1000);
-
-PID turnPID = PID(0.79, 0.00001, 0, 1, 14);
 
 
 void shoot(int num){
@@ -34,13 +31,13 @@ void activateIntake180GO(){
     intakeActuation.move_relative(red_ticks_per_rev / 2.0, 65);
 }
 
-void intakeUpDown(){
+void activateIntake90GO(){
     intakeActuation.move_relative(red_ticks_per_rev / 4.0, 65);
 }
 
 void intake_in(int time, int velo = 127){
     intakeRight = velo;
-    intakeLeft = velo;
+    intakeLeft = -velo;
     pros::delay(time);
     intakeRight = 0;
     intakeLeft = 0;
@@ -58,9 +55,9 @@ void flywheel_in(int time, int velo = 127){
     rightFly = 0;
 }
 
-void flywheel_out(int time){
-    leftFly = -127;
-    rightFly = 127;
+void flywheel_out(int time, int velo = 127){
+    leftFly = -velo;
+    rightFly = velo;
     pros::delay(time);
     leftFly = 0;
     rightFly = 0;
@@ -89,10 +86,10 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     go(18.31634855187454, leftPID, rightPID);
     turn(96.5646842913341, turnPID);
     go(48.703327196404146, leftPID, rightPID);
-    intakeUpDown();
+    activateIntake90GO();
     turn(359.683451952727, turnPID);
     go(69.505060765386, leftPID, rightPID);
-    intakeUpDown();
+    activateIntake90GO();
     turn(327.4028831217652, turnPID);
     go(33.50111162334766, leftPID, rightPID);
     turn(270.6986943829835, turnPID);
@@ -101,7 +98,7 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     go(20.71643521458265, leftPID, rightPID);
     turn(61.020292302071226, turnPID);
     go(14.266258934983622, leftPID, rightPID);
-    intakeUpDown();
+    activateIntake90GO();
     turn(294.26129085247777, turnPID);
     go(14.95259709883203, leftPID, rightPID);
     turn(263.74596725608353, turnPID);
@@ -114,4 +111,38 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     go(22.120866529139406, leftPID, rightPID);
     turn(1.0809241866606953, turnPID);
     go(30.533433478729506, leftPID, rightPID);
+}
+
+void match_tanner(PID leftPID, PID rightPID, PID turnPID){
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    imu.set_heading(convert(135));
+    while (imu.is_calibrating()){
+        pros::delay(10);
+    }
+    intakeActuation.move_relative(-red_ticks_per_rev / 8.0, 150);
+    intakeRight = 80;
+    intakeLeft = -80;
+    pros::delay(1500);
+    intakeRight = 0;
+    intakeLeft = 0;
+
+    go(-1, leftPID, rightPID);
+    turn(260, turnPID);
+    go(8, leftPID, rightPID);
+    leftFly = 70;
+    rightFly = -70;
+    intakeRight = -80;
+    intakeLeft = 80;
+    pros::delay(2000);
+    leftFly = 0;
+    rightFly = 0;
+    intakeRight = 0;
+    intakeLeft = 0;
+    turn(85, turnPID);
+    go(-20, leftPID, rightPID);
+    go(18, leftPID, rightPID);
+    pros::Motor_Group left( {topLeftDrive, midLeftDrive, botLeftDrive});
+    left.move_relative(4*10.0/(4 *wheel_radius* M_PI) * blue_ticks_per_rev, 75);
 }
