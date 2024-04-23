@@ -1,29 +1,229 @@
 #include "main.h"
 #include "auton.h"
-#include "api.h"
-#include "pros/adi.hpp"
-#include "pros/apix.h"
+#include "driver.h"
+#include "global_defs.h"
+#include "pros/llemu.hpp"
 #include "pros/misc.h"
 #include "pros/motors.h"
+#include "pros/motors.hpp"
 #include "pros/rtos.hpp"
+#include "routes.h"
+#include <cstddef>
+#include <iomanip>
+#include <iostream>
+#include <list>
+#include <regex>
 #include <string>
-#include "global_defs_v1.h"
+#include <sys/select.h>
+#include <tuple>
 
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2); 
-	}
+bool skillsToggle = true;
+std::list<std::tuple<std::function<void(PID a, PID b, PID c)>, std::string>>
+    skills_routes;
+std::list<std::tuple<std::function<void(PID a, PID b, PID c)>, std::string>>::
+    iterator skills_iter = skills_routes.begin();
+std::list<std::tuple<std::function<void()>, std::string>> match_routes;
+std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
+    match_routes.begin();
+
+PID leftpid = PID(.08,0,0,15,1000);
+PID rightpid = PID(.08,0,0,15,1000);
+PID turnpid = PID(0.55,0,0.005,0.5,10);
+
+PID *selected_pid = &leftpid;
+int pid_iter = 0;
+int lrt_iter = 0;
+
+void route_counter_up() {
+  if (skillsToggle) {
+    if (++skills_iter == skills_routes.end()) {
+      skills_iter = skills_routes.begin();
+      ++skills_iter;
+    }
+  } else {
+    if (++match_iter == match_routes.end()) {
+      match_iter = match_routes.begin();
+      ++match_iter;
+    }
+  }
+  std::string route_name = (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter);
+  pros::lcd::set_text(3, route_name);
+  master.clear_line(0);
+  pros::delay(50);
+  master.print(0,0,route_name.c_str());
 }
+
+void route_counter_down() {
+  if (skillsToggle) {
+    if (--skills_iter == skills_routes.begin()) {
+      skills_iter = skills_routes.end();
+      skills_iter--;
+    }
+  } else {
+    if (--match_iter == match_routes.begin()) {
+      match_iter = match_routes.end();
+    }
+  }
+  std::string route_name = (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter);
+  pros::lcd::set_text(3, route_name);
+  master.clear_line(0);
+  pros::delay(50);
+  master.print(0,0,route_name.c_str());
+}
+
+
+void skills_toggle() {
+  skillsToggle = !skillsToggle;
+  skills_iter = skills_routes.begin();
+  ++skills_iter;
+  match_iter = match_routes.begin();
+  ++match_iter;
+  std::string ba = "";
+  if (skillsToggle) {
+    ba = "SKILLS AUTON ON";
+  } else {
+    ba = "MATCH AUTON ON";
+  }
+  pros::lcd::set_text(2, ba);
+}
+
+void scroll_routes(){
+  if(master.get_digital_new_press(DIGITAL_R1)){
+    route_counter_up();
+  }
+  if(master.get_digital_new_press(DIGITAL_R2)){
+    route_counter_down();
+  }
+}
+
+void display_p_value(PID *pid){
+  double p = pid->P_weight;
+  master.print(2,0,"P %.5f", p);
+}
+void display_i_value(PID *pid){
+  double i = pid->I_weight;
+  master.print(2,0,"I %.5f", i);
+}
+void display_d_value(PID *pid){
+  double d = pid->D_weight;
+  master.print(2,0,"D %.5f", d);
+}
+void display_all_values(PID *pid){
+  display_p_value(pid);
+  pros::delay(50);
+  display_i_value(pid);
+  pros::delay(50);
+  display_d_value(pid);
+  pros::delay(50);
+}
+
+void scroll_pid_selection(){
+  if(master.get_digital_new_press(DIGITAL_RIGHT)){
+    lrt_iter++ ;
+    lrt_iter %= 2;
+    switch (lrt_iter){
+      case 0:
+        master.print(1,0,"Straight");
+        selected_pid = &leftpid;
+        break;
+      case 1:
+        master.print(1,0,"Turn");
+        selected_pid = &turnpid;
+        break;
+    }
+    switch (pid_iter){
+      case 0:
+        pros::delay(50);
+        display_p_value(selected_pid);
+        break;
+      case 1:
+        pros::delay(50);
+        display_i_value(selected_pid);
+        break;
+      case 2:
+        pros::delay(50);
+        display_d_value(selected_pid);
+        break;
+    }
+  }
+  if(master.get_digital_new_press(DIGITAL_LEFT)){
+    pid_iter ++;
+    pid_iter %= 3;
+	switch (pid_iter){
+		case 0:
+			pros::delay(50);
+			display_p_value(selected_pid);
+			break;
+		case 1:
+			pros::delay(50);
+			display_i_value(selected_pid);
+			break;
+		case 2:
+			pros::delay(50);
+			display_d_value(selected_pid);
+			break;
+		}
+  }
+}
+
+
+
+
+void incr_decr_pid_vals() {
+  double p_incr = 0.01;
+  double i_incr = 0.01;
+  double d_incr = 0.1;
+
+  if(master.get_digital_new_press(DIGITAL_UP)){
+    switch(pid_iter){
+      case 0:
+	  	if(selected_pid==&leftpid){
+			rightpid.P_weight += p_incr;
+		}
+        selected_pid->P_weight += p_incr;
+        display_p_value(selected_pid);
+        break;
+      case 1:
+	  	if(selected_pid==&leftpid){
+			rightpid.I_weight += i_incr;
+		}
+        selected_pid->I_weight += i_incr;
+        display_i_value(selected_pid);
+        break;
+      case 2:
+	  	if(selected_pid==&leftpid){
+			rightpid.D_weight += d_incr;
+		}
+        selected_pid->D_weight += d_incr;
+        display_d_value(selected_pid);
+        break;
+    }
+  }
+  if(master.get_digital_new_press(DIGITAL_DOWN)){
+    switch(pid_iter){
+      case 0:
+	  	if(selected_pid==&leftpid){
+			rightpid.P_weight -= p_incr;
+		}
+        selected_pid->P_weight -= p_incr;
+        display_p_value(selected_pid);
+        break;
+      case 1:
+	  	if(selected_pid==&leftpid){
+			rightpid.I_weight -= i_incr;
+		}
+        selected_pid->I_weight -= i_incr;
+        display_i_value(selected_pid);
+        break;
+      case 2:
+	  	if(selected_pid==&leftpid){
+			rightpid.D_weight -= d_incr;
+		}
+        selected_pid->D_weight -= d_incr;
+        display_d_value(selected_pid);
+        break;
+    }}}
+
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -31,17 +231,28 @@ void on_center_button() {
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+void dummy(PID a, PID b, PID c) { return; }
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "mac gets bitches");
-	pros::lcd::register_btn1_cb(on_center_button);
+  master.clear();
+  pros::delay(50);
+  skills_routes.push_back(std::make_tuple(dummy, "DUMMY"));
+  skills_routes.push_back(std::make_tuple(test_route, "test_route"));
+  skills_routes.push_back(
+      std::make_tuple(match_drew_MONEY, "match_drew_MONEY"));
+  //DONT DELETE OR MOVE THIS COMMENT SRSLY
+  ++skills_iter;
+  ++skills_iter;
+  ++match_iter;
+  ++match_iter;
+  pros::lcd::initialize();
+  pros::lcd::set_text(1, "its over...");
+  pros::lcd::register_btn1_cb(route_counter_down);
+  pros::lcd::register_btn2_cb(route_counter_up);
+  std::string route_name = (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter);
+  pros::lcd::set_text(3, route_name);
+  master.print(0, 0, route_name.c_str());
 }
 
-/**
- * Runs while the robot is in the disabled state of Field Management System or
- * the VEX Competition Switch, following either autonomous or opcontrol. When
- * the robot is enabled, this task will exit.
- */
 void disabled() {}
 
 /**
@@ -55,254 +266,50 @@ void disabled() {}
  */
 void competition_initialize() {}
 
-pros::ADIEncoder left(LEFT_ENCODE_TOP, LEFT_ENCODE_BOT);
-pros::ADIEncoder right(RIGHT_ENCODE_TOP, RIGHT_ENCODE_BOT);
-
-pros::Controller master(pros::E_CONTROLLER_MASTER);
-
-pros::Motor topLeftDrive(TOP_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
-pros::Motor midLeftDrive(MID_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE);
-pros::Motor botLeftDrive(BOT_LEFT_DRIVE, pros::E_MOTOR_GEAR_BLUE, true);
-
-pros::Motor topRightDrive(TOP_RIGHT_DRIVE);
-pros::Motor midRightDrive(MID_RIGHT_DRIVE, true);
-pros::Motor botRightDrive(BOT_RIGHT_DRIVE);
-
-pros::Motor leftIntake(LEFT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
-pros::Motor rightIntake(RIGHT_INTAKE, pros::E_MOTOR_GEAR_BLUE, true);
-
-pros::Motor elevation(EVEVATION, pros::E_MOTOR_GEAR_RED, true);
-
-pros::Motor leftCat(LEFT_CAT, pros::E_MOTOR_GEAR_RED, true);
-pros::Motor rightCat(RIGHT_CAT, pros::E_MOTOR_GEAR_RED);
-
-pros::ADIDigitalIn limit(LIMIT_SWITCH);
-pros::ADIDigitalOut triBallIntake(INTAKE);
-pros::ADIDigitalOut flippers(FLIPPERS);
-
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
  * the Field Management System or the VEX Competition Switch in the autonomous
  * mode. Alternatively, this function may be called in initialize or opcontrol
  * for non-competition testing purposes.
- *
- * If the robot is disabled or communications is lost, the autonomous task
- * will be stopped. Re-enabling the robot will restart the task, not re-start it
- * from where it left off.
  */
-int convert(int degrees){
-	return degrees + 23;
-}
-
-void shoot(int num){
-	triBallIntake.set_value(1);
-	rightIntake = 127;
-	leftIntake = 127;
-	pros::delay(1150);
-
-	for(int i = 0; i < num; i++){
-		leftCat = -127;
-		rightCat = -127;
-		pros::delay(300);
-		while(!limit.get_value()){
-			leftCat = -127;
-			rightCat = -127;
-		}
-		leftCat.brake();
-		rightCat.brake();
-		pros::delay(1000);
-	}
-	rightIntake = 0;
-	leftIntake = 0;
-	leftCat = -127;
-	rightCat = -127;
-	pros::delay(150);
-	leftCat = 0;
-	rightCat = 0;
-	return;
-}
-
 void autonomous() {
-	//ATTACK
-	elevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	leftCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	rightCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	//shoot(30);
-	pros::Imu imu(IMU);
-	imu.reset();
-	while(imu.is_calibrating()){
-		pros::delay(20);
-	}
-	imu.set_heading(convert(45));
-	while(imu.is_calibrating()){
-		pros::delay(20);
-	}
-	go(-2);
-	turn(convert(0));
-	std::cout << "end reached 1\n";
-	go (4*12-8);
-	std::cout << "end reached 2\n";
-	pros::delay(100000);
+	std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
 }
 
-void leftButton(){
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::clear();
-	}
-}
-
-void rightButton(){
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-	}
-}
-
-/**
- * Runs the operator control code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the operator
- * control mode.
- *
- * If no competition control is connected, this function will run immediately
- * following initialize().
- *
- * If the robot is disabled or communications is lost, the
- * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
- */
-
-//Function For Drive Code: Sticks
-void moveDrive(pros::Motor tl, pros::Motor ml, pros::Motor bl, pros::Motor tr, pros::Motor mr, pros::Motor br){
-	
-	//Tank Drive
-	int leftDrive = 0.75 * master.get_analog(ANALOG_LEFT_Y);
-	int rightDrive = 0.75 * master.get_analog(ANALOG_RIGHT_Y);
-
-	tr = rightDrive;
-	mr = rightDrive;
-	br = rightDrive;
-
-	tl = leftDrive;
-	ml = leftDrive;
-	bl = leftDrive;
-	
-}
-
-//Function For Moving the Catapult: Button: L1
-
-void moveCat(){
-	if(master.get_digital(DIGITAL_L1)){
-		leftCat = -127;
-		rightCat = -127;
-		pros::delay(300);
-		while(!limit.get_value()){
-			leftCat = -127;
-			rightCat = -127;
-		}
-		leftCat.brake();
-		rightCat.brake();
-	}
-}
-
-//Code for Elevation Button: X for up,  B for down
-void elevate(){
-	if (master.get_digital(DIGITAL_X)){ //Comes out of storage
-		elevation = 100;
-	} else if(master.get_digital(DIGITAL_B)){ //Climbs
-		elevation = -100;
-	} else{
-		elevation.brake();
-	}
-}
-
-
-bool isOnFor = false;
-bool isOnRev = false;
-void intake(){
-     if(master.get_digital_new_press(DIGITAL_R1)){
-        isOnFor = !isOnFor;
-        isOnRev = false;
-    }else if(master.get_digital_new_press(DIGITAL_R2)){
-        isOnFor = false;
-        isOnRev = !isOnRev;
-    }
-    if (isOnFor){
-        leftIntake = 127;
-        rightIntake = 127;
-    }
-    if (isOnRev){
-        leftIntake = -127;
-        rightIntake = -127;
-    }
-    if(!isOnFor && !isOnRev){
-        leftIntake = 0;
-        rightIntake = 0;
-    }
-}
-
-//Flippers Buttons: Y to Deploy and Pull Back
-bool flipperToggle = false;
-void actiavteFlippers(){
-	if(master.get_digital_new_press(DIGITAL_A)){
-		flipperToggle = !flipperToggle;
-		flippers.set_value(flipperToggle);
-		pros::delay(300);
-	}
-}
-
-//Intake Activation Buttons: A to Deploy and Pull Back
-bool intakeToggle = false;
-void activateIntake(){
-	if(master.get_digital_new_press(DIGITAL_Y)){
-		intakeToggle = !intakeToggle;
-		triBallIntake.set_value(intakeToggle);
-		pros::delay(300);
-	}
-}
-
+//runs in its own task
 void opcontrol() {
-	master.clear();
-	elevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	leftCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	rightCat.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	while(!limit.get_value()){
-		leftCat = -127;
-		rightCat = -127;
-	}
-	leftCat.brake();
-	rightCat.brake();
-	left.reset();
-	right.reset();
-	int i = 0;
-	while (true) {
-		//Sets the brake type of the evevation motor
-		//elevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-		//Tank Drive Code Sticks
-		moveDrive(topLeftDrive, midLeftDrive, botLeftDrive, topRightDrive, midRightDrive, botRightDrive);
+  master.clear();
+  display_d_value(selected_pid);
+  rightElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  leftElevation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  double flywheel_percent = 0.80;
 
-		//Catapult Code Button: L1
-		//moveCat();
+  while (true) {
+    
+    scroll_routes();
+    scroll_pid_selection();
+    incr_decr_pid_vals();
 
-		//Elevation Button: X for up,  B for down
-		//elevate();
+    moveDrive();
 
-		//Intake Button: R1 for in, R2 for out
-		//intake();
+    // Elevation Button: X for up,  B for down
+    elevate();
 
-		//Flippers Button: A
-		//actiavteFlippers();
+    // Intake Button: L1 for in, L2 for out
+    intake_func();
 
-		//Intake Activation Button: Y
-		//activateIntake();
-		
-		if(master.get_digital(DIGITAL_L2)){
-			triBallIntake.set_value(0);
-			flippers.set_value(1);
-		}
-		pros::delay(2);
-	}
+    // Flippers Button: R2
+    activateFlippers();
+
+    activateIntake180();
+
+    // Elevation Lock on Button: Left
+    activateElevation();
+
+    // Wheel Braking set to Button: Right
+    wheelsBrake();
+
+    pros::delay(2);
+  }
 }
