@@ -167,6 +167,9 @@ void opcontrol() {
     //Tank Drive Code Sticks
     moveDrive();
 
+    //Activiate Flaps
+    activateFlippers();
+
     //Intake Button: L1 for in, L2 for out
     intake_func();
 
@@ -183,7 +186,7 @@ void opcontrol() {
     rightFlyun(flywheel_percent);
 
     //Elevation Activate Button: Right
-    activateElevation();
+    elevationActive();
 
     wheelsBrake();
 

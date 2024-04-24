@@ -7,4 +7,5 @@ void activateIntake180();
 void activateIntake45();
 void activateElevation();
 void rightFlyun(double percent);
+void elevationActive();
 void wheelsBrake();

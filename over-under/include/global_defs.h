@@ -25,8 +25,8 @@
 
 #define INTAKE_ACTUATION 5
 
-#define ELEVATION_LOCK 'C'
-#define FLIPPERS 'F'
+#define ELEVATION 'C'
+#define FLIPPERS 'A'
 
 extern pros::Controller master;
 

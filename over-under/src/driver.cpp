@@ -10,7 +10,7 @@
 //Activate Elevation Button: Right Arrow
 bool elevationToggle = false;
 void elevationActive(){
-	if(master.get_digital_new_press(DIGITAL_LEFT)){
+	if(master.get_digital_new_press(DIGITAL_RIGHT)){
 		elevationToggle = !elevationToggle;
         elevation.set_value(elevationToggle);
 		pros::delay(300);
@@ -23,7 +23,7 @@ void moveDrive(){
 	
 	//Arcade Drive
 	int left = (.93 * master.get_analog(ANALOG_LEFT_Y));
-	int right = (.83 * master.get_analog(ANALOG_RIGHT_Y));
+	int right = (.93 * master.get_analog(ANALOG_RIGHT_Y));
 
 	topRightDrive = right;
 	midRightDrive = right;
@@ -58,9 +58,14 @@ void intake_func(){
 
 //Flippers Buttons: R2 to Deploy and Pull Back
 bool flipperToggle = false;
-void activteFlippers(){
-	if(master.get_digital_new_press(DIGITAL_L2)){
-		flipperToggle = !flipperToggle;
+void activateFlippers(){
+	if(master.get_digital_new_press(DIGITAL_L1)){
+		flipperToggle = true;
+		flippers.set_value(flipperToggle);
+		pros::delay(300);
+	}
+	else if(master.get_digital_new_press(DIGITAL_L2)){
+		flipperToggle = false;
 		flippers.set_value(flipperToggle);
 		pros::delay(300);
 	}
