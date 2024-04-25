@@ -23,9 +23,9 @@ std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
     match_routes.begin();
 
-PID leftpid = PID(.08,0.01,0,15,1000);
-PID rightpid = PID(.08,0.01,0,15,1000);
-PID turnpid = PID(0.60,0.5,0.005,0.5,100);
+PID leftpid = PID(.10,0.03,0,15,50);
+PID rightpid = PID(.075,0.03,0,15,50);
+PID turnpid = PID(0.30,0.1,10,1,10);
 PID *selected_pid = &leftpid;
 int pid_iter = 0;
 int lrt_iter = 0;
@@ -271,8 +271,9 @@ void competition_initialize() {}
  * mode. Alternatively, this function may be called in initialize or opcontrol
  * for non-competition testing purposes.
  */
+
 void autonomous() {
-	std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
+  match_drew_MONEY(leftpid, rightpid, turnpid);
 }
 
 //runs in its own task

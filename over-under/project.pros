@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "mac-tannerbot",
+    "project_name": "worlds-drewbot",
     "target": "v5",
     "templates": {
       "kernel": {

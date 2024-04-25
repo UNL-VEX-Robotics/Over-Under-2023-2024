@@ -152,11 +152,12 @@ void test_route(PID left, PID right, PID turnP){
 
 void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     while(imu.is_calibrating()){pros::delay(10);}
+    imu.reset(true);
     imu.set_heading(convert(270));
     while(imu.is_calibrating()){pros::delay(10);}
     go(54.53340818250772, leftPID, rightPID);
     turn(0.7690246825780491, turnPID);
-    go(28.610577065134493, leftPID, rightPID);
+    go(34.610577065134493, leftPID, rightPID);
     go(-6, leftPID, rightPID);
     turn(173.46786331214756, turnPID);
     go(18.31634855187454, leftPID, rightPID);
@@ -165,15 +166,16 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     intakeUpDown();
     turn(359.683451952727, turnPID);
     go(69.505060765386, leftPID, rightPID);
-    intakeUpDown();
+    //entered other side
     turn(327.4028831217652, turnPID);
-    go(33.50111162334766, leftPID, rightPID);
+    go(26.50111162334766, leftPID, rightPID);
     turn(270.6986943829835, turnPID);
-    go(15.745170688182457, leftPID, rightPID);
+    //push in first time |
+    go(24.745170688182457, leftPID, rightPID);
     turn(124.42647658143909, turnPID);
-    go(20.71643521458265, leftPID, rightPID);
-    turn(61.020292302071226, turnPID);
-    go(14.266258934983622, leftPID, rightPID);
+    go(15.71643521458265, leftPID, rightPID);
+    turn(45.020292302071226, turnPID);
+    go(11.266258934983622, leftPID, rightPID);
     intakeUpDown();
     turn(294.26129085247777, turnPID);
     go(14.95259709883203, leftPID, rightPID);
