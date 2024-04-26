@@ -31,7 +31,7 @@ void shoot(int num){
     pros::delay(500);
 }
 
-void activateIntake180GO(){
+void intakeBounce(){
     intakeActuation.move_relative(red_ticks_per_rev / 2.0, 65);
 }
 
@@ -157,6 +157,7 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     while(imu.is_calibrating()){pros::delay(10);}
     go(54.53340818250772, leftPID, rightPID);
     turn(0.7690246825780491, turnPID);
+    flippers.set_value(1);
     go(34.610577065134493, leftPID, rightPID);
     go(-6, leftPID, rightPID);
     turn(173.46786331214756, turnPID);

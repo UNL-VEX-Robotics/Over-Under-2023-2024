@@ -12,22 +12,19 @@
 #define STRAIGHT_RIGHT_DRIVE1 3
 #define STRAIGHT_RIGHT_DRIVE2 4
 
-#define RIGHT_INTAKE 19
-#define LEFT_INTAKE -14
+#define RIGHT_INTAKE 11
+#define LEFT_INTAKE -12 
 
 #define IMU 20
 
-#define RIGHT_ELEVATION -2
-#define LEFT_ELEVATION 6
-
-#define RIGHT_FLYWHEEL -12
-#define LEFT_FLYWHEEL 11
+#define LEFT_FLYWHEEL -19 
+#define RIGHT_FLYWHEEL 14
 
 #define INTAKE_ACTUATION 18
 
 //Change to correct
-#define ELEVATION_LOCK 'C'
-#define FLIPPERS 'F'
+#define ARM 'D'
+#define FLIPPERS 'B'
 
 extern pros::Controller master;
 

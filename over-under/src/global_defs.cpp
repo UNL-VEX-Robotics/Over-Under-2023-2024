@@ -18,14 +18,10 @@ pros::Motor intakeRight(RIGHT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
 pros::Motor intakeLeft(LEFT_INTAKE, pros::E_MOTOR_GEAR_BLUE);
 pros::Imu imu(IMU);
 
-pros::Motor rightElevation(RIGHT_ELEVATION);
-pros::Motor leftElevation(LEFT_ELEVATION);
-
 pros::Motor leftFly(LEFT_FLYWHEEL);
 pros::Motor rightFly(RIGHT_FLYWHEEL);
 pros::Motor intakeActuation(INTAKE_ACTUATION);
 
-pros::ADIDigitalOut eleLock(ELEVATION_LOCK);
 pros::ADIDigitalOut flippers(FLIPPERS);
 
 float wheel_radius=1.625;
