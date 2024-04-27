@@ -155,29 +155,48 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     imu.reset(true);
     imu.set_heading(convert(270));
     while(imu.is_calibrating()){pros::delay(10);}
-    go(54.53340818250772, leftPID, rightPID);
+    intakeUpDown();
+    go(52.03340818250772, leftPID, rightPID);
     turn(0.7690246825780491, turnPID);
+    intakeRight = -127;
+    intakeLeft = -127;
     flippers.set_value(1);
-    go(34.610577065134493, leftPID, rightPID);
+    pros::delay(100);
+    go(31.610577065134493, leftPID, rightPID); //<- decreased by 1 on THURS
     go(-6, leftPID, rightPID);
     turn(173.46786331214756, turnPID);
+    flippers.set_value(0);
+    intakeRight = 0;
+    intakeLeft = 0;
+    intakeUpDown();
     go(18.31634855187454, leftPID, rightPID);
     turn(96.5646842913341, turnPID);
-    go(48.703327196404146, leftPID, rightPID);
+    go(47.703327196404146, leftPID, rightPID); //<- 2 very good runs at end of day thurs
     intakeUpDown();
-    turn(359.683451952727, turnPID);
-    go(69.505060765386, leftPID, rightPID);
+    turn(360.683451952727, turnPID);
+    go(65.505060765386, leftPID, rightPID); //<- decreased by 4?
     //entered other side
-    turn(327.4028831217652, turnPID);
+    turn(315.4028831217652, turnPID);
+    flippers.set_value(1);
     go(26.50111162334766, leftPID, rightPID);
     turn(270.6986943829835, turnPID);
-    //push in first time |
+    //push in first time 
     go(24.745170688182457, leftPID, rightPID);
+    flippers.set_value(0);
+    //do more hits
+    //go(-12, leftPID, rightPID);
+    //turn(90, turnPID);
+    //go(13, leftPID, rightPID);
     turn(124.42647658143909, turnPID);
     go(15.71643521458265, leftPID, rightPID);
     turn(45.020292302071226, turnPID);
-    go(11.266258934983622, leftPID, rightPID);
+    go(6.266258934983622, leftPID, rightPID);
     intakeUpDown();
+    intakeRight = 80;
+    intakeLeft = 80;
+    pros::delay(2000);
+    intakeRight = 0;
+    intakeLeft = 0;
     turn(294.26129085247777, turnPID);
     go(14.95259709883203, leftPID, rightPID);
     turn(263.74596725608353, turnPID);

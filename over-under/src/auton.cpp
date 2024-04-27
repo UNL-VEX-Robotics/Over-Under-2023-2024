@@ -85,7 +85,7 @@ void go(double inches, PID leftPID, PID rightPID){
         //exit the push function after 3 seconds.
         if(i % (debug_frequency + 24000) == 0){ 
             now = pros::millis();
-            if(now - start > 3*1000){
+            if(now - start > 1.5*1000){
                 set_all_voltage(0);
                 return;     
             }

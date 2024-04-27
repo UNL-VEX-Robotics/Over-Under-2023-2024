@@ -1,4 +1,5 @@
 #include "main.h"
+#include <iostream>
 #include "auton.h"
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
@@ -20,21 +21,6 @@ void moveDrive(){
 	midLeftDrive = drive + turn;
 	botLeftDrive = drive + turn;
 	
-}
-
-
-//Code for Elevation Button: X for up,  B for down
-void elevate(){
-	if (master.get_digital(DIGITAL_UP)){ //Comes out of storage
-		rightElevation = 100;
-		leftElevation = 100;
-	} else if(master.get_digital(DIGITAL_DOWN)){ //Climbs
-		rightElevation = -100;
-		leftElevation = -100;
-	} else{
-		rightElevation = 0;
-		leftElevation = 0;
-	}
 }
 
 
@@ -91,8 +77,13 @@ void intake_func(){
 bool flipperToggle = false;
 void activateFlippers(){
 	if(master.get_digital_new_press(DIGITAL_R2)){
-		flipperToggle = !flipperToggle;
-		flippers.set_value(flipperToggle);
+		std::cout << "r2 got pressed" << std::endl;
+		flipperToggle = !flipperToggle;	
+		if(flipperToggle){
+			flippers.set_value(1);
+		} else {
+			flippers.set_value(0);
+		}
 		pros::delay(300);
 	}
 }

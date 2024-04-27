@@ -24,7 +24,7 @@
 
 //Change to correct
 #define ARM 'D'
-#define FLIPPERS 'B'
+#define FLIPPERS 'F'
 
 extern pros::Controller master;
 
