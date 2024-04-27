@@ -123,7 +123,7 @@ void match_tanner(PID leftPID, PID rightPID, PID turnPID){
     intakeActuation.move_relative(-red_ticks_per_rev / 4.0, 150);
     intakeRight = 80;
     intakeLeft = -80;
-    pros::delay(500);
+    pros::delay(1200);
     intakeRight = 0;
     intakeLeft = 0;
 
@@ -132,10 +132,11 @@ void match_tanner(PID leftPID, PID rightPID, PID turnPID){
     go(8, leftPID, rightPID);
     //WE RELY ON THIS BEING INACCURATE AND PUTTING US TO THE LEFT
     //potentially need a turn(255)
-    leftFly = 50;
-    rightFly = -50;
-    intakeRight = -60;
-    intakeLeft = 60;
+    leftFly = 70;
+    rightFly = -70;
+    intakeRight = -80;
+    intakeLeft = 80;
+    intakeActuation.move_relative(-red_ticks_per_rev / 4.0, 150);
     pros::delay(500);
     leftFly = 0;
     rightFly = 0;
@@ -143,10 +144,21 @@ void match_tanner(PID leftPID, PID rightPID, PID turnPID){
     intakeLeft = 0;
     turn(85, turnPID);
     go(-20, leftPID, rightPID);
+    turn(80, turnPID); // <- new addition
     go(18, leftPID, rightPID);
     pros::Motor_Group left( {topLeftDrive, midLeftDrive, botLeftDrive});
     left.move_relative(4*10.0/(4 *wheel_radius* M_PI) * blue_ticks_per_rev, 75);
     activateIntake90GO();
     pros::delay(1000);
-    shoot(2);
+    shoot(2); // <- 14
+    go(-4,leftPID,rightPID);
+    turn(45, turnPID);
+    go(20,leftPID, rightPID);
+    turn(0,turnPID);
+    leftPID.P_weight *= 0.6;
+    rightPID.P_weight *= 0.6;
+    leftPID.I_weight *= 2;
+    rightPID.I_weight *= 2;
+    elevation.set_value(1);
+    go(34, leftPID, rightPID);
 }

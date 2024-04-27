@@ -26,9 +26,9 @@ std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
     match_routes.begin();
 
-PID leftpid = PID(.08,0.05,0,15,25);
-PID rightpid = PID(.08,0.05,0,15,25);
-PID turnpid = PID(0.4,0.02,0,1,10);
+PID leftpid = PID(.08,0.1,0,15,25);
+PID rightpid = PID(.08,0.1,0,15,25);
+PID turnpid = PID(0.4,0.06,0,1,10);
 PID *selected_pid = &leftpid;
 int pid_iter = 0;
 int lrt_iter = 0;
@@ -139,7 +139,7 @@ void competition_initialize() {}
  * for non-competition testing purposes.
  */
 void autonomous() {
-	std::get<0>(*skills_iter)(leftpid, rightpid, turnpid);
+  match_tanner(leftpid, rightpid, turnpid);
 }
 
 //runs in its own task

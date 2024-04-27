@@ -15,7 +15,7 @@
 #define RIGHT_INTAKE 2
 #define LEFT_INTAKE 13
 
-#define IMU 15
+#define IMU 1
 
 #define RIGHT_ELEVATION -10
 #define LEFT_ELEVATION 4
