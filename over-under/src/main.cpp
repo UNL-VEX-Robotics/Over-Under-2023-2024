@@ -26,9 +26,9 @@ std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
     match_routes.begin();
 
-PID leftpid = PID(.08,0.1,0,15,25);
-PID rightpid = PID(.08,0.1,0,15,25);
-PID turnpid = PID(0.4,0.06,0,1,10);
+PID leftpid = PID(.08,0.11,0,15,25);
+PID rightpid = PID(.08,0.11,0,15,25);
+PID turnpid = PID(0.42,0.06,0,1,15);
 PID *selected_pid = &leftpid;
 int pid_iter = 0;
 int lrt_iter = 0;
@@ -100,10 +100,10 @@ void initialize() {
   master.clear();
   pros::delay(50);
   skills_routes.push_back(std::make_tuple(dummy, "DUMMY"));
-  skills_routes.push_back(std::make_tuple(match_tanner, "match_tanner"));
-  skills_routes.push_back(
-      std::make_tuple(match_drew_MONEY, "match_drew_MONEY"));
-  skills_routes.push_back(std::make_tuple(test_route, "test_route"));
+  //skills_routes.push_back(std::make_tuple(match_tanner, "match_tanner"));
+  //skills_routes.push_back(
+  //    std::make_tuple(match_drew_MONEY, "match_drew_MONEY"));
+  //skills_routes.push_back(std::make_tuple(test_route, "test_route"));
   //DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
   ++skills_iter;
