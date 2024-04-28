@@ -22,8 +22,8 @@ void elevationActive(){
 void moveDrive(){
 	
 	//Arcade Drive
-	int left = (.82 * master.get_analog(ANALOG_LEFT_Y));
-	int right = (.93 * master.get_analog(ANALOG_RIGHT_Y));
+	int left = (.95 * master.get_analog(ANALOG_LEFT_Y));
+	int right = (.95 * master.get_analog(ANALOG_RIGHT_Y));
 
 	topRightDrive = right;
 	midRightDrive = right;
