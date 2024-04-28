@@ -32,11 +32,11 @@ void shoot(int num){
 }
 
 void intakeBounce(){
-    intakeActuation.move_relative(red_ticks_per_rev / 2.0, 65);
+    intakeActuation.move_relative(-red_ticks_per_rev / 2.0, 65);
 }
 
 void intakeUpDown(){
-    intakeActuation.move_relative(red_ticks_per_rev / 4.0, 65);
+    intakeActuation.move_relative(-red_ticks_per_rev / 4.0, 65);
 }
 
 void intake_in(int time, int velo = 127){
