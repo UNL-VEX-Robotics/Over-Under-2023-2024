@@ -107,5 +107,5 @@ void match_tanner(PID leftPID, PID rightPID, PID turnPID){
     rightPID.P_weight *= 0.6;
     leftPID.I_weight *= 2;
     rightPID.I_weight *= 2;
-    go(30, leftPID, rightPID);
+    go(42, leftPID, rightPID);
 }
