@@ -99,8 +99,6 @@ void initialize() {
   skills_routes.push_back(std::make_tuple(test_route, "test_route"));
   skills_routes.push_back(
       std::make_tuple(match_drew_MONEY, "match_drew_MONEY"));
-  skills_routes.push_back(
-      std::make_tuple(drew_elevate, "drew_elevate"));
   //DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
   ++skills_iter;

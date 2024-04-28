@@ -22,7 +22,7 @@
 
 #define INTAKE_ACTUATION 18
 
-#define ARM 'B'
+#define ARM 'A'
 #define FLIPPERS 'F'
 
 extern pros::Controller master;

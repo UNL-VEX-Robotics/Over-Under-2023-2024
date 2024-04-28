@@ -88,7 +88,7 @@ void activateFlippers(){
 }
 bool armToggle = false;
 void activateArms(){
-	if(master.get_digital_new_press(DIGITAL_LEFT) || master.get_digital_new_press(DIGITAL_RIGHT)){
+	if(master.get_digital_new_press(DIGITAL_RIGHT)|| master.get_digital_new_press(DIGITAL_LEFT)){
 		armToggle = !armToggle;	
 		if(armToggle){
 			arm.set_value(1);

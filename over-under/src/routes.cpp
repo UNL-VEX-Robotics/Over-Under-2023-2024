@@ -227,13 +227,3 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     intakeUpDown();
     go(30.336607588852118, leftPID, rightPID);
 }
-
-void drew_elevate(PID leftPID, PID rightPID, PID turnPID){
-    while(imu.is_calibrating()){pros::delay(10);}
-    imu.set_heading(convert(90));
-    while(imu.is_calibrating()){pros::delay(10);}
-    turn(132.8499736489614, turnPID);
-    go(39.80702249603705, leftPID, rightPID);
-    turn(179.6373733260375, turnPID);
-    go(30.336607588852118, leftPID, rightPID);
-}
