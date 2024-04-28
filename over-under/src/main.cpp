@@ -140,6 +140,8 @@ void competition_initialize() {}
  * for non-competition testing purposes.
  */
 void autonomous() {
+  leftFly.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  rightFly.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   match_tanner(leftpid, rightpid, turnpid);
 }
 
@@ -147,6 +149,8 @@ void autonomous() {
 void opcontrol() {
   master.clear();
   double flywheel_percent = 0.82;
+  leftFly.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  rightFly.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   master.clear();
   while (true) {
     if (master.get_digital_new_press(DIGITAL_UP)){
