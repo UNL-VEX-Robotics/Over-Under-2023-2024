@@ -278,6 +278,7 @@ void get_over_and_score(PID leftPID, PID rightPID, PID turnPID){
     imu.reset(true);
     imu.set_heading(convert(0));
     while(imu.is_calibrating()){pros::delay(10);}
+    intakeUpDown();
     go(70.27304917249572, leftPID, rightPID);
     turn(319.7636416907262, turnPID);
     go(29.426779640320824, leftPID, rightPID);
