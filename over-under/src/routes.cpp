@@ -266,5 +266,9 @@ void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
     turn(132.8499736489614, turnPID);
     go(39.80702249603705, leftPID, rightPID);
     turn(180.39243070934089, turnPID);
+    leftPID.P_weight *= 0.8;
+    rightPID.P_weight *= 0.8;
+    leftPID.I_weight *= 2;
+    rightPID.I_weight *= 2;
     go(28.032657526535015, leftPID, rightPID);
 }
