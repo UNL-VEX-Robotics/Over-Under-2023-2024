@@ -99,10 +99,9 @@ void match_tanner(PID leftPID, PID rightPID, PID turnPID){
     go(12, leftPID, rightPID);
     //turn(80, turnPID); // <- new addition
     shoot(13); // <- 14
-    intakeActuation.move_relative(red_ticks_per_rev / 4.0, 150);
     go(-4,leftPID,rightPID);
     turn(45, turnPID);
-    go(12.5, leftPID, rightPID);
+    go(10.5, leftPID, rightPID);
     turn(0,turnPID);
     leftPID.P_weight *= 0.6;
     rightPID.P_weight *= 0.6;
