@@ -174,7 +174,7 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     go(47.703327196404146, leftPID, rightPID); //<- 2 very good runs at end of day thurs
     intakeUpDown(); //down
     turn(360.683451952727, turnPID);
-    go(65.505060765386, leftPID, rightPID); //<- decreased by 4?
+    go(72.505060765386, leftPID, rightPID); //<- decreased by 4?
     //entered other side
     turn(315.4028831217652, turnPID);
     //flippers.set_value(1);
@@ -227,3 +227,40 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     intakeUpDown();
     go(30.336607588852118, leftPID, rightPID);
 }
+
+void drew_elevate(PID leftPID, PID rightPID, PID turnPID){
+    intakeRight = 80;
+    intakeLeft = 80;
+    intakeUpDown(); //down
+    pros::delay(1500);
+    intakeRight = 0;
+    intakeLeft = 0;
+    imu.set_heading(convert(135));
+    while(imu.is_calibrating()){pros::delay(10);}
+    go(-2, leftPID, rightPID);
+    turn(255, turnPID);
+    go(8, leftPID, rightPID);
+    //WE RELY ON THIS BEING INACCURATE AND PUTTING US TO THE LEFT
+    //potentially need a turn(255)
+    leftFly = 70;
+    rightFly = 70;
+    intakeRight = 80;
+    intakeLeft = 80;
+    intakeUpDown(); //up
+    pros::delay(500);
+    leftFly = 0;
+    rightFly = 0;
+    intakeRight = 0;
+    intakeLeft = 0;
+    turn(85, turnPID);
+    go(-20, leftPID, rightPID);
+    imu.set_heading(convert(90));
+    while(imu.is_calibrating()){pros::delay(10);}
+    go(2,leftPID, rightPID);
+    turn(132.8499736489614, turnPID);
+    go(39.80702249603705, leftPID, rightPID);
+    turn(179.6373733260375, turnPID);
+    intakeUpDown();
+    go(30.336607588852118, leftPID, rightPID);
+}
+

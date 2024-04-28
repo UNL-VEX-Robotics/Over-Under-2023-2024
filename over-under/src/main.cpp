@@ -23,16 +23,26 @@ std::list<std::tuple<std::function<void()>, std::string>> match_routes;
 std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
     match_routes.begin();
 
+std::list<std::tuple<std::string, PID, PID, PID>> pid_sets;
+std::list<std::tuple<std::string, PID, PID, PID>>::iterator pid_iter= pid_sets.begin();
+
 PID leftpid = PID(.09,0.03,0,15,50);
 PID rightpid = PID(.075,0.03,0,15,50);
 PID turnpid = PID(0.35,0.1,10,1,10);
+
+PID intleftpid = PID(.09,0.06,0,15,50);
+PID intrightpid = PID(.075,0.06,0,15,50);
+PID intturnpid = PID(0.35,0.13,10,1,17);
+
+PID derivleftpid = PID(.09,0.03,1,15,50);
+PID derivrightpid = PID(.075,0.03,1,15,50);
+PID derivturnpid = PID(0.35,0.1,10,1,10);
 
 PID fastleftpid = PID(.01,0.06,0,15,50);
 PID fastrightpid = PID(.0833333,0.06,0,15,50);
 PID fastturnpid = PID(0.40,0.1,10,1,20);
 
-PID *selected_pid = &leftpid;
-int pid_iter = 0;
+
 int lrt_iter = 0;
 
 void route_counter_up() {
@@ -90,6 +100,17 @@ void skills_toggle() {
   pros::lcd::set_text(2, ba);
 }
 
+void pid_iter_up(){
+  pid_iter++;
+  if(pid_iter == pid_sets.end()){
+    pid_iter = pid_sets.begin();
+  }
+  master.clear_line(0);
+  pros::delay(50);
+  std::string n = std::get<0>(*pid_iter);
+  master.print(0,0,n.c_str());
+}
+ 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -104,6 +125,12 @@ void initialize() {
   skills_routes.push_back(std::make_tuple(test_route, "test_route"));
   skills_routes.push_back(
       std::make_tuple(match_drew_MONEY, "match_drew_MONEY"));
+  skills_routes.push_back(
+      std::make_tuple(drew_elevate, "drew_elevate"));
+  pid_sets.push_back(std::make_tuple("regular", leftpid, rightpid, turnpid));
+  pid_sets.push_back(std::make_tuple("fast", fastleftpid, fastrightpid, fastturnpid));
+  pid_sets.push_back(std::make_tuple("integral", intleftpid, intrightpid, intturnpid));
+  pid_sets.push_back(std::make_tuple("derivative", derivleftpid, derivrightpid, derivturnpid));
   //DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
   ++skills_iter;
@@ -114,8 +141,9 @@ void initialize() {
   pros::lcd::register_btn1_cb(route_counter_down);
   pros::lcd::register_btn2_cb(route_counter_up);
   std::string route_name = (skillsToggle) ? std::get<1>(*skills_iter) : std::get<1>(*match_iter);
+  std::string pid_name = std::get<0>(*pid_iter);
   pros::lcd::set_text(3, route_name);
-  master.print(0, 0, route_name.c_str());
+  master.print(0, 0, pid_name.c_str());
 }
 
 void disabled() {}
@@ -152,6 +180,15 @@ void opcontrol() {
   flippers.set_value(0);
   arm.set_value(0);
   while (true) {
+    if(master.get_digital_new_press(DIGITAL_Y)){
+      pid_iter_up();
+    }
+    if(master.get_digital_new_press(DIGITAL_UP)){
+      route_counter_up();
+    }
+    if(master.get_digital_new_press(DIGITAL_DOWN)){
+      route_counter_down();
+    }
     moveDrive();
       
     // Intake Button: L1 for in, L2 for out
