@@ -96,8 +96,13 @@ void match_tanner(PID leftPID, PID rightPID, PID turnPID){
     turn(45, turnPID);
     go(13, leftPID, rightPID);
     turn(135, turnPID);
+    flippers.set_value(1);
     go(12, leftPID, rightPID);
     //turn(80, turnPID); // <- new addition
+    leftPID.P_weight *= 0.6;
+    rightPID.P_weight *= 0.6;
+    leftPID.I_weight *= 2;
+    rightPID.I_weight *= 2;
     shoot(40); // <- 
     go(-4,leftPID,rightPID);
     turn(45, turnPID);

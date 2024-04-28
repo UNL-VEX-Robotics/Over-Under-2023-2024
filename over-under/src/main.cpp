@@ -151,6 +151,7 @@ void opcontrol() {
   double flywheel_percent = 0.82;
   leftFly.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   rightFly.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  flippers.set_value(0);
   master.clear();
   while (true) {
     if (master.get_digital_new_press(DIGITAL_UP)){
