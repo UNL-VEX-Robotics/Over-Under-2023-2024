@@ -228,26 +228,34 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     go(30.336607588852118, leftPID, rightPID);
 }
 
-void drew_elevate(PID leftPID, PID rightPID, PID turnPID){
-    intakeRight = 80;
+
+void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
+    while(imu.is_calibrating()){pros::delay(10);}
+    imu.reset(true);
+    imu.set_heading(convert(0));
+    while(imu.is_calibrating()){pros::delay(10);}
+    intakeUpDown(); // <- down
+    go(61.632, leftPID, rightPID);
+    turn(325.64061970241056, turnPID);
+    go(22.79307684363829, leftPID, rightPID);
+    intakeUpDown(); //<- up
+    turn(45.0, turnPID);
     intakeLeft = 80;
-    intakeUpDown(); //down
+    intakeRight = 80;
+    go(10.318102151074102, leftPID, rightPID);
+    intakeUpDown();
     pros::delay(1500);
-    intakeRight = 0;
-    intakeLeft = 0;
-    imu.set_heading(convert(135));
+    //acquired ball
     while(imu.is_calibrating()){pros::delay(10);}
     go(-2, leftPID, rightPID);
     turn(255, turnPID);
     go(8, leftPID, rightPID);
-    //WE RELY ON THIS BEING INACCURATE AND PUTTING US TO THE LEFT
-    //potentially need a turn(255)
-    leftFly = 70;
-    rightFly = 70;
-    intakeRight = 80;
-    intakeLeft = 80;
-    intakeUpDown(); //up
+    leftFly = -70;
+    rightFly = -70;
+    intakeRight = -80;
+    intakeLeft = -80;
     pros::delay(500);
+    intakeUpDown(); //up
     leftFly = 0;
     rightFly = 0;
     intakeRight = 0;
@@ -255,12 +263,8 @@ void drew_elevate(PID leftPID, PID rightPID, PID turnPID){
     turn(85, turnPID);
     go(-20, leftPID, rightPID);
     imu.set_heading(convert(90));
-    while(imu.is_calibrating()){pros::delay(10);}
-    go(2,leftPID, rightPID);
     turn(132.8499736489614, turnPID);
     go(39.80702249603705, leftPID, rightPID);
-    turn(179.6373733260375, turnPID);
-    intakeUpDown();
-    go(30.336607588852118, leftPID, rightPID);
+    turn(180.39243070934089, turnPID);
+    go(28.032657526535015, leftPID, rightPID);
 }
-

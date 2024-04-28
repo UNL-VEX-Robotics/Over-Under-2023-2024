@@ -125,12 +125,12 @@ void initialize() {
   skills_routes.push_back(std::make_tuple(test_route, "test_route"));
   skills_routes.push_back(
       std::make_tuple(match_drew_MONEY, "match_drew_MONEY"));
-  skills_routes.push_back(
-      std::make_tuple(drew_elevate, "drew_elevate"));
   pid_sets.push_back(std::make_tuple("regular", leftpid, rightpid, turnpid));
   pid_sets.push_back(std::make_tuple("fast", fastleftpid, fastrightpid, fastturnpid));
   pid_sets.push_back(std::make_tuple("integral", intleftpid, intrightpid, intturnpid));
   pid_sets.push_back(std::make_tuple("derivative", derivleftpid, derivrightpid, derivturnpid));
+  skills_routes.push_back(
+      std::make_tuple(drew_AWP, "drew_AWP"));
   //DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
   ++skills_iter;
@@ -169,13 +169,17 @@ void competition_initialize() {}
 
 void autonomous() {
   intakeActuation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  match_drew_MONEY(leftpid, rightpid, turnpid);
+  intakeLeft.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  intakeRight.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  drew_AWP(leftpid, rightpid, turnpid);
 }
 
 //runs in its own task
 void opcontrol() {
   master.clear();
   double flywheel_percent = 0.80;
+  intakeLeft.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  intakeRight.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
   flippers.set_value(0);
   arm.set_value(0);
