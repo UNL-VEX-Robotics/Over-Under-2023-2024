@@ -22,8 +22,7 @@
 
 #define INTAKE_ACTUATION 18
 
-//Change to correct
-#define ARM 'D'
+#define ARM 'B'
 #define FLIPPERS 'F'
 
 extern pros::Controller master;
@@ -48,10 +47,8 @@ extern pros::Motor rightFly;
 
 extern pros::Motor intakeActuation;
 
+extern pros::ADIDigitalOut arm;
 extern pros::ADIDigitalOut flippers;
-extern pros::ADIDigitalOut eleLock;
-extern pros::ADIDigitalOut intakePneu;
-extern pros::ADIDigitalOut eleLock;
 
 extern float wheel_radius;
 extern float encoder_wheel_radius;

@@ -77,7 +77,6 @@ void intake_func(){
 bool flipperToggle = false;
 void activateFlippers(){
 	if(master.get_digital_new_press(DIGITAL_R2)){
-		std::cout << "r2 got pressed" << std::endl;
 		flipperToggle = !flipperToggle;	
 		if(flipperToggle){
 			flippers.set_value(1);
@@ -87,6 +86,19 @@ void activateFlippers(){
 		pros::delay(300);
 	}
 }
+bool armToggle = false;
+void activateArms(){
+	if(master.get_digital_new_press(DIGITAL_LEFT) || master.get_digital_new_press(DIGITAL_RIGHT)){
+		armToggle = !armToggle;	
+		if(armToggle){
+			arm.set_value(1);
+		} else {
+			arm.set_value(0);
+		}
+		pros::delay(300);
+	}
+}
+
 
 
 void activateIntake180(){
@@ -110,29 +122,5 @@ void flywheelRun(float percent){
 	else {
 		rightFly = 0;
 		leftFly = 0;
-	}
-}
-
-//Toggle to Set Wheels at Brake Type hold
-bool isWheelsBrake = true;
-void wheelsBrake(){
-	if(master.get_digital_new_press(DIGITAL_RIGHT)){
-		isWheelsBrake = !isWheelsBrake;
-	}
-	if(isWheelsBrake){
-		topLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-		midLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-		botLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-		topRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-		midRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-		botRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	}
-	else if(!isWheelsBrake){
-		topLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-		midLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-		botLeftDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-		topRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-		midRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-		botRightDrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	}
 }

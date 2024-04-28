@@ -99,6 +99,8 @@ void initialize() {
   skills_routes.push_back(std::make_tuple(test_route, "test_route"));
   skills_routes.push_back(
       std::make_tuple(match_drew_MONEY, "match_drew_MONEY"));
+  skills_routes.push_back(
+      std::make_tuple(drew_elevate, "drew_elevate"));
   //DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
   ++skills_iter;
@@ -145,6 +147,7 @@ void opcontrol() {
   double flywheel_percent = 0.80;
 
   flippers.set_value(0);
+  arm.set_value(0);
   while (true) {
     moveDrive();
       
@@ -154,10 +157,8 @@ void opcontrol() {
     // Flippers Button: R2
     activateFlippers();
     flywheelRun(flywheel_percent);
+    activateArms();
     activateIntake180();
-
-    // Wheel Braking set to Button: Right
-    wheelsBrake();
 
     pros::delay(2);
   }

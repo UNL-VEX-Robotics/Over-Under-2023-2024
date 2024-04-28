@@ -23,6 +23,7 @@ pros::Motor rightFly(RIGHT_FLYWHEEL);
 pros::Motor intakeActuation(INTAKE_ACTUATION);
 
 pros::ADIDigitalOut flippers(FLIPPERS);
+pros::ADIDigitalOut arm(ARM);
 
 float wheel_radius=1.625;
 float encoder_wheel_radius=2.75;
