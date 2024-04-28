@@ -131,6 +131,8 @@ void initialize() {
   pid_sets.push_back(std::make_tuple("derivative", derivleftpid, derivrightpid, derivturnpid));
   skills_routes.push_back(
       std::make_tuple(drew_AWP, "drew_AWP"));
+  skills_routes.push_back(
+      std::make_tuple(get_over_and_score, "get_over_and_score"));
   //DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
   ++skills_iter;
@@ -171,7 +173,7 @@ void autonomous() {
   intakeActuation.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   intakeLeft.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   intakeRight.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  drew_AWP(leftpid, rightpid, turnpid);
+  get_over_and_score(leftpid, rightpid, turnpid);
 }
 
 //runs in its own task

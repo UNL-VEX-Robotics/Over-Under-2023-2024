@@ -272,3 +272,18 @@ void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
     rightPID.I_weight *= 2;
     go(28.032657526535015, leftPID, rightPID);
 }
+
+void get_over_and_score(PID leftPID, PID rightPID, PID turnPID){
+    while(imu.is_calibrating()){pros::delay(10);}
+    imu.reset(true);
+    imu.set_heading(convert(0));
+    while(imu.is_calibrating()){pros::delay(10);}
+    go(70.27304917249572, leftPID, rightPID);
+    turn(319.7636416907262, turnPID);
+    go(29.426779640320824, leftPID, rightPID);
+    turn(270.0, turnPID);
+    go(12.2, leftPID, rightPID);
+    go(-12.485906294698834, leftPID, rightPID);
+    turn(270, turnPID);
+    go(14.10511909010127, leftPID, rightPID);
+}
