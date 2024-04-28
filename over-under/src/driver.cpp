@@ -23,7 +23,7 @@ void moveDrive(){
 	
 	//Arcade Drive
 	int left = (.95 * master.get_analog(ANALOG_LEFT_Y));
-	int right = (.95 * master.get_analog(ANALOG_RIGHT_Y));
+	int right = (.97 * master.get_analog(ANALOG_RIGHT_Y));
 
 	topRightDrive = right;
 	midRightDrive = right;
