@@ -26,6 +26,11 @@ std::list<std::tuple<std::function<void()>, std::string>>::iterator match_iter =
 PID leftpid = PID(.09,0.03,0,15,50);
 PID rightpid = PID(.075,0.03,0,15,50);
 PID turnpid = PID(0.35,0.1,10,1,10);
+
+PID fastleftpid = PID(.01,0.06,0,15,50);
+PID fastrightpid = PID(.0833333,0.06,0,15,50);
+PID fastturnpid = PID(0.40,0.1,10,1,20);
+
 PID *selected_pid = &leftpid;
 int pid_iter = 0;
 int lrt_iter = 0;
