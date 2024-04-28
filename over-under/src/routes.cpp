@@ -98,7 +98,7 @@ void match_tanner(PID leftPID, PID rightPID, PID turnPID){
     turn(135, turnPID);
     go(12, leftPID, rightPID);
     //turn(80, turnPID); // <- new addition
-    shoot(13); // <- 14
+    shoot(40); // <- 
     go(-4,leftPID,rightPID);
     turn(45, turnPID);
     go(10.5, leftPID, rightPID);
