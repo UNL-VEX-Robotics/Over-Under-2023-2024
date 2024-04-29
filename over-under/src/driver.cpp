@@ -109,7 +109,7 @@ void activateIntake180(){
 
 
 //Flywheel set to run unless Y Button is pressed
-bool isFlyOn = true; //Auto set to true so the flywheel starts on
+bool isFlyOn = false; //Auto set to true so the flywheel starts on
 void flywheelRun(float percent){
 	if(master.get_digital_new_press(DIGITAL_X)){
 		isFlyOn = !isFlyOn;

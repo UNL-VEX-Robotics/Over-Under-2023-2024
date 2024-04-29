@@ -258,7 +258,7 @@ void get_over_and_score(PID leftPID, PID rightPID, PID turnPID){
 
 void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
     while(imu.is_calibrating()){pros::delay(10);}
-    imu.reset();
+    imu.reset(true);
     imu.set_heading(convert(0));
     while(imu.is_calibrating()){pros::delay(10);}
     intakeUpDown();
@@ -300,7 +300,9 @@ void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
     intakeLeft = 0;
     intakeRight = 0;
     //turn(90.0, turnPID); //270
-    turn_left(90, turnPID);
+    //turn_left(90, turnPID);
+    turn(180,turnPID);
+    turn(90,turnPID);
     go(-10.368, leftPID, rightPID); //+
     go(-3, leftPID, rightPID);
     turn(123.84005613496726, turnPID);

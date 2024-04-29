@@ -208,7 +208,7 @@ void turn_left_relative_debug(double degrees, PID turnPID){
 void turn(double degrees, PID turnPID){
     degrees = convert(degrees);
     turnPID.reset();
-    std::printf("current heading: %f\nturning to: %f", imu.get_heading(), degrees);
+    //std::printf("current heading: %f\nturning to: %f", imu.get_heading(), degrees);
     int start_heading = imu.get_heading(); 
     //right range = start +1, start + 180 % 360
     //left range = start -1, start - 180 % 360
