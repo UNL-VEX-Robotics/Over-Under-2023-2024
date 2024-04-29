@@ -133,6 +133,8 @@ void initialize() {
       std::make_tuple(drew_AWP, "drew_AWP"));
   skills_routes.push_back(
       std::make_tuple(get_over_and_score, "get_over_and_score"));
+  skills_routes.push_back(
+      std::make_tuple(drew_touch_elevation, "drew_touch_elevation"));
   //DONT DELETE OR MOVE THIS COMMENT SRSLY
   ++skills_iter;
   ++skills_iter;

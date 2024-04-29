@@ -220,58 +220,19 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     go(-20, leftPID, rightPID);
     imu.set_heading(convert(90));
     while(imu.is_calibrating()){pros::delay(10);}
-    go(2,leftPID, rightPID);
-    turn(132.8499736489614, turnPID);
-    go(39.80702249603705, leftPID, rightPID);
-    turn(179.6373733260375, turnPID);
+    turn(145.94421969906756, turnPID);
+    go(25.028582700584543, leftPID, rightPID);
+    turn(234.41262943686615, turnPID);
+    go(25.73444695345132, leftPID, rightPID);
+    turn(135.68206039317266, turnPID);
     intakeUpDown();
-    go(30.336607588852118, leftPID, rightPID);
+    leftPID.P_weight *=0.6;
+    leftPID.I_weight*=2;
+    rightPID.P_weight *=0.6;
+    rightPID.I_weight*=2;
+    go(22.810052520763737, leftPID, rightPID);
 }
 
-
-void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
-    while(imu.is_calibrating()){pros::delay(10);}
-    imu.reset(true);
-    imu.set_heading(convert(0));
-    while(imu.is_calibrating()){pros::delay(10);}
-    intakeUpDown(); // <- down
-    go(61.632, leftPID, rightPID);
-    turn(325.64061970241056, turnPID);
-    go(22.79307684363829, leftPID, rightPID);
-    intakeUpDown(); //<- up
-    turn(45.0, turnPID);
-    intakeLeft = 80;
-    intakeRight = 80;
-    go(10.318102151074102, leftPID, rightPID);
-    intakeUpDown();
-    pros::delay(1500);
-    //acquired ball
-    while(imu.is_calibrating()){pros::delay(10);}
-    go(-2, leftPID, rightPID);
-    turn(255, turnPID);
-    go(8, leftPID, rightPID);
-    leftFly = -70;
-    rightFly = -70;
-    intakeRight = -80;
-    intakeLeft = -80;
-    pros::delay(500);
-    intakeUpDown(); //up
-    leftFly = 0;
-    rightFly = 0;
-    intakeRight = 0;
-    intakeLeft = 0;
-    turn(85, turnPID);
-    go(-20, leftPID, rightPID);
-    imu.set_heading(convert(90));
-    turn(132.8499736489614, turnPID);
-    go(39.80702249603705, leftPID, rightPID);
-    turn(180.39243070934089, turnPID);
-    leftPID.P_weight *= 0.8;
-    rightPID.P_weight *= 0.8;
-    leftPID.I_weight *= 2;
-    rightPID.I_weight *= 2;
-    go(28.032657526535015, leftPID, rightPID);
-}
 
 void get_over_and_score(PID leftPID, PID rightPID, PID turnPID){
     intakeUpDown();
@@ -288,4 +249,16 @@ void get_over_and_score(PID leftPID, PID rightPID, PID turnPID){
     go(-12.485906294698834, leftPID, rightPID);
     turn(270, turnPID);
     go(14.10511909010127, leftPID, rightPID);
+}
+
+void drew_touch_elevation(PID leftPID, PID rightPID, PID turnPID){
+    while(imu.is_calibrating()){pros::delay(10);}
+    imu.set_heading(convert(90));
+    while(imu.is_calibrating()){pros::delay(10);}
+    turn(145.94421969906756, turnPID);
+    go(25.028582700584543, leftPID, rightPID);
+    turn(234.41262943686615, turnPID);
+    go(25.73444695345132, leftPID, rightPID);
+    turn(135.68206039317266, turnPID);
+    go(22.810052520763737, leftPID, rightPID);
 }
