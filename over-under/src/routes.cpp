@@ -14,7 +14,7 @@ void shoot(int num){
     pros::delay(600);
     for(int i = 0; i < num; i++){
         intakeActuation.move_relative(red_ticks_per_rev / 2.0, 85);
-        pros::delay(1500);
+        pros::delay(1200); // <- decreased from 1500
     }
     leftFly = 0;
     rightFly = 0;
@@ -108,7 +108,8 @@ void match_tanner(int start_voltage, PID leftPID, PID rightPID, PID turnPID){
     rightPID.P_weight /= 0.6;
     leftPID.I_weight /= 2;
     rightPID.I_weight /= 2;
-    shoot(8); // <- 
+    shoot(10); // <- 
+    flippers.set_value(1);
     go(-8.145870119269029, leftPID, rightPID);
     turn(32.57405713457251, turnPID);
     go(24.60673078651449, leftPID, rightPID);
@@ -155,7 +156,8 @@ void old_tanner_start(PID leftPID,PID rightPID, PID turnPID){
     leftPID.I_weight *= 2;
     rightPID.I_weight *= 2;
     go(10, leftPID, rightPID);
-    }
+}
+
 void tanner_touch_elevation(PID leftPID, PID rightPID, PID turnPID){
     while(imu.is_calibrating()){pros::delay(10);}
     imu.set_heading(convert(135));
