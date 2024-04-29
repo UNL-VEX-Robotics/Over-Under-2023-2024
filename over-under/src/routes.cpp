@@ -9,8 +9,8 @@
 void shoot(int num){
     intakeRight = 127;
     intakeLeft = -127;
-    leftFly = .71 * -127;
-	rightFly = .71 * 127; 
+    leftFly = .73 * -127;
+	rightFly = .73 * 127; 
     pros::delay(600);
     for(int i = 0; i < num; i++){
         intakeActuation.move_relative(red_ticks_per_rev / 2.0, 85);
@@ -119,7 +119,7 @@ void match_tanner(int start_voltage, PID leftPID, PID rightPID, PID turnPID){
     leftPID.I_weight *= 2;
     rightPID.I_weight *= 2;
     intakeActuation.move_relative(red_ticks_per_rev / 4.0, 150);
-    go(18.91370550685402, leftPID, rightPID);
+    go(17.41370550685402, leftPID, rightPID);
 }
 
 
