@@ -60,14 +60,9 @@ void intake_func(){
 bool flipperToggle = false;
 void activateFlippers(){
 	if(master.get_digital_new_press(DIGITAL_L1)){
-		flipperToggle = true;
+		flipperToggle = !flipperToggle;
 		flippers.set_value(flipperToggle);
-		pros::delay(300);
-	}
-	else if(master.get_digital_new_press(DIGITAL_L2)){
-		flipperToggle = false;
-		flippers.set_value(flipperToggle);
-		pros::delay(300);
+		pros::delay(100);
 	}
 }
 

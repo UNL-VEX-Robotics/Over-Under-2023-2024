@@ -60,7 +60,7 @@ void flywheel_out(int time, int velo = 127){
 
 
 
-void match_tanner(PID leftPID, PID rightPID, PID turnPID){
+void match_tanner(int start_voltage, PID leftPID, PID rightPID, PID turnPID){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
@@ -69,9 +69,10 @@ void match_tanner(PID leftPID, PID rightPID, PID turnPID){
         pros::delay(10);
     }
     intakeActuation.move_relative(-red_ticks_per_rev / 4.0, 150);
-    intakeRight = 70;
-    intakeLeft = -70;
-    pros::delay(800); 
+    pros::delay(600);
+    intakeRight = 127;
+    intakeLeft = -127;
+    pros::delay(250);  // <- decrease
     intakeRight = 0;
     intakeLeft = 0;
 
@@ -114,3 +115,40 @@ void match_tanner(PID leftPID, PID rightPID, PID turnPID){
     rightPID.I_weight *= 2;
     go(42, leftPID, rightPID);
 }
+
+void old_tanner_start(PID leftPID,PID rightPID, PID turnPID){
+    intakeActuation.move_relative(-red_ticks_per_rev / 4.0, 150);
+    intakeRight = 70;
+    intakeLeft = -70;
+    pros::delay(800); 
+    intakeRight = 0;
+    intakeLeft = 0;
+
+    go(-2, leftPID, rightPID);
+    turn(255, turnPID);
+    go(8, leftPID, rightPID);
+    //WE RELY ON THIS BEING INACCURATE AND PUTTING US TO THE LEFT
+    //potentially need a turn(255)
+    leftFly = 70;
+    rightFly = -70;
+    intakeRight = -80;
+    intakeLeft = 80;
+    intakeActuation.move_relative(red_ticks_per_rev / 4.0, 150);
+    pros::delay(500);
+    leftFly = 0;
+    rightFly = 0;
+    intakeRight = 0;
+    intakeLeft = 0;
+    turn(85, turnPID);
+    go(-20, leftPID, rightPID);
+    go(6, leftPID, rightPID);
+    turn(45, turnPID);
+    go(13, leftPID, rightPID);
+    turn(135, turnPID);
+    flippers.set_value(1);
+    leftPID.P_weight *= 0.6;
+    rightPID.P_weight *= 0.6;
+    leftPID.I_weight *= 2;
+    rightPID.I_weight *= 2;
+    go(10, leftPID, rightPID);
+    }
