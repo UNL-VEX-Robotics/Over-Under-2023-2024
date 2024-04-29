@@ -101,7 +101,7 @@ void activateElevation(){
 }
 
 //Flywheel set to be always running unless turned off Button: X On, B Off
-bool isFlyOn = true;
+bool isFlyOn = false;
 void rightFlyun(double percent){
 	if(master.get_digital_new_press(DIGITAL_X)){
 		isFlyOn = !isFlyOn;
