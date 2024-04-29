@@ -232,7 +232,11 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     rightPID.I_weight*=2;
     go(22.810052520763737, leftPID, rightPID);
 }
-
+void turn_left(int abs_x, PID p){
+    double start = imu.get_heading();
+    double rel = start - abs_x;
+    turn_left_relative_debug(rel, p);
+}
 
 void get_over_and_score(PID leftPID, PID rightPID, PID turnPID){
     intakeUpDown();
@@ -256,14 +260,18 @@ void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
     while(imu.is_calibrating()){pros::delay(10);}
     imu.set_heading(convert(0));
     while(imu.is_calibrating()){pros::delay(10);}
-    turn(359.13717698291896, turnPID);
-    go(63.75122850580998, leftPID, rightPID);
+    intakeUpDown();
+    leftPID.P_weight *=1.6;
+    rightPID.P_weight *=1.6;
+    go(12, leftPID, rightPID);
+    leftPID.P_weight /=1.6;
+    rightPID.P_weight /=1.6;
+    go(51.75122850580998, leftPID, rightPID);
     turn(315.0, turnPID);
     go(20.636204302148204, leftPID, rightPID);
     intakeLeft =-127; 
     intakeRight =-127; 
     intakeUpDown();
-    flippers.set_value(1);
     turn(45.0, turnPID);
     intakeRight = 90;
     intakeLeft = 90;
@@ -288,8 +296,9 @@ void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
     pros::delay(800);
     intakeLeft = 0;
     intakeRight = 0;
-    turn(270.0, turnPID);
-    go(10.368, leftPID, rightPID);
+    //turn(90.0, turnPID); //270
+    turn_left(90, turnPID);
+    go(-10.368, leftPID, rightPID); //+
     go(-3, leftPID, rightPID);
     turn(123.84005613496726, turnPID);
     go(20.342035296400407, leftPID, rightPID);
