@@ -68,11 +68,11 @@ void match_tanner(int start_voltage, PID leftPID, PID rightPID, PID turnPID){
     while (imu.is_calibrating()){
         pros::delay(10);
     }
-    intakeActuation.move_relative(-red_ticks_per_rev / 4.0, 150);
-    pros::delay(600);
-    intakeRight = 127;
-    intakeLeft = -127;
-    pros::delay(250);  // <- decrease
+    intakeActuation.move_relative(-red_ticks_per_rev / 4.0, 95);//Started at 150
+    pros::delay(825);
+    intakeRight = 90;
+    intakeLeft = -90;
+    pros::delay(275);  // <- decrease
     intakeRight = 0;
     intakeLeft = 0;
 
@@ -104,16 +104,20 @@ void match_tanner(int start_voltage, PID leftPID, PID rightPID, PID turnPID){
     rightPID.I_weight *= 2;
     go(10, leftPID, rightPID);
     //turn(80, turnPID); // <- new addition
-    shoot(40); // <- 
-    go(-4,leftPID,rightPID);
-    turn(45, turnPID);
-    go(10.5, leftPID, rightPID);
-    turn(0,turnPID);
+    leftPID.P_weight /= 0.6;
+    rightPID.P_weight /= 0.6;
+    leftPID.I_weight /= 2;
+    rightPID.I_weight /= 2;
+    shoot(8); // <- 
+    go(-8.145870119269029, leftPID, rightPID);
+    turn(32.57405713457251, turnPID);
+    go(24.60673078651449, leftPID, rightPID);
+    turn(354.1736579704442, turnPID);
     leftPID.P_weight *= 0.6;
     rightPID.P_weight *= 0.6;
     leftPID.I_weight *= 2;
     rightPID.I_weight *= 2;
-    go(42, leftPID, rightPID);
+    go(18.91370550685402, leftPID, rightPID);
 }
 
 void old_tanner_start(PID leftPID,PID rightPID, PID turnPID){
@@ -152,3 +156,13 @@ void old_tanner_start(PID leftPID,PID rightPID, PID turnPID){
     rightPID.I_weight *= 2;
     go(10, leftPID, rightPID);
     }
+void tanner_touch_elevation(PID leftPID, PID rightPID, PID turnPID){
+    while(imu.is_calibrating()){pros::delay(10);}
+    imu.set_heading(convert(135));
+    while(imu.is_calibrating()){pros::delay(10);}
+    go(-8.145870119269029, leftPID, rightPID);
+    turn(32.57405713457251, turnPID);
+    go(24.60673078651449, leftPID, rightPID);
+    turn(354.1736579704442, turnPID);
+    go(18.91370550685402, leftPID, rightPID);
+}

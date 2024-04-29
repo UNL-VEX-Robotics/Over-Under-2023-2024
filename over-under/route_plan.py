@@ -184,6 +184,7 @@ class FieldDrawer:
         self.canvas.bind("<Motion>",self.show_bot)
         self.canvas.bind("<Button-4>",self.rotate)
         self.canvas.bind("<Button-5>",self.rotate)
+        self.master.bind("l",self.rotate45)
 
 
         self.start_heading = heading
@@ -290,6 +291,10 @@ class FieldDrawer:
     def rotate(self, event):
         self.heading += 180
         self.heading %= 360
+    
+    def rotate45(self, event):
+        self.heading = 45
+    
 
     def pack_utility_buttons(self):
         ininbutt = Button(self.master, text="Intake In", command=self.intake_in)
