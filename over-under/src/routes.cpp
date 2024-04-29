@@ -150,7 +150,7 @@ void test_route(PID left, PID right, PID turnP){
     go(-12, left, right);
 }
 
-void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
+void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
     while(imu.is_calibrating()){pros::delay(10);}
     imu.reset(true);
     imu.set_heading(convert(270));
@@ -261,4 +261,52 @@ void drew_touch_elevation(PID leftPID, PID rightPID, PID turnPID){
     go(25.73444695345132, leftPID, rightPID);
     turn(135.68206039317266, turnPID);
     go(22.810052520763737, leftPID, rightPID);
+}
+
+
+void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
+
+
+}
+void drew_AWP_gen(PID leftPID, PID rightPID, PID turnPID){
+    while(imu.is_calibrating()){pros::delay(10);}
+    imu.set_heading(convert(0));
+    while(imu.is_calibrating()){pros::delay(10);}
+    turn(359.13717698291896, turnPID);
+    go(63.75122850580998, leftPID, rightPID);
+    turn(315.0, turnPID);
+    go(20.636204302148204, leftPID, rightPID);
+    intakeLeft =-80; 
+    intakeRight =-80; 
+    intakeUpDown();
+    flippers.set_value(1);
+    turn(45.0, turnPID);
+    go(11.675747170952274, leftPID, rightPID);
+    intakeUpDown();
+     
+    imu.set_heading(convert(135));
+    while(imu.is_calibrating()){pros::delay(10);}
+    go(-2, leftPID, rightPID);
+    turn(255, turnPID);
+    go(8, leftPID, rightPID);
+    //WE RELY ON THIS BEING INACCURATE AND PUTTING US TO THE LEFT
+    //potentially need a turn(255)
+    leftFly = 70;
+    rightFly = 70;
+    intakeRight = 80;
+    intakeLeft = 80;
+    intakeUpDown(); //up
+    pros::delay(500);
+    leftFly = 0;
+    rightFly = 0;
+    intakeRight = 0;
+    intakeLeft = 0;
+    turn(85, turnPID);
+    go(-20, leftPID, rightPID);
+    imu.set_heading(convert(90));
+    while(imu.is_calibrating()){pros::delay(10);}
+    turn(45.552675264948164, turnPID);
+    go(-42.2247245106466, leftPID, rightPID);
+    turn(136.25904520717526, turnPID);
+    go(24.715106311727652, leftPID, rightPID);
 }
