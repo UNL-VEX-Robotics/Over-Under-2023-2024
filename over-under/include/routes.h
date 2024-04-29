@@ -15,3 +15,4 @@ void drew_AWP(PID leftPID, PID rightPID, PID turnPID);
 void get_over_and_score(PID leftPID, PID rightPID, PID turnPID);
 void drew_touch_elevation(PID leftPID, PID rightPID, PID turnPID);
 void drew_AWP_gen(PID leftPID, PID rightPID, PID turnPID);
+void drew_AWP_from_alliance_ball(PID leftPID, PID rightPID, PID turnPID);

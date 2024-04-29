@@ -251,24 +251,8 @@ void get_over_and_score(PID leftPID, PID rightPID, PID turnPID){
     go(14.10511909010127, leftPID, rightPID);
 }
 
-void drew_touch_elevation(PID leftPID, PID rightPID, PID turnPID){
-    while(imu.is_calibrating()){pros::delay(10);}
-    imu.set_heading(convert(90));
-    while(imu.is_calibrating()){pros::delay(10);}
-    turn(145.94421969906756, turnPID);
-    go(25.028582700584543, leftPID, rightPID);
-    turn(234.41262943686615, turnPID);
-    go(25.73444695345132, leftPID, rightPID);
-    turn(135.68206039317266, turnPID);
-    go(22.810052520763737, leftPID, rightPID);
-}
-
 
 void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
-
-
-}
-void drew_AWP_gen(PID leftPID, PID rightPID, PID turnPID){
     while(imu.is_calibrating()){pros::delay(10);}
     imu.set_heading(convert(0));
     while(imu.is_calibrating()){pros::delay(10);}
@@ -276,37 +260,41 @@ void drew_AWP_gen(PID leftPID, PID rightPID, PID turnPID){
     go(63.75122850580998, leftPID, rightPID);
     turn(315.0, turnPID);
     go(20.636204302148204, leftPID, rightPID);
-    intakeLeft =-80; 
-    intakeRight =-80; 
+    intakeLeft =-127; 
+    intakeRight =-127; 
     intakeUpDown();
     flippers.set_value(1);
     turn(45.0, turnPID);
+    intakeRight = 90;
+    intakeLeft = 90;
+    leftPID.P_weight *=0.6;
+    leftPID.I_weight*=2;
+    rightPID.P_weight *=0.6;
+    rightPID.I_weight*=2;
     go(11.675747170952274, leftPID, rightPID);
-    intakeUpDown();
-     
-    imu.set_heading(convert(135));
-    while(imu.is_calibrating()){pros::delay(10);}
-    go(-2, leftPID, rightPID);
-    turn(255, turnPID);
-    go(8, leftPID, rightPID);
-    //WE RELY ON THIS BEING INACCURATE AND PUTTING US TO THE LEFT
-    //potentially need a turn(255)
-    leftFly = 70;
-    rightFly = 70;
-    intakeRight = 80;
-    intakeLeft = 80;
-    intakeUpDown(); //up
-    pros::delay(500);
-    leftFly = 0;
-    rightFly = 0;
-    intakeRight = 0;
+    pros::delay(777);  // <- decrease
+    flippers.set_value(0);
     intakeLeft = 0;
-    turn(85, turnPID);
-    go(-20, leftPID, rightPID);
-    imu.set_heading(convert(90));
-    while(imu.is_calibrating()){pros::delay(10);}
-    turn(45.552675264948164, turnPID);
-    go(-42.2247245106466, leftPID, rightPID);
-    turn(136.25904520717526, turnPID);
-    go(24.715106311727652, leftPID, rightPID);
+    intakeRight= 0;
+    leftPID.P_weight /=0.6;
+    leftPID.I_weight /=2;
+    rightPID.P_weight /=0.6;
+    rightPID.I_weight /=2;
+    go(-4.344464063610149, leftPID, rightPID);
+    turn(311.18592516570965, turnPID);
+    go(14.28691597231537, leftPID, rightPID);
+    intakeLeft = -127;
+    intakeRight = -127;
+    pros::delay(800);
+    intakeLeft = 0;
+    intakeRight = 0;
+    turn(270.0, turnPID);
+    go(10.368, leftPID, rightPID);
+    go(-3, leftPID, rightPID);
+    turn(123.84005613496726, turnPID);
+    go(20.342035296400407, leftPID, rightPID);
+    turn(222.31622484053102, turnPID);
+    go(34.79387532310823, leftPID, rightPID);
+    turn(132.3974377975002, turnPID);
+    go(23.919224067682464, leftPID, rightPID);
 }
