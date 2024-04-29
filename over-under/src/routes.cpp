@@ -9,8 +9,8 @@
 void shoot(int num){
     intakeRight = 127;
     intakeLeft = -127;
-    leftFly = .65 * -127;
-	rightFly = .65 * 127; 
+    leftFly = .71 * -127;
+	rightFly = .71 * 127; 
     pros::delay(600);
     for(int i = 0; i < num; i++){
         intakeActuation.move_relative(red_ticks_per_rev / 2.0, 85);
