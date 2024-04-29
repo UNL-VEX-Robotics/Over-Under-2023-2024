@@ -28,7 +28,7 @@ std::list<std::tuple<std::string, PID, PID, PID>>::iterator pid_iter= pid_sets.b
 
 PID leftpid = PID(.09,0.03,0,15,50);
 PID rightpid = PID(.075,0.03,0,15,50);
-PID turnpid = PID(0.35,0.1,10,1,10);
+PID turnpid = PID(0.38,0.1,10,1,10);
 
 PID intleftpid = PID(.09,0.06,0,15,50);
 PID intrightpid = PID(.075,0.06,0,15,50);

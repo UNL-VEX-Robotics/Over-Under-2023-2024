@@ -235,7 +235,7 @@ void match_drew_MONEY(PID leftPID, PID rightPID, PID turnPID){
 void turn_left(int abs_x, PID p){
     double start = imu.get_heading();
     double rel = start - abs_x;
-    turn_left_relative_debug(rel, p);
+    turn_left_relative_debug(rel+23, p);
 }
 
 void get_over_and_score(PID leftPID, PID rightPID, PID turnPID){
@@ -258,6 +258,7 @@ void get_over_and_score(PID leftPID, PID rightPID, PID turnPID){
 
 void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
     while(imu.is_calibrating()){pros::delay(10);}
+    imu.reset();
     imu.set_heading(convert(0));
     while(imu.is_calibrating()){pros::delay(10);}
     intakeUpDown();
@@ -271,6 +272,8 @@ void drew_AWP(PID leftPID, PID rightPID, PID turnPID){
     go(20.636204302148204, leftPID, rightPID);
     intakeLeft =-127; 
     intakeRight =-127; 
+    go(8, leftPID, rightPID);
+    go(-8, leftPID, rightPID);
     intakeUpDown();
     turn(45.0, turnPID);
     intakeRight = 90;
